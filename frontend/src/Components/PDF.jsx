@@ -31,31 +31,31 @@ const {vegetables, total, name, address} = props;
       <div className="flex justify-between w-full">
         <div className="w-full">
           <p className="border-b border-black pt-3 pb-4 px-6 capitalize">
-            BILL TO: <strong>{name}</strong>
+            BILL TO: <strong>{name} xsnckjdsnk</strong>
           </p>
-          <p className="border-b border-black pt-3 pb-4 px-6 capitalize">
-            Address: <strong>{address}</strong>
+          <p className=" border-black pt-3 pb-4 px-6 capitalize">
+            Address: <strong>{address} ckbsk</strong>
           </p>
         </div>
         <div className="">
           <p className="border-b border-l pl-2 pb-1 border-black">
             Invoice No: <strong>01/2023-24</strong>
           </p>
-          <p className="border-b border-l pl-2 border-black pb-1">
+          <p className="border-l pl-2 border-black pb-1">
             Invoice Date: <strong>13/9/2023</strong>
           </p>
         </div>
       </div>
 
       <div className="flex justify-between mt-0">
-        <table className="w-full border-collapse border border-black">
+        <table className="w-full border-collapse border-b border-black">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-black px-2 py-2">Sr. No</th>
-              <th className="border border-black px-2 py-2">Particulars</th>
-              <th className="border border-black px-2 py-2">Total (Kg)</th>
+              <th className="border-t border-b border-black px-2 py-2">Sr. No</th>
+              <th className="border border-r-0 border-black px-2 py-2">Particulars</th>
+              <th className="border border-r-0 border-black px-2 py-2">Total (Kg)</th>
               <th className="border border-black px-2 py-2">Per (Kg)</th>
-              <th className="border border-black px-2 py-2">Amount (In Rs.)</th>
+              <th className="border-t border-b border-black px-2 py-2">Amount (In Rs.)</th>
             </tr>
           </thead>
           <tbody>
@@ -66,7 +66,7 @@ const {vegetables, total, name, address} = props;
                 <td className="border border-black px-2 py-2">
                   {item.quantity}
                 </td>
-                <td className="border border-black px-2 py-2">{item.price}</td>
+                <td className="border border-black px-2 py-2">{item.price_per_kg}</td>
                 <td className="border border-black px-2 py-2">{item.amount}</td>
               </tr>
             ))}

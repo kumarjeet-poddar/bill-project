@@ -17,12 +17,12 @@ const router = express.Router();
 router.get("/customers", get_all_customer);
 router.get("/customer/:cust_id", get_customer);
 router.post("/customer", add_customer);
-router.put("/customers/:cust_id", edit_customer);
+router.put("/customer/:cust_id", edit_customer);
 router.delete("/customer/:cust_id", remove_customer);
 
 // vegetables
-router.post("/vegetables", add_vegetable);
-router.put("/vegetables/:veg_id", edit_vegetable);
-router.delete("/vegetables/:veg_id", remove_vegetable);
+router.post("/vegetable", add_vegetable);
+router.put("/vegetable/:veg_id", edit_vegetable);
+router.delete("/vegetable/:cust_id/:veg_id", remove_vegetable);
 
 export default router;

@@ -21,24 +21,37 @@ function Form() {
 
   const { custId } = useParams();
 
-  const [veges, setVeges] = useState([
-    {
-      id: 0,
-    },
-  ]);
+  const [veges, setVeges] = useState([]);
   const [total, setTotal] = useState(0);
+  const [customer, setCustomer] = useState();
   const [name, setName] = useState("");
   const [add, setAdd] = useState("");
-  const navigate = useNavigate();
   const targetRef = useRef();
   const [load, setLoad] = useState(false);
   const [actionId, setActionId] = useState(-1);
+  const [isAdd, setIsAdd] = useState(false);
+
+  useEffect(() => {
+    async function getCustomer() {
+      await axiosInstance
+        .get(`/customer/${custId}`)
+        .then((res) => {
+          setCustomer(res.data.customer);
+          setVeges(res?.data?.customer?.vegetables);
+          setName(res?.data?.customer?.username);
+          setAdd(res?.data?.customer?.address);
+        })
+        .catch((err) => {});
+    }
+
+    if (custId) getCustomer();
+  }, [custId]);
 
   useEffect(() => {
     var amount = 0;
     veges.map((veg) => {
-      if (!isNaN(veg.price) && !isNaN(veg.quantity)) {
-        var temp = veg.price * veg.quantity;
+      if (!isNaN(veg.price_per_kg) && !isNaN(veg.quantity)) {
+        var temp = veg.price_per_kg * veg.quantity;
         amount += temp;
       }
     });
@@ -46,31 +59,137 @@ function Form() {
     setTotal(amount);
   }, [veges]);
 
-  async function onSubmit(data) {
-    // const upd_data = {
-    //   customer_name: data.name,
-    //   customer_phone: data.phone,
-    //   customer_address: data.address,
-    //   vegetables: veges,
-    //   total: total,
-    // };
-    // generatePDF(targetRef, { filename: `${data.name}_invoice.pdf` });
+  async function handleRemove(id) {
+    if (id == 0) {
+      setVeges((prev) => prev.filter((veg) => veg._id != 0));
+    } else {
+      await axiosInstance
+        .delete(`/vegetable/${custId}/${id}`)
+        .then((res) => {
+          setVeges((prev) => prev.filter((p) => p._id != id));
+          toast.success(res?.data?.msg);
+        })
+        .catch((err) => {});
+    }
+  }
 
-    var data;
+  function handleAddMore() {
+    setIsAdd(true);
+    setActionId(0);
+    setVeges((prev) => [...prev, { _id: 0 }]);
+  }
+
+  function handleOnChange(idx, field, e) {
+    var val = e.target.value;
+
+    setVeges((data) => {
+      const isExist = data.find((d) => d._id == idx);
+      if (isExist) {
+        return data.map((d) =>
+          d._id === idx
+            ? {
+                ...d,
+                [field]: val,
+                amount: field === "price" ? val * d.quantity : d.price * val,
+              }
+            : d
+        );
+      }
+    });
+  }
+
+  function handleEditVeg(id) {
+    setActionId(id);
+  }
+
+  function handleCancel() {
+    setActionId(-1);
+    if (isAdd) {
+      setVeges((prev) => prev.filter((veg) => veg._id != 0));
+      setIsAdd(false);
+    } else {
+    }
+  }
+
+  async function handleSave(id) {
+    const data = veges.find((v) => v._id == id);
+
+    if (isAdd) {
+      const d = {
+        cust_id: custId,
+        name: data.name,
+        price: parseInt(data.price),
+        quantity: parseInt(data.quantity),
+      };
+
+      await axiosInstance
+        .post("/vegetable", d)
+        .then((res) => {
+          if (res.status == 200) {
+            setVeges((prev) => prev.filter((veg) => veg._id != 0));
+            setVeges((prev) => [...prev, res?.data?.vegetable]);
+            toast.success(res?.data?.msg);
+            setIsAdd(false);
+          }
+        })
+        .catch((err) => {});
+    } else {
+      const d = {
+        veg_id: data._id,
+        name: data.name,
+        price: parseInt(data.price),
+        quantity: parseInt(data.quantity),
+      };
+
+      await axiosInstance
+        .put(`/vegetable/${data._id}`, d)
+        .then((res) => {
+          if (res.status == 200) {
+            toast.success(res?.data?.msg);
+            setActionId(-1);
+          }
+        })
+        .catch((err) => {});
+    }
+  }
+
+  async function onSubmit(data) {
+    var upd_data;
     setLoad(true);
 
     if (custId) {
+      // edit customer
+      const d = {
+        cust_id: custId,
+        phone: data.phone,
+        address: data.address,
+      };
+
+      await axiosInstance
+        .put(`customer/${custId}`, d)
+        .then((res) => {
+          setLoad(false);
+          console.log(res);
+          if (res.status == 200) {
+            toast.success("Customer Bill generated");
+            // generate bill
+            generatePDF(targetRef, { filename: `${data.name}_invoice.pdf` });
+          }
+        })
+        .catch((err) => {
+          setLoad(false);
+          toast.error(err?.response?.data?.msg);
+        });
     } else {
-      data = {
+      // add new customer
+      upd_data = {
         username: data.name,
         phone: data.phone,
         address: data.address,
       };
 
-      console.log(data);
-
       await axiosInstance
-        .post("customer", data)
+        .post("customer", upd_data)
         .then((res) => {
           setLoad(false);
           if (res.status == 200) {
@@ -84,74 +203,8 @@ function Form() {
     }
   }
 
-  function handleRemove(idx) {
-    var updated = veges.filter((v) => v.id !== idx);
-    updated = updated.map((m) => {
-      if (m.id > idx) return { ...m, id: m.id - 1 };
-      return m;
-    });
+  console.log(veges);
 
-    setVeges(updated);
-  }
-
-  function handleAddMore(idx) {
-    setVeges((prev) => [...prev, { id: idx + 1 }]);
-  }
-
-  function handleOnChange(idx, field, e) {
-    var val = e.target.value;
-
-    if (field == "name") {
-      const selectedVeg = vegList.find((veg) => veg.veg_name === val);
-
-      setVeges((data) => {
-        const isExist = data.find((d) => d.id == idx);
-        if (isExist) {
-          return data.map((d) =>
-            d.id === idx
-              ? {
-                  ...d,
-                  name: selectedVeg.veg_name,
-                  price: selectedVeg.veg_price,
-                  quantity: selectedVeg.quantity,
-                  amount: selectedVeg.quantity * selectedVeg.veg_price,
-                }
-              : d
-          );
-        }
-      });
-    } else {
-      setVeges((data) => {
-        const isExist = data.find((d) => d.id == idx);
-        if (isExist) {
-          return data.map((d) =>
-            d.id === idx
-              ? {
-                  ...d,
-                  [field]: val,
-                  amount: field === "price" ? val * d.quantity : d.price * val,
-                }
-              : d
-          );
-        }
-      });
-    }
-  }
-
-  function handleEditVeg(id) {
-    console.log(id)
-    setActionId(id);
-  }
-
-  function handleCancel() {
-    setActionId(-1);
-  }
-
-  function handleSave() {
-    setActionId(-1);
-  }
-
-  console.log(veges)
   return (
     <>
       <div className="bg-slate-100 max-w-xl px-4 py-8 my-8 rounded-xl mx-auto flex flex-col">
@@ -160,14 +213,15 @@ function Form() {
           <div className="mb-4">
             <label className="text-gray-800">Customer Name</label>
             <input
-              type="name"
+              type="text"
               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
               placeholder="Enter Customer name"
-              defaultValue=""
+              defaultValue={customer?.username}
               {...register("name", { required: true })}
               onChange={(e) => {
                 setName(e.target.value);
               }}
+              readOnly={custId ? true : false}
             />
             {errors.username && (
               <span className="text-red-600">Please, enter name</span>
@@ -180,7 +234,8 @@ function Form() {
               type="number"
               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
               placeholder="Phone Number"
-              {...register("phone")}
+              defaultValue={customer?.phone}
+              {...register("phone", { required: true })}
             />
           </div>
 
@@ -190,7 +245,7 @@ function Form() {
               type="text"
               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
               placeholder="Enter Address"
-              defaultValue=""
+              defaultValue={customer?.address}
               {...register("address", { required: true })}
               onChange={(e) => {
                 setAdd(e.target.value);
@@ -203,56 +258,44 @@ function Form() {
 
           {custId && (
             <div className="mb-4">
-              <label className="text-gray-800">Add Vegetables</label>
+              <label className="text-gray-800">Vegetables</label>
 
-              {veges.length > 0 &&
+              {veges.length > 0 ? (
                 veges.map((data, index) => {
                   return (
-                    <div className="flex flex-col gap-y-1">
+                    <div key={data._id} className="flex flex-col gap-y-1">
                       <div
                         className="flex items-center w-full gap-x-2 my-2"
-                        key={data.id}
+                        key={data._id}
                       >
                         <input
                           type="text"
                           placeholder="Vegetable Name"
                           value={data.name}
-                          onChange={(e) => handleOnChange(index, "name", e)}
+                          onChange={(e) => handleOnChange(data?._id, "name", e)}
                           className="w-1/2 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                         />
-                        {/* <select
-                        value={data.name}
-                        onChange={(e) => handleOnChange(index, "name", e)}
-                        className="w-1/2 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                      >
-                        <option value="">--select--vegetable--</option>
-                        {vegList.map((list) => {
-                          return (
-                            <option key={list.id} value={list.veg_name}>
-                              {list.veg_name}
-                            </option>
-                          );
-                        })}
-                      </select> */}
                         <input
                           type="number"
                           placeholder="KGs"
                           value={data?.quantity}
                           className="w-1/4 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                          onChange={(e) => handleOnChange(index, "quantity", e)}
+                          onChange={(e) =>
+                            handleOnChange(data._id, "quantity", e)
+                          }
                         />
                         <input
                           type="number"
                           placeholder="price per KG"
-                          value={data?.price}
-                          onChange={(e) => handleOnChange(index, "price", e)}
+                          value={data?.price_per_kg}
+                          onChange={(e) => handleOnChange(data._id, "price", e)}
                           className="w-1/4 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                         />
                         <div
                           className="rounded-full cursor-pointer"
                           title="Edit"
                           onClick={() => {
-                            handleEditVeg(data.id);
+                            handleEditVeg(data._id);
                           }}
                         >
                           <RiPencilFill size={32} />
@@ -262,25 +305,25 @@ function Form() {
                             className="rounded-full cursor-pointer"
                             title="Add More"
                             onClick={() => {
-                              handleAddMore(index);
+                              handleAddMore();
                             }}
                           >
                             <IoIosAddCircle size={32} />
                           </div>
                         )}
-                        {/* {index !== 0 && ( */}
-                        <div
-                          className="rounded-full cursor-pointer"
-                          title="Remove"
-                          onClick={() => {
-                            handleRemove(index);
-                          }}
-                        >
-                          <IoIosRemoveCircle size={32} />
-                        </div>
-                        {/* )} */}
+                        {index !== 0 && (
+                          <div
+                            className="rounded-full cursor-pointer"
+                            title="Remove"
+                            onClick={() => {
+                              handleRemove(data._id);
+                            }}
+                          >
+                            <IoIosRemoveCircle size={32} />
+                          </div>
+                        )}
                       </div>
-                      {(actionId == data.id) && (
+                      {actionId == data._id && (
                         <div className="flex w-full justify-end gap-x-3 border-b pb-1">
                           <button
                             onClick={handleCancel}
@@ -289,7 +332,9 @@ function Form() {
                             Cancel
                           </button>
                           <button
-                            onClick={handleSave}
+                            onClick={() => {
+                              handleSave(data._id);
+                            }}
                             className="py-1 px-3 text-sm text-white bg-green-500 hover:bg-green-600 transition-all rounded-xl"
                           >
                             Save
@@ -298,7 +343,17 @@ function Form() {
                       )}
                     </div>
                   );
-                })}
+                })
+              ) : (
+                <button
+                  className="py-1 px-2 text-sm text-white bg-gray-900 hover:bg-black transition-all rounded-lg float-right"
+                  onClick={() => {
+                    handleAddMore();
+                  }}
+                >
+                  Add new
+                </button>
+              )}
             </div>
           )}
 
@@ -309,7 +364,7 @@ function Form() {
           <button
             disabled={load}
             type="submit"
-            className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer"
+            className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
           >
             Generate Bill
           </button>
@@ -326,3 +381,4 @@ function Form() {
 }
 
 export default Form;
+

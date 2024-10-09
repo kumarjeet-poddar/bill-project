@@ -10,6 +10,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Table />} />
+          <Route path="/customer" element={<Form />} />
           <Route path="/customer/:custId" element={<Form />} />
           <Route path="/customer_bill" element={<Pdf />} />
         </Routes>

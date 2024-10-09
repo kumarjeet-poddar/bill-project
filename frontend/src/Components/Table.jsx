@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import vegData from "../Utils/VegetableData.json";
 import axiosInstance from "../Utils/axiosInstance";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { MdDelete } from "react-icons/md";
 
 export function Table() {
-
   const [customer, setCustomer] = useState([]);
 
   useEffect(() => {
@@ -14,8 +14,7 @@ export function Table() {
         .then((res) => {
           setCustomer(res?.data?.customers);
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
     }
 
     getCustomers();
@@ -27,11 +26,33 @@ export function Table() {
     navigate(`/customer/${id}`);
   }
 
+  function handleAdd() {
+    navigate(`/customer`);
+  }
+
+  async function handleDelete(id) {
+    await axiosInstance
+      .delete(`/customer/${id}`)
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.msg);
+        setCustomer((prev) => prev.filter((p) => p._id != id));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   return (
     <div className="rounded p-2 m-4">
-      <div className="flex justify-between items-center my-2">
-        <p className="font-bold text-lg">Vegetables</p>
-        {/* <button className="bg-blue-600 rounded w-32 py-2">Add New</button> */}
+      <div className="flex justify-between items-center mt-2 mb-4">
+        <p className="font-bold text-lg">Customer Details</p>
+        <button
+          onClick={handleAdd}
+          className="bg-black text-white rounded w-fit px-4 py-2"
+        >
+          Add New Customer
+        </button>
       </div>
 
       <div className="relative overflow-x-auto rounded-lg w-full max-h-[82vh] mb-2">
@@ -44,7 +65,7 @@ export function Table() {
               <th scope="col" className="px-6 py-3">
                 Customer Phone number
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" colSpan={2} className="px-6 py-3">
                 Generate Bill
               </th>
             </tr>
@@ -52,7 +73,10 @@ export function Table() {
           <tbody>
             {customer.map((data) => {
               return (
-                <tr key={data?._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <tr
+                  key={data?._id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                >
                   <th
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -68,6 +92,16 @@ export function Table() {
                       }}
                     >
                       Generate Bill
+                    </button>
+                  </td>
+
+                  <td>
+                    <button
+                      onClick={() => {
+                        handleDelete(data._id);
+                      }}
+                    >
+                      <MdDelete size={20} />
                     </button>
                   </td>
                 </tr>
