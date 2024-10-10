@@ -34,12 +34,10 @@ export function Table() {
     await axiosInstance
       .delete(`/customer/${id}`)
       .then((res) => {
-        console.log(res);
         toast.success(res.data.msg);
         setCustomer((prev) => prev.filter((p) => p._id != id));
       })
       .catch((err) => {
-        console.log(err);
       });
   }
 

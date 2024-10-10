@@ -10,6 +10,7 @@ async function add_vegetable(req, res) {
       price_per_kg: price,
       quantity: quantity,
       cust_id: cust_id,
+      amount: price * quantity,
     });
 
     await Customer.findByIdAndUpdate(cust_id, {
@@ -39,6 +40,7 @@ async function edit_vegetable(req, res) {
         $set: {
           ...(price && { price_per_kg: price }),
           ...(quantity && { quantity: quantity }),
+          amount: price * quantity,
         },
       },
       { new: true }
@@ -57,7 +59,6 @@ async function edit_vegetable(req, res) {
       vegetable: updatedVeg,
     });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({
       success: false,
       msg: "Internal server error",
@@ -87,7 +88,6 @@ async function remove_vegetable(req, res) {
       msg: "Vegetable removed successfully",
     });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({
       success: false,
       msg: "Internal server error",

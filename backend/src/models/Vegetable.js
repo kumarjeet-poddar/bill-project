@@ -19,6 +19,9 @@ const vegSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  amount:{
+    type:Number
+  }
 });
 
 const Vegetable = mongoose.model("vegetable", vegSchema);

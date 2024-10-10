@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoIosAddCircle } from "react-icons/io";
 import { IoIosRemoveCircle } from "react-icons/io";
-import vegList from "../Utils/VegetableData.json";
 import { useNavigate, useParams } from "react-router";
 import { useRef } from "react";
 import generatePDF from "react-to-pdf";
@@ -16,6 +15,8 @@ function Form() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -23,23 +24,24 @@ function Form() {
 
   const [veges, setVeges] = useState([]);
   const [total, setTotal] = useState(0);
-  const [customer, setCustomer] = useState();
-  const [name, setName] = useState("");
-  const [add, setAdd] = useState("");
   const targetRef = useRef();
   const [load, setLoad] = useState(false);
   const [actionId, setActionId] = useState(-1);
   const [isAdd, setIsAdd] = useState(false);
+  const [orgVeg, setOrgVeg] = useState([]);
+  const name = watch("name");
+  const address = watch("address");
 
   useEffect(() => {
     async function getCustomer() {
       await axiosInstance
         .get(`/customer/${custId}`)
         .then((res) => {
-          setCustomer(res.data.customer);
           setVeges(res?.data?.customer?.vegetables);
-          setName(res?.data?.customer?.username);
-          setAdd(res?.data?.customer?.address);
+          setOrgVeg(res?.data?.customer?.vegetables);
+          setValue("name", res?.data?.customer?.username);
+          setValue("phone", res?.data?.customer?.phone);
+          setValue("address", res?.data?.customer?.address);
         })
         .catch((err) => {});
     }
@@ -49,6 +51,7 @@ function Form() {
 
   useEffect(() => {
     var amount = 0;
+    
     veges.map((veg) => {
       if (!isNaN(veg.price_per_kg) && !isNaN(veg.quantity)) {
         var temp = veg.price_per_kg * veg.quantity;
@@ -60,13 +63,13 @@ function Form() {
   }, [veges]);
 
   async function handleRemove(id) {
-    if (id == 0) {
-      setVeges((prev) => prev.filter((veg) => veg._id != 0));
+    if (id === 0) {
+      setVeges((prev) => prev.filter((veg) => veg._id !== 0));
     } else {
       await axiosInstance
         .delete(`/vegetable/${custId}/${id}`)
         .then((res) => {
-          setVeges((prev) => prev.filter((p) => p._id != id));
+          setVeges((prev) => prev.filter((p) => p._id !== id));
           toast.success(res?.data?.msg);
         })
         .catch((err) => {});
@@ -83,14 +86,13 @@ function Form() {
     var val = e.target.value;
 
     setVeges((data) => {
-      const isExist = data.find((d) => d._id == idx);
+      const isExist = data.find((d) => d._id === idx);
       if (isExist) {
         return data.map((d) =>
           d._id === idx
             ? {
                 ...d,
                 [field]: val,
-                amount: field === "price" ? val * d.quantity : d.price * val,
               }
             : d
         );
@@ -102,31 +104,32 @@ function Form() {
     setActionId(id);
   }
 
-  function handleCancel() {
-    setActionId(-1);
-    if (isAdd) {
-      setVeges((prev) => prev.filter((veg) => veg._id != 0));
+  function handleCancel(id) {
+    if (isAdd && id == 0) {
+      setVeges((prev) => prev.filter((veg) => veg._id !== 0));
       setIsAdd(false);
     } else {
+      setActionId(-1);
+      setVeges(orgVeg);
     }
   }
 
   async function handleSave(id) {
-    const data = veges.find((v) => v._id == id);
+    const data = veges.find((v) => v._id === id);
 
-    if (isAdd) {
+    if (isAdd && id === 0) {
       const d = {
         cust_id: custId,
         name: data.name,
-        price: parseInt(data.price),
+        price: parseInt(data.price_per_kg),
         quantity: parseInt(data.quantity),
       };
 
       await axiosInstance
         .post("/vegetable", d)
         .then((res) => {
-          if (res.status == 200) {
-            setVeges((prev) => prev.filter((veg) => veg._id != 0));
+          if (res.status === 200) {
+            setVeges((prev) => prev.filter((veg) => veg._id !== 0));
             setVeges((prev) => [...prev, res?.data?.vegetable]);
             toast.success(res?.data?.msg);
             setIsAdd(false);
@@ -137,14 +140,14 @@ function Form() {
       const d = {
         veg_id: data._id,
         name: data.name,
-        price: parseInt(data.price),
+        price: parseInt(data.price_per_kg),
         quantity: parseInt(data.quantity),
       };
 
       await axiosInstance
         .put(`/vegetable/${data._id}`, d)
         .then((res) => {
-          if (res.status == 200) {
+          if (res.status === 200) {
             toast.success(res?.data?.msg);
             setActionId(-1);
           }
@@ -169,8 +172,7 @@ function Form() {
         .put(`customer/${custId}`, d)
         .then((res) => {
           setLoad(false);
-          console.log(res);
-          if (res.status == 200) {
+          if (res.status === 200) {
             toast.success("Customer Bill generated");
             // generate bill
             generatePDF(targetRef, { filename: `${data.name}_invoice.pdf` });
@@ -192,7 +194,7 @@ function Form() {
         .post("customer", upd_data)
         .then((res) => {
           setLoad(false);
-          if (res.status == 200) {
+          if (res.status === 200) {
             toast.success(res?.data?.msg);
           }
         })
@@ -202,8 +204,6 @@ function Form() {
         });
     }
   }
-
-  console.log(veges);
 
   return (
     <>
@@ -216,11 +216,7 @@ function Form() {
               type="text"
               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
               placeholder="Enter Customer name"
-              defaultValue={customer?.username}
               {...register("name", { required: true })}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
               readOnly={custId ? true : false}
             />
             {errors.username && (
@@ -234,7 +230,6 @@ function Form() {
               type="number"
               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
               placeholder="Phone Number"
-              defaultValue={customer?.phone}
               {...register("phone", { required: true })}
             />
           </div>
@@ -245,11 +240,7 @@ function Form() {
               type="text"
               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
               placeholder="Enter Address"
-              defaultValue={customer?.address}
               {...register("address", { required: true })}
-              onChange={(e) => {
-                setAdd(e.target.value);
-              }}
             />
             {errors.username && (
               <span className="text-red-600">Please, enter address</span>
@@ -257,7 +248,7 @@ function Form() {
           </div>
 
           {custId && (
-            <div className="mb-4">
+            <div className="mb-4 h-[35vh] overflow-y-scroll">
               <label className="text-gray-800">Vegetables</label>
 
               {veges.length > 0 ? (
@@ -288,7 +279,9 @@ function Form() {
                           type="number"
                           placeholder="price per KG"
                           value={data?.price_per_kg}
-                          onChange={(e) => handleOnChange(data._id, "price", e)}
+                          onChange={(e) =>
+                            handleOnChange(data._id, "price_per_kg", e)
+                          }
                           className="w-1/4 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                         />
                         <div
@@ -300,17 +293,18 @@ function Form() {
                         >
                           <RiPencilFill size={32} />
                         </div>
-                        {index + 1 == veges.length && (
-                          <div
-                            className="rounded-full cursor-pointer"
-                            title="Add More"
-                            onClick={() => {
-                              handleAddMore();
-                            }}
-                          >
-                            <IoIosAddCircle size={32} />
-                          </div>
-                        )}
+                        {index + 1 === veges.length &&
+                          !veges.some((veg) => veg._id === 0) && (
+                            <div
+                              className="rounded-full cursor-pointer"
+                              title="Add More"
+                              onClick={() => {
+                                handleAddMore();
+                              }}
+                            >
+                              <IoIosAddCircle size={32} />
+                            </div>
+                          )}
                         {index !== 0 && (
                           <div
                             className="rounded-full cursor-pointer"
@@ -323,10 +317,13 @@ function Form() {
                           </div>
                         )}
                       </div>
-                      {actionId == data._id && (
+                      {(actionId === data._id || (isAdd && data._id === 0)) && (
                         <div className="flex w-full justify-end gap-x-3 border-b pb-1">
                           <button
-                            onClick={handleCancel}
+                            onClick={() => {
+                              handleCancel(data._id);
+                            }}
+                            type="button"
                             className="py-1 px-2 text-sm text-white bg-red-500 hover:bg-red-600 transition-all rounded-xl"
                           >
                             Cancel
@@ -335,6 +332,7 @@ function Form() {
                             onClick={() => {
                               handleSave(data._id);
                             }}
+                            type="button"
                             className="py-1 px-3 text-sm text-white bg-green-500 hover:bg-green-600 transition-all rounded-xl"
                           >
                             Save
@@ -373,7 +371,7 @@ function Form() {
 
       <div className="opacity-0">
         <div ref={targetRef}>
-          <Pdf vegetables={veges} total={total} name={name} address={add} />
+          <Pdf vegetables={veges} total={total} name={name} address={address} />
         </div>
       </div>
     </>
@@ -381,4 +379,3 @@ function Form() {
 }
 
 export default Form;
-
