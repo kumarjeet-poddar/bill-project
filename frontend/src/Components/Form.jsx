@@ -10,6 +10,7 @@ import axiosInstance from "../Utils/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RiPencilFill } from "react-icons/ri";
+import { ReactSearchAutocomplete } from "react-search-autocomplete";
 
 function Form() {
   const {
@@ -20,7 +21,7 @@ function Form() {
     formState: { errors },
   } = useForm();
 
-  const { custId } = useParams();
+  const { custId, operation } = useParams();
 
   const [veges, setVeges] = useState([]);
   const [total, setTotal] = useState(0);
@@ -49,9 +50,10 @@ function Form() {
     if (custId) getCustomer();
   }, [custId]);
 
+  console.log(veges);
   useEffect(() => {
     var amount = 0;
-    
+
     veges.map((veg) => {
       if (!isNaN(veg.price_per_kg) && !isNaN(veg.quantity)) {
         var temp = veg.price_per_kg * veg.quantity;
@@ -63,16 +65,21 @@ function Form() {
   }, [veges]);
 
   async function handleRemove(id) {
-    if (id === 0) {
-      setVeges((prev) => prev.filter((veg) => veg._id !== 0));
+    if (operation === "generate_bill") {
+      setVeges((prev) => prev.filter((veg) => veg._id !== id));
+      toast.success("Vegetable removed");
     } else {
-      await axiosInstance
-        .delete(`/vegetable/${custId}/${id}`)
-        .then((res) => {
-          setVeges((prev) => prev.filter((p) => p._id !== id));
-          toast.success(res?.data?.msg);
-        })
-        .catch((err) => {});
+      if (id === 0) {
+        setVeges((prev) => prev.filter((veg) => veg._id !== 0));
+      } else {
+        await axiosInstance
+          .delete(`/vegetable/${custId}/${id}`)
+          .then((res) => {
+            setVeges((prev) => prev.filter((p) => p._id !== id));
+            toast.success(res?.data?.msg);
+          })
+          .catch((err) => {});
+      }
     }
   }
 
@@ -135,7 +142,25 @@ function Form() {
             setIsAdd(false);
           }
         })
-        .catch((err) => {});
+        .catch((err) => {
+          // if data is in db
+          if (err.response.status == 400) {
+            // const foundItem = veges.find(
+            //   (veg) => veg?.name?.toLowerCase() === data?.name?.toLowerCase()
+            // );
+            // in veges show alert and return
+            // if (foundItem) {
+            //   console.log("56")
+            //   return toast.info(err.response.data.msg);
+            // }
+            // not in veges then add
+            // else {
+            setVeges((prev) => prev.filter((veg) => veg._id !== 0));
+            setVeges((prev) => [...prev, err.response.data.vegetable]);
+            toast.success("Vegetable added");
+            // }
+          }
+        });
     } else {
       const d = {
         veg_id: data._id,
@@ -254,45 +279,94 @@ function Form() {
               {veges.length > 0 ? (
                 veges.map((data, index) => {
                   return (
-                    <div key={data._id} className="flex flex-col gap-y-1">
+                    <div key={index} className="flex flex-col gap-y-1">
                       <div
                         className="flex items-center w-full gap-x-2 my-2"
                         key={data._id}
                       >
-                        <input
-                          type="text"
-                          placeholder="Vegetable Name"
-                          value={data.name}
-                          onChange={(e) => handleOnChange(data?._id, "name", e)}
-                          className="w-1/2 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                        />
-                        <input
-                          type="number"
-                          placeholder="KGs"
-                          value={data?.quantity}
-                          className="w-1/4 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                          onChange={(e) =>
-                            handleOnChange(data._id, "quantity", e)
-                          }
-                        />
-                        <input
-                          type="number"
-                          placeholder="price per KG"
-                          value={data?.price_per_kg}
-                          onChange={(e) =>
-                            handleOnChange(data._id, "price_per_kg", e)
-                          }
-                          className="w-1/4 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                        />
-                        <div
-                          className="rounded-full cursor-pointer"
-                          title="Edit"
-                          onClick={() => {
-                            handleEditVeg(data._id);
-                          }}
-                        >
-                          <RiPencilFill size={32} />
+                        <div className="w-full flex flex-col">
+                          <label className="pointer-events-none text-[10px]">
+                            Vegetable
+                          </label>
+                          <ReactSearchAutocomplete
+                            showIcon={false}
+                            items={orgVeg}
+                            placeholder={data.name}
+                            onSearch={(inputValue) => {
+                              const foundItem = veges.find(
+                                (veg) =>
+                                  veg?.name?.toLowerCase() ===
+                                  inputValue?.toLowerCase()
+                              );
+                              if (!foundItem) {
+                                handleOnChange(data._id, "name", {
+                                  target: { value: inputValue },
+                                });
+                              }
+                            }}
+                            onSelect={(item) => {
+                              handleOnChange(data._id, "name", {
+                                target: { value: item.name },
+                              });
+                              handleOnChange(data._id, "quantity", {
+                                target: { value: item.quantity },
+                              });
+                              handleOnChange(data._id, "price_per_kg", {
+                                target: { value: item.price_per_kg },
+                              });
+                            }}
+                            styling={{
+                              height: "40px",
+                              borderRadius: "8px",
+                              backgroundColor: "white",
+                              boxShadow: "none",
+                              color: "black",
+                              fontSize: "16px",
+                              iconColor: "gray",
+                              clearIconMargin: "0 4px 0 0",
+                              zIndex: 2,
+                              borderColor: "#d1d5db",
+                              placeholderColor: "black",
+                            }}
+                          />
                         </div>
+                        <div className="w-full flex flex-col">
+                          <label className="text-[10px]">KGs</label>
+                          <input
+                            type="number"
+                            placeholder="KGs"
+                            value={data?.quantity}
+                            className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                            onChange={(e) =>
+                              handleOnChange(data._id, "quantity", e)
+                            }
+                          />
+                        </div>
+                        <div className="w-full flex flex-col">
+                          <label className="pointer-events-none text-[10px]">
+                            Price
+                          </label>
+                          <input
+                            type="number"
+                            placeholder="price per KG"
+                            value={data?.price_per_kg}
+                            onChange={(e) =>
+                              handleOnChange(data._id, "price_per_kg", e)
+                            }
+                            className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                          />
+                        </div>
+                        {operation === "edit" && (
+                          <div
+                            className="rounded-full cursor-pointer"
+                            title="Edit"
+                            onClick={() => {
+                              handleEditVeg(data._id);
+                            }}
+                          >
+                            <RiPencilFill size={32} />
+                          </div>
+                        )}
                         {index + 1 === veges.length &&
                           !veges.some((veg) => veg._id === 0) && (
                             <div
@@ -364,7 +438,7 @@ function Form() {
             type="submit"
             className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
           >
-            Generate Bill
+            {custId ? "Generate Bill" : "Add Customer"}
           </button>
         </form>
       </div>

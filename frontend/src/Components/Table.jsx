@@ -23,7 +23,11 @@ export function Table() {
   const navigate = useNavigate();
 
   function handleBill(id) {
-    navigate(`/customer/${id}`);
+    navigate(`/customer/generate_bill/${id}`);
+  }
+
+  function handleEdit(id) {
+    navigate(`/customer/edit/${id}`);
   }
 
   function handleAdd() {
@@ -64,7 +68,7 @@ export function Table() {
                 Customer Phone number
               </th>
               <th scope="col" colSpan={2} className="px-6 py-3">
-                Generate Bill
+                Action
               </th>
             </tr>
           </thead>
@@ -90,6 +94,15 @@ export function Table() {
                       }}
                     >
                       Generate Bill
+                    </button>
+
+                    <button
+                      className="py-[6px] px-3 bg-gray-50 text-black hover:bg-gray-200 rounded-lg ml-8"
+                      onClick={() => {
+                        handleEdit(data._id);
+                      }}
+                    >
+                      Edit Detail
                     </button>
                   </td>
 

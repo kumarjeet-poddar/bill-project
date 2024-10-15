@@ -1,8 +1,7 @@
 import React from "react";
 
 export default function Pdf(props) {
-
-const {vegetables, total, name, address} = props;
+  const { vegetables, total, name, address } = props;
   return (
     <div className="max-w-6xl mx-auto my-8 border border-black pt-6">
       {/* Header */}
@@ -31,10 +30,10 @@ const {vegetables, total, name, address} = props;
       <div className="flex justify-between w-full">
         <div className="w-full">
           <p className="border-b border-black pt-3 pb-4 px-6 capitalize">
-            BILL TO: <strong>{name} xsnckjdsnk</strong>
+            BILL TO: <strong>{name}</strong>
           </p>
           <p className=" border-black pt-3 pb-4 px-6 capitalize">
-            Address: <strong>{address} ckbsk</strong>
+            Address: <strong>{address}</strong>
           </p>
         </div>
         <div className="">
@@ -51,11 +50,19 @@ const {vegetables, total, name, address} = props;
         <table className="w-full border-collapse border-b border-black">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border-t border-b border-black px-2 py-2">Sr. No</th>
-              <th className="border border-r-0 border-black px-2 py-2">Particulars</th>
-              <th className="border border-r-0 border-black px-2 py-2">Total (Kg)</th>
+              <th className="border-t border-b border-black px-2 py-2">
+                Sr. No
+              </th>
+              <th className="border border-r-0 border-black px-2 py-2">
+                Particulars
+              </th>
+              <th className="border border-r-0 border-black px-2 py-2">
+                Total (Kg)
+              </th>
               <th className="border border-black px-2 py-2">Per (Kg)</th>
-              <th className="border-t border-b border-black px-2 py-2">Amount (In Rs.)</th>
+              <th className="border-t border-b border-black px-2 py-2">
+                Amount (In Rs.)
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -66,10 +73,49 @@ const {vegetables, total, name, address} = props;
                 <td className="border border-black px-2 py-2">
                   {item.quantity}
                 </td>
-                <td className="border border-black px-2 py-2">{item.price_per_kg}</td>
-                <td className="border border-black px-2 py-2">{item.amount}</td>
+                <td className="border border-black px-2 py-2">
+                  {item.price_per_kg}
+                </td>
+                <td className="border border-black px-2 py-2">
+                  {item.quantity * item.price_per_kg}
+                </td>
               </tr>
             ))}
+            <tr className="py-4">
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+            </tr>
+            <tr className="py-4">
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+            </tr>
+            <tr className="py-4">
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+            </tr>
+            <tr className="py-4">
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+            </tr>
+            <tr className="py-4">
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+              <td className="border border-black px-2 py-4"></td>
+            </tr>
           </tbody>
         </table>
       </div>

@@ -6,11 +6,20 @@ import {
   get_customer,
   remove_customer,
 } from "../controllers/CustController.js";
+
 import {
   add_vegetable,
   edit_vegetable,
   remove_vegetable,
 } from "../controllers/VegController.js";
+
+import {
+  add_bill,
+  edit_bill,
+  get_all_bill,
+  get_bill,
+  remove_bill,
+} from "../controllers/BillController.js";
 const router = express.Router();
 
 // customers
@@ -24,5 +33,12 @@ router.delete("/customer/:cust_id", remove_customer);
 router.post("/vegetable", add_vegetable);
 router.put("/vegetable/:veg_id", edit_vegetable);
 router.delete("/vegetable/:cust_id/:veg_id", remove_vegetable);
+
+// bills
+router.get("/bills", get_all_bill);
+router.get("/bill/:bill_id", get_bill);
+router.post("/bill", add_bill);
+router.put("/bill/:bill_id", edit_bill);
+router.delete("/bill/:bill_id/:cust_id", remove_bill);
 
 export default router;

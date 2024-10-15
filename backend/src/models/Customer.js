@@ -6,10 +6,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-//   email: {
-//     type: String,
-//     required: true,
-//   },
+  //   email: {
+  //     type: String,
+  //     required: true,
+  //   },
   phone: {
     type: Number,
     required: true,
@@ -22,6 +22,12 @@ const userSchema = new mongoose.Schema({
     {
       type: ObjectId,
       ref: "vegetable",
+    },
+  ],
+  bills: [
+    {
+      type: ObjectId,
+      ref: "bill",
     },
   ],
 });

@@ -5,6 +5,18 @@ async function add_vegetable(req, res) {
   try {
     const { cust_id, name, price, quantity } = req.body;
 
+    const is_exist = await Vegetable.findOne({
+      name: name,
+    });
+
+    if (is_exist) {
+      return res.status(400).json({
+        success: false,
+        msg: "Vegetable by this name already exists",
+        vegetable:is_exist
+      });
+    }
+
     const new_veg = await Vegetable.create({
       name: name,
       price_per_kg: price,
