@@ -187,26 +187,53 @@ function Form() {
 
     if (custId) {
       // edit customer
-      const d = {
-        cust_id: custId,
-        phone: data.phone,
-        address: data.address,
-      };
+      if (operation === "edit") {
+        const d = {
+          cust_id: custId,
+          phone: data.phone,
+          address: data.address,
+        };
 
-      await axiosInstance
-        .put(`customer/${custId}`, d)
-        .then((res) => {
-          setLoad(false);
-          if (res.status === 200) {
-            toast.success("Customer Bill generated");
-            // generate bill
-            generatePDF(targetRef, { filename: `${data.name}_invoice.pdf` });
-          }
-        })
-        .catch((err) => {
-          setLoad(false);
-          toast.error(err?.response?.data?.msg);
-        });
+        await axiosInstance
+          .put(`customer/${custId}`, d)
+          .then((res) => {
+            setLoad(false);
+            toast.success(res?.data?.msg);
+          })
+          .catch((err) => {
+            setLoad(false);
+            toast.error(err?.response?.data?.msg);
+          });
+
+        return;
+      }
+      
+      // generate bill
+      if (operation === "generate_bill") {
+        const bill_data = {
+          cust_id: custId,
+          cust_vegetables: veges,
+          total,
+        };
+
+        await axiosInstance
+          .post(`bill`, bill_data)
+          .then((res) => {
+            setLoad(false);
+            if (res.status === 200) {
+              toast.success(res?.data?.msg);
+              generatePDF(targetRef, {
+                filename: `${data.name}_invoice.pdf`,
+              });
+            }
+          })
+          .catch((err) => {
+            setLoad(false);
+            toast.error(err?.response?.data?.msg);
+          });
+
+        return;
+      }
     } else {
       // add new customer
       upd_data = {

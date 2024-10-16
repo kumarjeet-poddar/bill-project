@@ -35,7 +35,7 @@ router.put("/vegetable/:veg_id", edit_vegetable);
 router.delete("/vegetable/:cust_id/:veg_id", remove_vegetable);
 
 // bills
-router.get("/bills", get_all_bill);
+router.get("/bills/:cust_id", get_all_bill);
 router.get("/bill/:bill_id", get_bill);
 router.post("/bill", add_bill);
 router.put("/bill/:bill_id", edit_bill);

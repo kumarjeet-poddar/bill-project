@@ -4,7 +4,7 @@ import Customer from "../models/Customer.js";
 // get all bills
 async function get_all_bill(req, res) {
   try {
-    const { cust_id } = await req;
+    const { cust_id } = await req.params;
 
     const bills = await Customer.findOne({ _id: cust_id }).populate({
       path: "bills",
@@ -27,8 +27,7 @@ async function get_bill(req, res) {
   try {
     const { bill_id } = req.params;
 
-    const bill = await Bill.findById(bill_id)
-      .populate("customer")
+    const bill = await Bill.findById(bill_id).populate("customer");
 
     return res.status(200).json({
       success: true,
@@ -47,28 +46,24 @@ async function add_bill(req, res) {
   try {
     const { cust_id, cust_vegetables, total } = req.body;
 
-    const newBill = new Bill({
+    const bill = await Bill.create({
       customer: cust_id,
       vegetables: cust_vegetables.map((veg) => ({
         name: veg.name,
-        price: veg.price,
+        price: veg.price_per_kg,
         quantity: veg.quantity,
       })),
-      totalPrice: total,
+      total_amount: total,
     });
 
-    const savedBill = await newBill.save();
-
-    await Customer.findByIdAndUpdate(
-      cust_id,
-      { $push: { bills: savedBill._id } },
-      { new: true }
-    );
+    await Customer.findByIdAndUpdate(cust_id, {
+      $addToSet: { bills: bill._id },
+    });
 
     return res.status(200).json({
       success: true,
       msg: "Bill generated successfully",
-      bill: savedBill,
+      bill
     });
   } catch (err) {
     return res.status(500).json({
@@ -91,7 +86,7 @@ async function edit_bill(req, res) {
 
     bill.vegetables = vegetables.map((veg) => ({
       name: veg.name,
-      price: veg.price,
+      price: veg.price_per_kg,
       quantity: veg.quantity,
     }));
 

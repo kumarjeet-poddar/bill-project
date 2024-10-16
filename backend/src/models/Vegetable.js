@@ -18,9 +18,6 @@ const vegSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     required: true,
-  },
-  amount:{
-    type:Number
   }
 });
 

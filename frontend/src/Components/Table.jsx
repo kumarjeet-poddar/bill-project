@@ -41,8 +41,7 @@ export function Table() {
         toast.success(res.data.msg);
         setCustomer((prev) => prev.filter((p) => p._id != id));
       })
-      .catch((err) => {
-      });
+      .catch((err) => {});
   }
 
   return (
@@ -81,7 +80,10 @@ export function Table() {
                 >
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer"
+                    onClick={() => {
+                      navigate(`/bills/${data._id}`);
+                    }}
                   >
                     {data.username}
                   </th>

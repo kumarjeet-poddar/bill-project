@@ -13,7 +13,7 @@ async function add_vegetable(req, res) {
       return res.status(400).json({
         success: false,
         msg: "Vegetable by this name already exists",
-        vegetable:is_exist
+        vegetable: is_exist,
       });
     }
 
@@ -22,7 +22,6 @@ async function add_vegetable(req, res) {
       price_per_kg: price,
       quantity: quantity,
       cust_id: cust_id,
-      amount: price * quantity,
     });
 
     await Customer.findByIdAndUpdate(cust_id, {
@@ -52,7 +51,6 @@ async function edit_vegetable(req, res) {
         $set: {
           ...(price && { price_per_kg: price }),
           ...(quantity && { quantity: quantity }),
-          amount: price * quantity,
         },
       },
       { new: true }
