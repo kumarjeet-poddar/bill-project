@@ -11,7 +11,7 @@ const billSchema = new mongoose.Schema(
     vegetables: [
       {
         name: String,
-        price: Number,
+        price_per_kg: Number,
         quantity: Number,
       },
     ],

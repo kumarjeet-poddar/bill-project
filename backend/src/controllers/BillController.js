@@ -50,7 +50,7 @@ async function add_bill(req, res) {
       customer: cust_id,
       vegetables: cust_vegetables.map((veg) => ({
         name: veg.name,
-        price: veg.price_per_kg,
+        price_per_kg: veg.price_per_kg,
         quantity: veg.quantity,
       })),
       total_amount: total,
@@ -76,19 +76,21 @@ async function add_bill(req, res) {
 //  edit bill
 async function edit_bill(req, res) {
   try {
-    const { billId } = req.params;
-    const { vegetables } = req.body;
+    const { bill_id } = req.params;
+    const { vegetables, total_amount } = req.body;
 
-    const bill = await Bill.findById(billId);
+    const bill = await Bill.findById(bill_id);
     if (!bill) {
       return res.status(404).json({ message: "Bill not found" });
     }
 
     bill.vegetables = vegetables.map((veg) => ({
       name: veg.name,
-      price: veg.price_per_kg,
+      price_per_kg: veg.price_per_kg,
       quantity: veg.quantity,
     }));
+
+    bill.total_amount = total_amount;
 
     await bill.save();
 

@@ -21,7 +21,7 @@ function Form() {
     formState: { errors },
   } = useForm();
 
-  const { custId, operation } = useParams();
+  const { custId, operation, billId } = useParams();
 
   const [veges, setVeges] = useState([]);
   const [total, setTotal] = useState(0);
@@ -47,8 +47,27 @@ function Form() {
         .catch((err) => {});
     }
 
+    async function getBill() {
+      await axiosInstance
+        .get(`/bill/${billId}`)
+        .then((res) => {
+          setVeges(res?.data?.bill?.vegetables);
+          setOrgVeg(res?.data?.bill?.vegetables);
+          setValue("name", res?.data?.bill?.customer?.username);
+          setValue("phone", res?.data?.bill?.customer?.phone);
+          setValue("address", res?.data?.bill?.customer?.address);
+        })
+        .catch((err) => {
+        });
+    }
+
+    if (billId) {
+      getBill();
+      return;
+    }
+
     if (custId) getCustomer();
-  }, [custId]);
+  }, [custId, billId]);
 
   console.log(veges);
   useEffect(() => {
@@ -65,7 +84,7 @@ function Form() {
   }, [veges]);
 
   async function handleRemove(id) {
-    if (operation === "generate_bill") {
+    if (operation === "generate_bill" || billId) {
       setVeges((prev) => prev.filter((veg) => veg._id !== id));
       toast.success("Vegetable removed");
     } else {
@@ -143,22 +162,10 @@ function Form() {
           }
         })
         .catch((err) => {
-          // if data is in db
           if (err.response.status == 400) {
-            // const foundItem = veges.find(
-            //   (veg) => veg?.name?.toLowerCase() === data?.name?.toLowerCase()
-            // );
-            // in veges show alert and return
-            // if (foundItem) {
-            //   console.log("56")
-            //   return toast.info(err.response.data.msg);
-            // }
-            // not in veges then add
-            // else {
             setVeges((prev) => prev.filter((veg) => veg._id !== 0));
             setVeges((prev) => [...prev, err.response.data.vegetable]);
             toast.success("Vegetable added");
-            // }
           }
         });
     } else {
@@ -207,7 +214,7 @@ function Form() {
 
         return;
       }
-      
+
       // generate bill
       if (operation === "generate_bill") {
         const bill_data = {
@@ -228,6 +235,30 @@ function Form() {
             }
           })
           .catch((err) => {
+            setLoad(false);
+            toast.error(err?.response?.data?.msg);
+          });
+
+        return;
+      }
+
+      // edit bill
+      if(billId){
+        console.log(billId)
+        const d = {
+          vegetables:veges,
+          total_amount:total
+        };
+
+        await axiosInstance
+          .put(`bill/${billId}`, d)
+          .then((res) => {
+            console.log(res)
+            setLoad(false);
+            toast.success(res?.data?.msg);
+          })
+          .catch((err) => {
+            console.log(err)
             setLoad(false);
             toast.error(err?.response?.data?.msg);
           });
@@ -465,7 +496,7 @@ function Form() {
             type="submit"
             className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
           >
-            {custId ? "Generate Bill" : "Add Customer"}
+            {billId ? "Edit Bill" : custId ? "Generate Bill" : "Add Customer"}
           </button>
         </form>
       </div>

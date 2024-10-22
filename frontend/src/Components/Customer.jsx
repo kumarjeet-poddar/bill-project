@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../Utils/axiosInstance";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 
 export default function Customer() {
   const [bills, setBills] = useState({});
 
   const { custId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getBills() {
@@ -32,6 +33,10 @@ export default function Customer() {
         }));
       })
       .catch((err) => {});
+  }
+
+  function handleEdit(billId) {
+    navigate(`/bill/${billId}/${custId}`);
   }
 
   console.log(bills);
@@ -81,9 +86,14 @@ export default function Customer() {
                         <p class="text-sm">Rs. {b?.total_amount}</p>
                       </td>
                       <td class="p-4">
-                        <a href="#" class="text-sm font-semibold ">
+                        <button
+                          onClick={() => {
+                            handleEdit(b?._id);
+                          }}
+                          class="text-sm font-semibold "
+                        >
                           Edit
-                        </a>
+                        </button>
                       </td>
                       <td class="p-4">
                         <button

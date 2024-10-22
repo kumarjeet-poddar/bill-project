@@ -13,7 +13,8 @@ function App() {
           <Route path="/" element={<Table />} />
           <Route path="/customer" element={<Form />} />
           <Route path="/customer/:operation/:custId" element={<Form />} />
-          <Route path="/customer_bill" element={<Pdf />} />
+          <Route path="/bill/:billId/:custId" element={<Form />} />
+          <Route path="/pdf" element={<Pdf />} />
           <Route path="/bills/:custId" element={<Customer />} />
         </Routes>
       </BrowserRouter>
@@ -25,7 +26,7 @@ function App() {
 
 export default App;
 
-// form me dropdown css 3
-// get bill page - same form 1
-// edit bill from edit option 2
-// thorough testing
+// form me dropdown css 2
+// thorough testing 
+// unique vegetable name error 1
+// ask - editing bill me add ka option dena hai?
