@@ -26,7 +26,9 @@ function App() {
 
 export default App;
 
-// form me dropdown css 2
-// thorough testing 
-// unique vegetable name error 1
-// ask - editing bill me add ka option dena hai?
+// testing 4
+
+
+// form me dropdown css 
+// when generating a bill - in start no veges but if refresh page - state resets
+// sort bills latest to oldest

@@ -6,7 +6,8 @@ async function add_vegetable(req, res) {
     const { cust_id, name, price, quantity } = req.body;
 
     const is_exist = await Vegetable.findOne({
-      name: name,
+      name,
+      cust_id
     });
 
     if (is_exist) {

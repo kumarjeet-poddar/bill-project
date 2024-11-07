@@ -14,7 +14,8 @@ export function Table() {
         .then((res) => {
           setCustomer(res?.data?.customers);
         })
-        .catch((err) => {});
+        .catch((err) => {
+        });
     }
 
     getCustomers();
@@ -72,7 +73,7 @@ export function Table() {
             </tr>
           </thead>
           <tbody>
-            {customer.map((data) => {
+            {customer.length > 0 && customer.map((data) => {
               return (
                 <tr
                   key={data?._id}

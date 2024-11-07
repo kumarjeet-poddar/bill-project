@@ -1,5 +1,6 @@
 import Bill from "../models/Bill.js";
 import Customer from "../models/Customer.js";
+import Vegetable from "../models/Vegetable.js";
 
 // get all bills
 async function get_all_bill(req, res) {
@@ -25,13 +26,16 @@ async function get_all_bill(req, res) {
 //  get bill
 async function get_bill(req, res) {
   try {
-    const { bill_id } = req.params;
+    const { bill_id, cust_id } = req.params;
 
     const bill = await Bill.findById(bill_id).populate("customer");
+
+    const all_vegetables = await Vegetable.find({ cust_id });
 
     return res.status(200).json({
       success: true,
       bill,
+      all_vegetables,
     });
   } catch (err) {
     return res.status(500).json({
@@ -63,7 +67,7 @@ async function add_bill(req, res) {
     return res.status(200).json({
       success: true,
       msg: "Bill generated successfully",
-      bill
+      bill,
     });
   } catch (err) {
     return res.status(500).json({
@@ -135,4 +139,4 @@ async function remove_bill(req, res) {
   }
 }
 
-export { add_bill, get_all_bill, get_bill, edit_bill, remove_bill };
+export { add_bill, get_all_bill, get_bill, edit_bill, remove_bill};

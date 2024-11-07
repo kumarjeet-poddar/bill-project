@@ -38,7 +38,9 @@ function Form() {
       await axiosInstance
         .get(`/customer/${custId}`)
         .then((res) => {
-          setVeges(res?.data?.customer?.vegetables);
+          if (operation === "edit") {
+            setVeges(res?.data?.customer?.vegetables);
+          }
           setOrgVeg(res?.data?.customer?.vegetables);
           setValue("name", res?.data?.customer?.username);
           setValue("phone", res?.data?.customer?.phone);
@@ -49,16 +51,15 @@ function Form() {
 
     async function getBill() {
       await axiosInstance
-        .get(`/bill/${billId}`)
+        .get(`/bill/${billId}/${custId}`)
         .then((res) => {
           setVeges(res?.data?.bill?.vegetables);
-          setOrgVeg(res?.data?.bill?.vegetables);
+          setOrgVeg(res?.data?.all_vegetables);
           setValue("name", res?.data?.bill?.customer?.username);
           setValue("phone", res?.data?.bill?.customer?.phone);
           setValue("address", res?.data?.bill?.customer?.address);
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
     }
 
     if (billId) {
@@ -69,7 +70,6 @@ function Form() {
     if (custId) getCustomer();
   }, [custId, billId]);
 
-  console.log(veges);
   useEffect(() => {
     var amount = 0;
 
@@ -153,18 +153,36 @@ function Form() {
 
       await axiosInstance
         .post("/vegetable", d)
-        .then((res) => {
+        .then(async (res) => {
           if (res.status === 200) {
             setVeges((prev) => prev.filter((veg) => veg._id !== 0));
             setVeges((prev) => [...prev, res?.data?.vegetable]);
+            setOrgVeg((prev) => [...prev, res?.data?.vegetable]);
+
+            // if editing a bill - save vege to that bill
+            if (billId) {
+              await edit_bill({}, "edit_bill");
+            }
             toast.success(res?.data?.msg);
             setIsAdd(false);
           }
         })
-        .catch((err) => {
+        .catch(async (err) => {
           if (err.response.status == 400) {
-            setVeges((prev) => prev.filter((veg) => veg._id !== 0));
-            setVeges((prev) => [...prev, err.response.data.vegetable]);
+            // setVeges((prev) => prev.filter((veg) => veg._id !== 0));
+            // setVeges((prev) => [...prev, err.response.data.vegetable]);
+
+            setVeges((prev) =>
+              prev.map((veg) =>
+                veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
+              )
+            );
+
+             // if editing a bill - save vege to that bill
+             if (billId) {
+              await edit_bill({}, "edit_bill");
+            }
+
             toast.success("Vegetable added");
           }
         });
@@ -186,6 +204,31 @@ function Form() {
         })
         .catch((err) => {});
     }
+  }
+
+  async function edit_bill(data, str) {
+    const d = {
+      vegetables: veges,
+      total_amount: total,
+    };
+
+    await axiosInstance
+      .put(`bill/${billId}`, d)
+      .then((res) => {
+        if (str === "save_bill") {
+          setLoad(false);
+          toast.success(res?.data?.msg);
+          generatePDF(targetRef, {
+            filename: `${data.name}_invoice.pdf`,
+          });
+        }
+      })
+      .catch((err) => {
+        setLoad(false);
+        toast.error(err?.response?.data?.msg);
+      });
+
+    return;
   }
 
   async function onSubmit(data) {
@@ -243,27 +286,8 @@ function Form() {
       }
 
       // edit bill
-      if(billId){
-        console.log(billId)
-        const d = {
-          vegetables:veges,
-          total_amount:total
-        };
-
-        await axiosInstance
-          .put(`bill/${billId}`, d)
-          .then((res) => {
-            console.log(res)
-            setLoad(false);
-            toast.success(res?.data?.msg);
-          })
-          .catch((err) => {
-            console.log(err)
-            setLoad(false);
-            toast.error(err?.response?.data?.msg);
-          });
-
-        return;
+      if (billId) {
+        await edit_bill(data, "save_bill");
       }
     } else {
       // add new customer
@@ -382,9 +406,10 @@ function Form() {
                               fontSize: "16px",
                               iconColor: "gray",
                               clearIconMargin: "0 4px 0 0",
-                              zIndex: 2,
                               borderColor: "#d1d5db",
                               placeholderColor: "black",
+                              zIndex: 1000,
+                              position: "relative",
                             }}
                           />
                         </div>
@@ -496,7 +521,13 @@ function Form() {
             type="submit"
             className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
           >
-            {billId ? "Edit Bill" : custId ? "Generate Bill" : "Add Customer"}
+            {billId
+              ? "Edit Bill"
+              : operation === "generate_bill"
+              ? "Generate Bill"
+              : operation === "edit"
+              ? "Save Details"
+              : "Add Customer"}
           </button>
         </form>
       </div>

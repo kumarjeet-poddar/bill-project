@@ -9,7 +9,7 @@ const vegSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    unique: true,
+    required: true,
   },
   price_per_kg: {
     type: Number,
@@ -20,6 +20,8 @@ const vegSchema = new mongoose.Schema({
     required: true,
   }
 });
+
+// vegSchema.index({ cust_id: 1, name: 1 }, { unique: true });
 
 const Vegetable = mongoose.model("vegetable", vegSchema);
 

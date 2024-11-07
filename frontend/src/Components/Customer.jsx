@@ -39,65 +39,64 @@ export default function Customer() {
     navigate(`/bill/${billId}/${custId}`);
   }
 
-  console.log(bills);
   return (
     <>
       <div className="m-8">
         <p className="font-bold my-4 text-lg underline">
           Previously Generated Bills
         </p>
-        <div class="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
+        <div className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
           {bills?.bills?.length > 0 ? (
-            <table class="w-full text-left table-auto min-w-max text-slate-800">
+            <table className="w-full text-left table-auto min-w-max text-slate-800">
               <thead>
-                <tr class="text-slate-500 border-b border-slate-300 bg-slate-50">
-                  <th class="p-4">
-                    <p class="text-sm leading-none font-normal">
+                <tr className="text-slate-500 border-b border-slate-300 bg-slate-50">
+                  <th className="p-4">
+                    <p className="text-sm leading-none font-normal">
                       Customer Name
                     </p>
                   </th>
-                  <th class="p-4">
-                    <p class="text-sm leading-none font-normal">Bill Date</p>
+                  <th className="p-4">
+                    <p className="text-sm leading-none font-normal">Bill Date</p>
                   </th>
-                  <th class="p-4">
-                    <p class="text-sm leading-none font-normal">Budget</p>
+                  <th className="p-4">
+                    <p className="text-sm leading-none font-normal">Budget</p>
                   </th>
-                  <th class="p-4">
+                  <th className="p-4">
                     <p></p>
                   </th>
-                  <th class="p-4">
+                  <th className="p-4">
                     <p></p>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {bills?.bills?.map((b) => {
+                {bills?.bills?.map((b, index) => {
                   return (
-                    <tr class="hover:bg-slate-50">
-                      <td class="p-4">
-                        <p class="text-sm font-bold">{bills?.username}</p>
+                    <tr key={index} className="hover:bg-slate-50">
+                      <td className="p-4">
+                        <p className="text-sm font-bold">{bills?.username}</p>
                       </td>
-                      <td class="p-4">
-                        <p class="text-sm">
+                      <td className="p-4">
+                        <p className="text-sm">
                           {new Date(b?.createdAt).toLocaleString()}
                         </p>
                       </td>
-                      <td class="p-4">
-                        <p class="text-sm">Rs. {b?.total_amount}</p>
+                      <td className="p-4">
+                        <p className="text-sm">Rs. {b?.total_amount}</p>
                       </td>
-                      <td class="p-4">
+                      <td className="p-4">
                         <button
                           onClick={() => {
                             handleEdit(b?._id);
                           }}
-                          class="text-sm font-semibold "
+                          className="text-sm font-semibold "
                         >
                           Edit
                         </button>
                       </td>
-                      <td class="p-4">
+                      <td className="p-4">
                         <button
-                          class="text-sm font-semibold hover:text-red-500 transition-all overflow-hidden"
+                          className="text-sm font-semibold hover:text-red-500 transition-all overflow-hidden"
                           onClick={() => {
                             handleDelete(b?._id);
                           }}
