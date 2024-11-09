@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RiPencilFill } from "react-icons/ri";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import BackButton from "./BackButton";
 
 function Form() {
   const {
@@ -316,7 +317,8 @@ function Form() {
 
   return (
     <>
-      <div className="bg-slate-100 max-w-xl px-4 py-8 my-8 rounded-xl mx-auto flex flex-col">
+    <BackButton />
+      <div className="bg-slate-100 max-w-lg px-4 py-8 my-8 rounded-xl mx-auto flex flex-col">
         <form onSubmit={handleSubmit(onSubmit)}>
           <p className="text-lg font-bold text-center mb-4">Customer Details</p>
           <div className="mb-4">

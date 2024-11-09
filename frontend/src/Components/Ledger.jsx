@@ -6,6 +6,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import dayjs from "dayjs";
 import CircularProgress from "@mui/material/CircularProgress";
+import BackButton from "./BackButton";
 
 export function Ledger() {
   const [bills, setBills] = useState([]);
@@ -39,7 +40,8 @@ export function Ledger() {
       });
   }
 
-  return (
+  return <>
+  <BackButton />
     <div className="rounded p-2 m-4">
       <p className="font-bold text-lg">Monthly Ledger</p>
       <div className="flex justify-between w-full">
@@ -66,8 +68,8 @@ export function Ledger() {
       ) : (
         bills.length > 0 && (
           <div className="relative overflow-x-auto rounded-lg w-full mb-2 mt-4">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-y-scroll">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-100 overflow-y-scroll">
+              <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-100">
                 <tr className="">
                   <th scope="col" className="px-6 py-3">
                     Date
@@ -107,5 +109,5 @@ export function Ledger() {
         )
       )}
     </div>
-  );
+  </>
 }

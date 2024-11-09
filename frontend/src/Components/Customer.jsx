@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../Utils/axiosInstance";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
+import BackButton from "./BackButton";
 
 export default function Customer() {
   const [bills, setBills] = useState({});
@@ -22,15 +23,14 @@ export default function Customer() {
     getBills();
   }, []);
 
+  console.log(bills);
+
   async function handleDelete(id) {
     await axiosInstance
       .delete(`/bill/${id}/${custId}`)
       .then((res) => {
         toast.success(res.data.msg);
-        setBills((prev) => ({
-          ...prev,
-          bills: prev.bills.filter((p) => p._id !== id),
-        }));
+        setBills((prev) => prev.filter((p) => p._id !== id));
       })
       .catch((err) => {});
   }
@@ -41,6 +41,7 @@ export default function Customer() {
 
   return (
     <>
+    <BackButton />
       <div className="m-8">
         <p className="font-bold my-4 text-lg underline">
           Previously Generated Bills
@@ -56,7 +57,9 @@ export default function Customer() {
                     </p>
                   </th>
                   <th className="p-4">
-                    <p className="text-sm leading-none font-normal">Bill Date</p>
+                    <p className="text-sm leading-none font-normal">
+                      Bill Date
+                    </p>
                   </th>
                   <th className="p-4">
                     <p className="text-sm leading-none font-normal">Budget</p>
@@ -74,7 +77,9 @@ export default function Customer() {
                   return (
                     <tr key={index} className="hover:bg-slate-50">
                       <td className="p-4">
-                        <p className="text-sm font-bold">{b?.customer?.username}</p>
+                        <p className="text-sm font-bold">
+                          {b?.customer?.username}
+                        </p>
                       </td>
                       <td className="p-4">
                         <p className="text-sm">
