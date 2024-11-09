@@ -7,9 +7,9 @@ async function get_all_bill(req, res) {
   try {
     const { cust_id } = await req.params;
 
-    const bills = await Customer.findOne({ _id: cust_id }).populate({
-      path: "bills",
-    });
+    const bills = await Bill.find({ customer: cust_id })
+      .sort({ createdAt: -1 })
+      .populate("customer", "username");
 
     return res.status(200).json({
       success: true,
@@ -139,4 +139,34 @@ async function remove_bill(req, res) {
   }
 }
 
-export { add_bill, get_all_bill, get_bill, edit_bill, remove_bill};
+async function get_monthly_bill(req, res) {
+  try {
+    const { month, year } = req.params;
+
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59);
+
+    const bills = await Bill.find({
+      updatedAt: { $gte: startDate, $lte: endDate },
+    }).sort({ updatedAt: -1 }).populate("customer", "username");;
+
+    return res.status(200).json({
+      success: true,
+      bills,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+}
+
+export {
+  add_bill,
+  get_all_bill,
+  get_bill,
+  edit_bill,
+  remove_bill,
+  get_monthly_bill,
+};

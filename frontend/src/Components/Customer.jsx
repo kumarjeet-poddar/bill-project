@@ -46,7 +46,7 @@ export default function Customer() {
           Previously Generated Bills
         </p>
         <div className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
-          {bills?.bills?.length > 0 ? (
+          {bills?.length > 0 ? (
             <table className="w-full text-left table-auto min-w-max text-slate-800">
               <thead>
                 <tr className="text-slate-500 border-b border-slate-300 bg-slate-50">
@@ -70,11 +70,11 @@ export default function Customer() {
                 </tr>
               </thead>
               <tbody>
-                {bills?.bills?.map((b, index) => {
+                {bills?.map((b, index) => {
                   return (
                     <tr key={index} className="hover:bg-slate-50">
                       <td className="p-4">
-                        <p className="text-sm font-bold">{bills?.username}</p>
+                        <p className="text-sm font-bold">{b?.customer?.username}</p>
                       </td>
                       <td className="p-4">
                         <p className="text-sm">

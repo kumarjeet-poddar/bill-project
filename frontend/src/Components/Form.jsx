@@ -32,6 +32,7 @@ function Form() {
   const [orgVeg, setOrgVeg] = useState([]);
   const name = watch("name");
   const address = watch("address");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getCustomer() {
@@ -303,6 +304,7 @@ function Form() {
           setLoad(false);
           if (res.status === 200) {
             toast.success(res?.data?.msg);
+            navigate("/customer")
           }
         })
         .catch((err) => {

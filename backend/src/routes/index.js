@@ -18,6 +18,7 @@ import {
   edit_bill,
   get_all_bill,
   get_bill,
+  get_monthly_bill,
   remove_bill,
 } from "../controllers/BillController.js";
 const router = express.Router();
@@ -40,5 +41,6 @@ router.get("/bill/:bill_id/:cust_id", get_bill);
 router.post("/bill", add_bill);
 router.put("/bill/:bill_id", edit_bill);
 router.delete("/bill/:bill_id/:cust_id", remove_bill);
+router.get("/monthly_bill/:month/:year", get_monthly_bill);
 
 export default router;

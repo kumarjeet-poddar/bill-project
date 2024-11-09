@@ -24,15 +24,15 @@ export function Table() {
   const navigate = useNavigate();
 
   function handleBill(id) {
-    navigate(`/customer/generate_bill/${id}`);
+    navigate(`/form/generate_bill/${id}`);
   }
 
   function handleEdit(id) {
-    navigate(`/customer/edit/${id}`);
+    navigate(`/form/edit/${id}`);
   }
 
   function handleAdd() {
-    navigate(`/customer`);
+    navigate(`/form`);
   }
 
   async function handleDelete(id) {
