@@ -1,5 +1,6 @@
 import Customer from "../models/Customer.js";
 import Vegetable from "../models/Vegetable.js";
+import Bill from "../models/Bill.js"
 
 async function get_all_customer(req, res) {
   try {
@@ -109,6 +110,8 @@ async function remove_customer(req, res) {
     }
 
     await Vegetable.deleteMany({ cust_id: cust_id });
+
+    await Bill.deleteMany({ customer: cust_id });
 
     await Customer.findByIdAndDelete(cust_id);
 
