@@ -381,6 +381,7 @@ function Form() {
                             showIcon={false}
                             items={orgVeg}
                             placeholder={data.name}
+                            value={data.name}
                             onFocus={() => setCurrentDropdownId(data._id)}
                             onBlur={() => setCurrentDropdownId(null)}
                             onSearch={(inputValue) => {
