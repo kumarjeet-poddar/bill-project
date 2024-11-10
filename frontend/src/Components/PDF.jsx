@@ -1,4 +1,5 @@
 import React from "react";
+import vegetableList from "../Utils/vegetable.js"
 
 export default function Pdf(props) {
   const { vegetables, total, name, address } = props;
@@ -69,7 +70,7 @@ export default function Pdf(props) {
             {vegetables?.map((item, index) => (
               <tr key={index + 1} className="pb-2">
                 <td className="border border-black px-2 py-2">{index + 1}</td>
-                <td className="border border-black px-2 py-2">{item.name}</td>
+                <td className="border border-black px-2 py-2">{item.name} / {vegetableList[item?.name?.toLowerCase()]}</td>
                 <td className="border border-black px-2 py-2">
                   {item.quantity}
                 </td>

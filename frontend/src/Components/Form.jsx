@@ -34,6 +34,7 @@ function Form() {
   const name = watch("name");
   const address = watch("address");
   const navigate = useNavigate();
+  const [currentDropdownId, setCurrentDropdownId] = useState(null);
 
   useEffect(() => {
     async function getCustomer() {
@@ -315,6 +316,8 @@ function Form() {
     }
   }
 
+  console.log(veges, "319")
+
   return (
     <>
     <BackButton />
@@ -378,6 +381,8 @@ function Form() {
                             showIcon={false}
                             items={orgVeg}
                             placeholder={data.name}
+                            onFocus={() => setCurrentDropdownId(data._id)}
+                            onBlur={() => setCurrentDropdownId(null)}
                             onSearch={(inputValue) => {
                               const foundItem = veges.find(
                                 (veg) =>
@@ -412,7 +417,7 @@ function Form() {
                               clearIconMargin: "0 4px 0 0",
                               borderColor: "#d1d5db",
                               placeholderColor: "black",
-                              zIndex: 1000,
+                              zIndex: currentDropdownId === data._id ? 50 : 10,
                               position: "relative",
                             }}
                           />
