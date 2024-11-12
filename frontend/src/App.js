@@ -1,9 +1,9 @@
 import Form from "./Components/Form";
-import { Table } from "./Components/Table";
+import { Table } from "./Components/CustomersTable";
 import Pdf from "./Components/PDF";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Customer from "./Components/Customer";
+import Customer from "./Components/CustomerBills";
 import Home from "./Components/Home";
 import { Ledger } from "./Components/Ledger";
 

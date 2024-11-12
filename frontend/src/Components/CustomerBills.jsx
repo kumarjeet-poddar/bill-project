@@ -46,26 +46,28 @@ export default function Customer() {
         </p>
         <div className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
           {bills?.length > 0 ? (
-            <table className="w-full text-left table-auto min-w-max text-slate-800">
+            <table className="overflow-x-auto w-full text-left table-auto sm:min-w-max text-slate-800">
               <thead>
                 <tr className="text-slate-500 border-b border-slate-300 bg-slate-50">
-                  <th className="p-4">
-                    <p className="text-sm leading-none font-normal">
+                  <th className="px-2 p-4 sm:px-4">
+                    <p className="text-sm leading-none font-normal text-center">
                       Customer Name
                     </p>
                   </th>
-                  <th className="p-4">
-                    <p className="text-sm leading-none font-normal">
+                  <th className="px-2 p-4 sm:px-4">
+                    <p className="text-sm leading-none font-normal text-center">
                       Bill Date
                     </p>
                   </th>
-                  <th className="p-4">
-                    <p className="text-sm leading-none font-normal">Budget</p>
+                  <th className="px-2 p-4 sm:px-4">
+                    <p className="text-sm leading-none font-normal text-center">
+                      Budget
+                    </p>
                   </th>
-                  <th className="p-4">
+                  <th className="px-2 p-4 sm:px-4">
                     <p></p>
                   </th>
-                  <th className="p-4">
+                  <th className="px-2 p-4 sm:px-4">
                     <p></p>
                   </th>
                 </tr>
@@ -74,20 +76,22 @@ export default function Customer() {
                 {bills?.map((b, index) => {
                   return (
                     <tr key={index} className="hover:bg-slate-50">
-                      <td className="p-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <p className="text-sm font-bold">
                           {b?.customer?.username}
                         </p>
                       </td>
-                      <td className="p-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <p className="text-sm">
-                          {new Date(b?.date).toISOString().split("T")[0]}
+                          11-12-2024{" "}
+                          {b?.date &&
+                            new Date(b?.date).toISOString().split("T")[0]}
                         </p>
                       </td>
-                      <td className="p-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <p className="text-sm">Rs. {b?.total_amount}</p>
                       </td>
-                      <td className="p-4">
+                      <td className="py-4 px-2 sm:px-4">
                         <button
                           onClick={() => {
                             handleEdit(b?._id);

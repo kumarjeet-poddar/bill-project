@@ -44,13 +44,13 @@ export function Ledger() {
   <BackButton />
     <div className="rounded p-2 m-4">
       <p className="font-bold text-lg">Monthly Ledger</p>
-      <div className="flex justify-between w-full">
-        <div className="flex flex-col gap-y-2 my-4">
+      <div className="flex sm:flex-row flex-col justify-between w-full">
+        <div className="flex flex-col gap-y-2 my-4 mr-2">
           <p>Select Month</p>
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
-              className="bg-slate-200 rounded-lg"
+              className="bg-slate-200 rounded-lg w-fit"
               value={month}
               views={["month", "year"]}
               maxDate={dayjs().endOf("year")}

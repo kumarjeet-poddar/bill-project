@@ -92,9 +92,9 @@ export function Table() {
                         {data.username}
                       </th>
                       <td className="px-6 py-4">{data.phone}</td>
-                      <td>
+                      <td className="flex flex-col md:flex-row items-center gap-x-8 gap-y-2 md:gap-y-0 px-2 py-4">
                         <button
-                          className="py-[6px] px-3 bg-gray-50 text-black hover:bg-gray-200 rounded-lg"
+                          className="py-[6px] px-3 bg-gray-50 text-black hover:bg-gray-200 rounded-lg w-28"
                           onClick={() => {
                             handleBill(data._id);
                           }}
@@ -103,7 +103,7 @@ export function Table() {
                         </button>
 
                         <button
-                          className="py-[6px] px-3 bg-gray-50 text-black hover:bg-gray-200 rounded-lg ml-8"
+                          className="py-[6px] px-3 bg-gray-50 text-black hover:bg-gray-200 rounded-lg w-28"
                           onClick={() => {
                             handleEdit(data._id);
                           }}

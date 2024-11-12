@@ -344,7 +344,7 @@ function Form() {
   return (
     <>
       <BackButton />
-      <div className="bg-slate-100 max-w-lg px-4 py-8 my-8 rounded-xl mx-auto flex flex-col">
+      <div className="bg-slate-100 w-11/12 sm:max-w-lg px-4 py-8 my-8 rounded-xl mx-auto flex flex-col">
         <form onSubmit={handleSubmit(onSubmit)}>
           <p className="text-lg font-bold text-center mb-4">Customer Details</p>
           <div className="mb-4">
