@@ -92,7 +92,7 @@ export function Ledger() {
                       key={data?._id}
                       className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                     >
-                      <td className="px-6 py-4">{data?.date}</td>
+                      <td className="px-6 py-4">{new Date(data?.date).toISOString().split("T")[0]}</td>
                       <td className="px-6 py-4">{data?.customer?.username}</td>
                       <td className="px-6 py-4">{data?.bill_number}</td>
                       <td className="px-6 py-4">{data?.total_amount}</td>

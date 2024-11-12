@@ -23,8 +23,6 @@ export default function Customer() {
     getBills();
   }, []);
 
-  console.log(bills);
-
   async function handleDelete(id) {
     await axiosInstance
       .delete(`/bill/${id}/${custId}`)
@@ -41,7 +39,7 @@ export default function Customer() {
 
   return (
     <>
-    <BackButton />
+      <BackButton />
       <div className="m-8">
         <p className="font-bold my-4 text-lg underline">
           Previously Generated Bills
@@ -83,7 +81,7 @@ export default function Customer() {
                       </td>
                       <td className="p-4">
                         <p className="text-sm">
-                          {b?.date}
+                          {new Date(b?.date).toISOString().split("T")[0]}
                         </p>
                       </td>
                       <td className="p-4">

@@ -68,7 +68,8 @@ function Form() {
           setValue("name", res?.data?.bill?.customer?.username);
           setValue("phone", res?.data?.bill?.customer?.phone);
           setValue("address", res?.data?.bill?.customer?.address);
-          setValue("date", res?.data?.bill?.date);
+          const formattedDate = res?.data?.bill?.date ? new Date(res.data.bill.date).toISOString().split('T')[0] : "";
+          setValue("date", formattedDate);
           setValue("bill_number", res?.data?.bill?.bill_number);
         })
         .catch((err) => {});
@@ -339,8 +340,6 @@ function Form() {
         });
     }
   }
-
-  console.log(veges);
 
   return (
     <>

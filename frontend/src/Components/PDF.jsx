@@ -29,19 +29,19 @@ export default function Pdf(props) {
 
       {/* Invoice Information */}
       <div className="flex justify-between w-full">
-        <div className="w-full">
+        <div className="w-4/5">
           <p className="border-b border-black pt-3 pb-4 px-6 capitalize">
             BILL TO: <strong>{name}</strong>
           </p>
-          <p className=" border-black pt-3 pb-4 px-6 capitalize">
+          <p className="pt-3 pb-4 px-6 capitalize">
             Address: <strong>{address}</strong>
           </p>
         </div>
-        <div className="">
-          <p className="border-b border-l pl-2 pb-1 border-black">
+        <div className="w-1/5 border-l border-black">
+          <p className="border-b px-2 pb-4 pt-3 border-black">
             Invoice No: <strong>{bill_number}</strong>
           </p>
-          <p className="border-l pl-2 border-black pb-1">
+          <p className="px-2 pb-4 pt-3">
             Invoice Date:{" "}
             <strong>{date}</strong>
           </p>
@@ -52,7 +52,7 @@ export default function Pdf(props) {
         <table className="w-full border-collapse border-b border-black">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border-t border-b border-black px-2 py-2">
+              <th className="border-t border-b border-black px-2 pt-2 pb-4">
                 Sr. No
               </th>
               <th className="border border-r-0 border-black px-2 py-2">
