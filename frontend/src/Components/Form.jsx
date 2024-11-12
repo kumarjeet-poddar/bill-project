@@ -33,6 +33,8 @@ function Form() {
   const [orgVeg, setOrgVeg] = useState([]);
   const name = watch("name");
   const address = watch("address");
+  const date = watch("date");
+  const bill_number = watch("bill_number");
   const navigate = useNavigate();
   const [currentDropdownId, setCurrentDropdownId] = useState(null);
 
@@ -48,6 +50,11 @@ function Form() {
           setValue("name", res?.data?.customer?.username);
           setValue("phone", res?.data?.customer?.phone);
           setValue("address", res?.data?.customer?.address);
+
+          if (operation === "generate_bill") {
+            const currentDate = new Date().toISOString().split("T")[0];
+            setValue("date", currentDate);
+          }
         })
         .catch((err) => {});
     }
@@ -61,6 +68,8 @@ function Form() {
           setValue("name", res?.data?.bill?.customer?.username);
           setValue("phone", res?.data?.bill?.customer?.phone);
           setValue("address", res?.data?.bill?.customer?.address);
+          setValue("date", res?.data?.bill?.date);
+          setValue("bill_number", res?.data?.bill?.bill_number);
         })
         .catch((err) => {});
     }
@@ -177,12 +186,14 @@ function Form() {
 
             setVeges((prev) =>
               prev.map((veg) =>
-                veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
+                veg._id === 0
+                  ? { ...veg, _id: err.response.data.vegetable._id }
+                  : veg
               )
             );
 
-             // if editing a bill - save vege to that bill
-             if (billId) {
+            // if editing a bill - save vege to that bill
+            if (billId) {
               await edit_bill({}, "edit_bill");
             }
 
@@ -213,6 +224,8 @@ function Form() {
     const d = {
       vegetables: veges,
       total_amount: total,
+      date: data.date,
+      bill_number: data.bill_number,
     };
 
     await axiosInstance
@@ -236,6 +249,7 @@ function Form() {
 
   async function onSubmit(data) {
     var upd_data;
+
     setLoad(true);
 
     if (custId) {
@@ -267,6 +281,8 @@ function Form() {
           cust_id: custId,
           cust_vegetables: veges,
           total,
+          date: data.date,
+          bill_number: data.bill_number,
         };
 
         await axiosInstance
@@ -306,7 +322,7 @@ function Form() {
           setLoad(false);
           if (res.status === 200) {
             toast.success(res?.data?.msg);
-            navigate("/customer")
+            navigate("/customer");
           }
         })
         .catch((err) => {
@@ -316,11 +332,11 @@ function Form() {
     }
   }
 
-  console.log(veges, "319")
-
+  console.log(veges)
+  
   return (
     <>
-    <BackButton />
+      <BackButton />
       <div className="bg-slate-100 max-w-lg px-4 py-8 my-8 rounded-xl mx-auto flex flex-col">
         <form onSubmit={handleSubmit(onSubmit)}>
           <p className="text-lg font-bold text-center mb-4">Customer Details</p>
@@ -360,6 +376,36 @@ function Form() {
               <span className="text-red-600">Please, enter address</span>
             )}
           </div>
+
+          {(operation === "generate_bill" || billId) && (
+            <div className="mb-4">
+              <label className="text-gray-800">Date</label>
+              <input
+                type="date"
+                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                placeholder="dd-mm-yyyy"
+                {...register("date", { required: true })}
+              />
+              {errors.date && (
+                <span className="text-red-600">This is a required field</span>
+              )}
+            </div>
+          )}
+
+          {(operation === "generate_bill" || billId) && (
+            <div className="mb-4">
+              <label className="text-gray-800">Bill Number</label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                placeholder="Enter Bill Number"
+                {...register("bill_number", { required: true })}
+              />
+              {errors.date && (
+                <span className="text-red-600">This is a required field</span>
+              )}
+            </div>
+          )}
 
           {custId && (
             <div className="mb-4 h-[35vh] overflow-y-scroll">
@@ -401,7 +447,7 @@ function Form() {
                                 target: { value: item.name },
                               });
                               handleOnChange(data._id, "quantity", {
-                                target: { value: item.quantity },
+                                target: { value: "" },
                               });
                               handleOnChange(data._id, "price_per_kg", {
                                 target: { value: item.price_per_kg },
@@ -429,6 +475,7 @@ function Form() {
                             type="number"
                             placeholder="KGs"
                             value={data?.quantity}
+                            required
                             className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
                             onChange={(e) =>
                               handleOnChange(data._id, "quantity", e)
@@ -443,6 +490,7 @@ function Form() {
                             type="number"
                             placeholder="price per KG"
                             value={data?.price_per_kg}
+                            required
                             onChange={(e) =>
                               handleOnChange(data._id, "price_per_kg", e)
                             }
@@ -544,7 +592,14 @@ function Form() {
 
       <div className="opacity-0">
         <div ref={targetRef}>
-          <Pdf vegetables={veges} total={total} name={name} address={address} />
+          <Pdf
+            vegetables={veges}
+            total={total}
+            name={name}
+            address={address}
+            date={date}
+            bill_number={bill_number}
+          />
         </div>
       </div>
     </>

@@ -83,7 +83,7 @@ export default function Customer() {
                       </td>
                       <td className="p-4">
                         <p className="text-sm">
-                          {new Date(b?.createdAt).toLocaleString()}
+                          {b?.date}
                         </p>
                       </td>
                       <td className="p-4">

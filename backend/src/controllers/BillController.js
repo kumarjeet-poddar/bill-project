@@ -8,7 +8,7 @@ async function get_all_bill(req, res) {
     const { cust_id } = await req.params;
 
     const bills = await Bill.find({ customer: cust_id })
-      .sort({ createdAt: -1 })
+      .sort({ date: -1 })
       .populate("customer", "username");
 
     return res.status(200).json({
@@ -48,7 +48,7 @@ async function get_bill(req, res) {
 //  save bill
 async function add_bill(req, res) {
   try {
-    const { cust_id, cust_vegetables, total } = req.body;
+    const { cust_id, cust_vegetables, total, date, bill_number } = req.body;
 
     const bill = await Bill.create({
       customer: cust_id,
@@ -58,6 +58,8 @@ async function add_bill(req, res) {
         quantity: veg.quantity,
       })),
       total_amount: total,
+      date,
+      bill_number
     });
 
     await Customer.findByIdAndUpdate(cust_id, {
@@ -81,7 +83,7 @@ async function add_bill(req, res) {
 async function edit_bill(req, res) {
   try {
     const { bill_id } = req.params;
-    const { vegetables, total_amount } = req.body;
+    const { vegetables, total_amount, date, bill_number } = req.body;
 
     const bill = await Bill.findById(bill_id);
     if (!bill) {
@@ -95,6 +97,8 @@ async function edit_bill(req, res) {
     }));
 
     bill.total_amount = total_amount;
+    bill.date = date;
+    bill.bill_number = bill_number;
 
     await bill.save();
 
@@ -147,8 +151,10 @@ async function get_monthly_bill(req, res) {
     const endDate = new Date(year, month, 0, 23, 59, 59);
 
     const bills = await Bill.find({
-      updatedAt: { $gte: startDate, $lte: endDate },
-    }).sort({ updatedAt: -1 }).populate("customer", "username");;
+      date: { $gte: startDate, $lte: endDate },
+    })
+      .sort({ date: -1 })
+      .populate("customer", "username");
 
     return res.status(200).json({
       success: true,

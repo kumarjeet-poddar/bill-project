@@ -19,6 +19,13 @@ const billSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    date: {
+      type: Date,
+      required: true,
+    },
+    bill_number:{
+      type:Number
+    }
   },
   {
     timestamps: true,

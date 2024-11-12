@@ -1,8 +1,8 @@
 import React from "react";
-import vegetableList from "../Utils/vegetable.js"
+import vegetableList from "../Utils/vegetable.js";
 
 export default function Pdf(props) {
-  const { vegetables, total, name, address } = props;
+  const { vegetables, total, name, address, bill_number, date } = props;
   return (
     <div className="max-w-6xl mx-auto my-8 border border-black pt-6">
       {/* Header */}
@@ -39,10 +39,11 @@ export default function Pdf(props) {
         </div>
         <div className="">
           <p className="border-b border-l pl-2 pb-1 border-black">
-            Invoice No: <strong>01/2023-24</strong>
+            Invoice No: <strong>{bill_number}</strong>
           </p>
           <p className="border-l pl-2 border-black pb-1">
-            Invoice Date: <strong>13/9/2023</strong>
+            Invoice Date:{" "}
+            <strong>{date}</strong>
           </p>
         </div>
       </div>
@@ -70,7 +71,9 @@ export default function Pdf(props) {
             {vegetables?.map((item, index) => (
               <tr key={index + 1} className="pb-2">
                 <td className="border border-black px-2 py-2">{index + 1}</td>
-                <td className="border border-black px-2 py-2">{item.name} / {vegetableList[item?.name?.toLowerCase()]}</td>
+                <td className="border border-black px-2 py-2">
+                  {item.name} / {vegetableList[item?.name?.toLowerCase()]}
+                </td>
                 <td className="border border-black px-2 py-2">
                   {item.quantity}
                 </td>
