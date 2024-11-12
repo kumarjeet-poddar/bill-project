@@ -173,7 +173,7 @@ function Form() {
 
             // if editing a bill - save vege to that bill
             if (billId) {
-              await edit_bill({}, "edit_bill");
+              await edit_bill({}, "add_veg_in_bill");
             }
             toast.success(res?.data?.msg);
             setIsAdd(false);
@@ -194,7 +194,7 @@ function Form() {
 
             // if editing a bill - save vege to that bill
             if (billId) {
-              await edit_bill({}, "edit_bill");
+              await edit_bill({}, "add_veg_in_bill");
             }
 
             toast.success("Vegetable added");
@@ -221,12 +221,20 @@ function Form() {
   }
 
   async function edit_bill(data, str) {
-    const d = {
-      vegetables: veges,
-      total_amount: total,
-      date: data.date,
-      bill_number: data.bill_number,
-    };
+    var d;
+    if (str === "save_bill") {
+      d = {
+        vegetables: veges,
+        total_amount: total,
+        date: data.date,
+        bill_number: data.bill_number,
+      };
+    } else {
+      d = {
+        vegetables: veges,
+        total_amount: total,
+      };
+    }
 
     await axiosInstance
       .put(`bill/${billId}`, d)
@@ -332,8 +340,8 @@ function Form() {
     }
   }
 
-  console.log(veges)
-  
+  console.log(veges);
+
   return (
     <>
       <BackButton />

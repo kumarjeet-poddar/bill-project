@@ -59,7 +59,7 @@ async function add_bill(req, res) {
       })),
       total_amount: total,
       date,
-      bill_number
+      bill_number,
     });
 
     await Customer.findByIdAndUpdate(cust_id, {
@@ -97,8 +97,11 @@ async function edit_bill(req, res) {
     }));
 
     bill.total_amount = total_amount;
-    bill.date = date;
-    bill.bill_number = bill_number;
+
+    if (date && bill_number) {
+      bill.date = date;
+      bill.bill_number = bill_number;
+    }
 
     await bill.save();
 
