@@ -49,6 +49,11 @@ export default function Customer() {
             <table className="overflow-x-auto w-full text-left table-auto sm:min-w-max text-slate-800">
               <thead>
                 <tr className="text-slate-500 border-b border-slate-300 bg-slate-50">
+                <th className="px-2 p-4 sm:px-4">
+                    <p className="text-sm leading-none font-normal text-center">
+                      Bill Number
+                    </p>
+                  </th>
                   <th className="px-2 p-4 sm:px-4">
                     <p className="text-sm leading-none font-normal text-center">
                       Customer Name
@@ -76,6 +81,11 @@ export default function Customer() {
                 {bills?.map((b, index) => {
                   return (
                     <tr key={index} className="hover:bg-slate-50">
+                        <td className="py-4 px-2 sm:px-4">
+                        <p className="text-sm">
+                          {b?.bill_number}
+                        </p>
+                      </td>
                       <td className="py-4 px-2 sm:px-4">
                         <p className="text-sm font-bold">
                           {b?.customer?.username}
@@ -83,9 +93,8 @@ export default function Customer() {
                       </td>
                       <td className="py-4 px-2 sm:px-4">
                         <p className="text-sm">
-                          11-12-2024{" "}
-                          {b?.date &&
-                            new Date(b?.date).toISOString().split("T")[0]}
+                        {b?.date &&
+  new Date(b?.date).toLocaleDateString("en-GB")}
                         </p>
                       </td>
                       <td className="py-4 px-2 sm:px-4">
