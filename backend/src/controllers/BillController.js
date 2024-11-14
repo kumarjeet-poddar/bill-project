@@ -172,6 +172,24 @@ async function get_monthly_bill(req, res) {
   }
 }
 
+async function get_bill_count(req, res) {
+  try {
+
+    const billCount = await Bill.countDocuments();
+
+    return res.status(200).json({
+      success: true,
+      totalBills: billCount,
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+}
+
 export {
   add_bill,
   get_all_bill,
@@ -179,4 +197,5 @@ export {
   edit_bill,
   remove_bill,
   get_monthly_bill,
+  get_bill_count
 };

@@ -81,23 +81,23 @@ export default function Customer() {
                 {bills?.map((b, index) => {
                   return (
                     <tr key={index} className="hover:bg-slate-50">
-                        <td className="py-4 px-2 sm:px-4">
+                        <td className="py-4 px-2 sm:px-4 text-center">
                         <p className="text-sm">
                           {b?.bill_number}
                         </p>
                       </td>
-                      <td className="py-4 px-2 sm:px-4">
+                      <td className="py-4 px-2 sm:px-4 text-center">
                         <p className="text-sm font-bold">
                           {b?.customer?.username}
                         </p>
                       </td>
-                      <td className="py-4 px-2 sm:px-4">
+                      <td className="py-4 px-2 sm:px-4 text-center">
                         <p className="text-sm">
                         {b?.date &&
   new Date(b?.date).toLocaleDateString("en-GB")}
                         </p>
                       </td>
-                      <td className="py-4 px-2 sm:px-4">
+                      <td className="py-4 px-2 sm:px-4 text-center">
                         <p className="text-sm">Rs. {b?.total_amount}</p>
                       </td>
                       <td className="py-4 px-2 sm:px-4">

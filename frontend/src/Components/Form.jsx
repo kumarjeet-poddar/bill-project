@@ -59,6 +59,16 @@ function Form() {
         .catch((err) => {});
     }
 
+    async function getBillCount() {
+      await axiosInstance
+        .get(`/bill_count`)
+        .then((res) => {
+          setValue("bill_number", res?.data?.totalBills + 1)
+        })
+        .catch((err) => {
+        });
+    }
+
     async function getBill() {
       await axiosInstance
         .get(`/bill/${billId}/${custId}`)
@@ -68,7 +78,9 @@ function Form() {
           setValue("name", res?.data?.bill?.customer?.username);
           setValue("phone", res?.data?.bill?.customer?.phone);
           setValue("address", res?.data?.bill?.customer?.address);
-          const formattedDate = res?.data?.bill?.date ? new Date(res.data.bill.date).toISOString().split('T')[0] : "";
+          const formattedDate = res?.data?.bill?.date
+            ? new Date(res.data.bill.date).toISOString().split("T")[0]
+            : "";
           setValue("date", formattedDate);
           setValue("bill_number", res?.data?.bill?.bill_number);
         })
@@ -81,6 +93,11 @@ function Form() {
     }
 
     if (custId) getCustomer();
+
+    if (operation === "generate_bill") {
+      getBillCount();
+      return;
+    }
   }, [custId, billId]);
 
   useEffect(() => {
@@ -244,7 +261,9 @@ function Form() {
           setLoad(false);
           toast.success(res?.data?.msg);
           generatePDF(targetRef, {
-            filename: `${data.name}_invoice.pdf`,
+            filename: `${data.name}_${new Date(data.date).toLocaleDateString(
+              "en-GB"
+            )}_invoice.pdf`,
           });
         }
       })
@@ -301,7 +320,9 @@ function Form() {
             if (res.status === 200) {
               toast.success(res?.data?.msg);
               generatePDF(targetRef, {
-                filename: `${data.name}_invoice.pdf`,
+                filename: `${data.name}_${new Date(
+                  data.date
+                ).toLocaleDateString("en-GB")}_invoice.pdf`,
               });
             }
           })

@@ -43,7 +43,9 @@ export default function Pdf(props) {
           </p>
           <p className="px-2 pb-4 pt-3">
             Invoice Date:{" "}
-            <strong>{date}</strong>
+            <strong>
+              {date && new Date(date).toLocaleDateString("en-GB")}
+            </strong>
           </p>
         </div>
       </div>
@@ -52,17 +54,17 @@ export default function Pdf(props) {
         <table className="w-full border-collapse border-b border-black">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border-t border-b border-black px-2 pt-2 pb-4">
+              <th className="border-t border-b border-black px-2 pt-2 pb-4 text-center">
                 Sr. No
               </th>
-              <th className="border border-r-0 border-black px-2 py-2">
+              <th className="border border-r-0 border-black px-2 py-2 text-center">
                 Particulars
               </th>
-              <th className="border border-r-0 border-black px-2 py-2">
+              <th className="border border-r-0 border-black px-2 py-2 text-center">
                 Total (Kg)
               </th>
-              <th className="border border-black px-2 py-2">Per (Kg)</th>
-              <th className="border-t border-b border-black px-2 py-2">
+              <th className="border border-black px-2 py-2 text-center">Per (Kg)</th>
+              <th className="border-t border-b border-black px-2 py-2 text-center">
                 Amount (In Rs.)
               </th>
             </tr>
@@ -70,17 +72,17 @@ export default function Pdf(props) {
           <tbody>
             {vegetables?.map((item, index) => (
               <tr key={index + 1} className="pb-2">
-                <td className="border border-black px-2 py-2">{index + 1}</td>
-                <td className="border border-black px-2 py-2">
+                <td className="border border-black px-2 py-2 text-center">{index + 1}</td>
+                <td className="border border-black px-2 py-2 text-center">
                   {item.name} / {vegetableList[item?.name?.toLowerCase()]}
                 </td>
-                <td className="border border-black px-2 py-2">
+                <td className="border border-black px-2 py-2 text-center">
                   {item.quantity}
                 </td>
-                <td className="border border-black px-2 py-2">
+                <td className="border border-black px-2 py-2 text-center">
                   {item.price_per_kg}
                 </td>
-                <td className="border border-black px-2 py-2">
+                <td className="border border-black px-2 py-2 text-center">
                   {item.quantity * item.price_per_kg}
                 </td>
               </tr>
