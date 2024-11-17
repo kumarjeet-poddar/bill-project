@@ -63,10 +63,9 @@ function Form() {
       await axiosInstance
         .get(`/bill_count`)
         .then((res) => {
-          setValue("bill_number", res?.data?.totalBills + 1)
+          setValue("bill_number", res?.data?.totalBills + 1);
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
     }
 
     async function getBill() {
@@ -437,8 +436,13 @@ function Form() {
 
           {custId && (
             <div className="mb-4 h-[35vh] overflow-y-scroll">
-              <label className="text-gray-800">Vegetables</label>
-
+              <div className="flex justify-between">
+                <label className="text-gray-800">Vegetables</label>
+                <div>
+                  <small>Count: </small>
+                  <b>{veges && veges.length}</b>
+                </div>
+              </div>
               {veges.length > 0 ? (
                 veges.map((data, index) => {
                   return (

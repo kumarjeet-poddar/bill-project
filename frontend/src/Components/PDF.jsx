@@ -8,17 +8,17 @@ export default function Pdf(props) {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-2xl font-bold border-b border-black pb-3">
-          NARAYAN GREEN VEGETABLES & FRUITS SUPLIERS
+          NARAYAN GREEN VEGETABLES
         </h1>
-        <h2 className="text-xl font-semibold pb-3 border-b border-black ">
-          INDIAN & CHINESE
+        <h2 className="text-xl font-semibold pb-3 border-b border-black uppercase">
+          INDIAN, exotic, imported & Fruits supplies
         </h2>
-        <p>
+        <p className="pb-2">
           <b>Warehouse Add:</b> Senapati Bapat Marg, Hawker Plaza Marg, Shop NO.
           110, Dadar (West), Mum-400028
         </p>
-        <p>
-          <b>Office Address:</b> Siddhivinayak Chawal, Gazadhar Bandh, Santacruz
+        <p className="border-black border-t border-b pb-2">
+          <b className="p-0">Office Address:</b> Siddhivinayak Chawal, Gazadhar Bandh, Santacruz
           (West), Mumbai-400054
         </p>
         <p className="border-b border-black pb-2">
