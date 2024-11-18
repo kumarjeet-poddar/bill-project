@@ -633,9 +633,7 @@ function Form() {
           ref={targetRef}
           style={{
             width: "1152px",
-            padding: "20px",
             margin: "auto",
-            border: "1px solid #000",
             backgroundColor: "#fff",
           }}
         >
