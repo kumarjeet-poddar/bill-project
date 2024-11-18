@@ -627,9 +627,18 @@ function Form() {
           </form>
         </div>
       </div>
-      
-      <div className="opacity-0 w-[1152px]">
-        <div ref={targetRef}>
+
+      <div className="opacity-0">
+        <div
+          ref={targetRef}
+          style={{
+            width: "1152px",
+            padding: "20px",
+            margin: "auto",
+            border: "1px solid #000",
+            backgroundColor: "#fff",
+          }}
+        >
           <Pdf
             vegetables={veges}
             total={total}
