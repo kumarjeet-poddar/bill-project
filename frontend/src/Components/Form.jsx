@@ -201,23 +201,30 @@ function Form() {
         })
         .catch(async (err) => {
           if (err.response.status == 400) {
-            // setVeges((prev) => prev.filter((veg) => veg._id !== 0));
-            // setVeges((prev) => [...prev, err.response.data.vegetable]);
+            setVeges((prev) => {
+              const isDuplicate = prev.some(
+                (veg) =>
+                  veg.name.toLowerCase() === data.name.toLowerCase() &&
+                  veg._id !== 0
+              );
 
-            setVeges((prev) =>
-              prev.map((veg) =>
-                veg._id === 0
-                  ? { ...veg, _id: err.response.data.vegetable._id }
-                  : veg
-              )
-            );
+              if (isDuplicate) {
+                toast.error("This vegetable is already added!");
+                return prev.filter((veg) => veg._id !== 0);
+              } else {
+                toast.success("Vegetable added");
+                return prev.map((veg) =>
+                  veg._id === 0
+                    ? { ...veg, _id: err.response.data.vegetable._id }
+                    : veg
+                );
+              }
+            });
 
             // if editing a bill - save vege to that bill
             if (billId) {
               await edit_bill({}, "add_veg_in_bill");
             }
-
-            toast.success("Vegetable added");
           }
         });
     } else {
@@ -561,17 +568,17 @@ function Form() {
                                   <IoIosAddCircle size={32} />
                                 </div>
                               )}
-                            {index !== 0 && (
-                              <div
-                                className="rounded-full cursor-pointer"
-                                title="Remove"
-                                onClick={() => {
-                                  handleRemove(data._id);
-                                }}
-                              >
-                                <IoIosRemoveCircle size={32} />
-                              </div>
-                            )}
+                            {/* {index !== 0 && ( */}
+                            <div
+                              className="rounded-full cursor-pointer"
+                              title="Remove"
+                              onClick={() => {
+                                handleRemove(data._id);
+                              }}
+                            >
+                              <IoIosRemoveCircle size={32} />
+                            </div>
+                            {/* )} */}
                           </div>
                           {(actionId === data._id ||
                             (isAdd && data._id === 0)) && (
