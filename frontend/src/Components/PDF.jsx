@@ -36,7 +36,7 @@ export default function Pdf(props) {
                   NARAYAN GREEN VEGETABLES
                 </h1>
                 <h2 className="text-xl font-semibold pb-3 border-b border-black uppercase">
-                  INDIAN, Exotic, Imported & Fruits Supplies
+                  INDIAN, Exotic, Imported & Fruits Supplier
                 </h2>
                 <p className="pb-2 border-black border-b">
                   <b>Warehouse Address:</b> Senapati Bapat Marg, Hawker Plaza
