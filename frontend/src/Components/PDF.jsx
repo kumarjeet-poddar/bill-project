@@ -98,19 +98,19 @@ export default function Pdf(props) {
               <tbody>
                 {pageItems.map((item, index) => (
                   <tr key={index + 1} className="pb-2 w-full">
-                    <td className="border border-black px-2 py-2 text-center w-[15%]">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
                       {index + 1 + pageIndex * itemsPerPage}
                     </td>
-                    <td className="border border-black px-2 py-2 text-center w-2/5">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-2/5">
                       {item.name} / {vegetableList[item?.name?.toLowerCase()]}
                     </td>
-                    <td className="border border-black px-2 py-2 text-center w-[15%]">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
                       {item.quantity}
                     </td>
-                    <td className="border border-black px-2 py-2 text-center w-[15%]">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
                       {item.price_per_kg}
                     </td>
-                    <td className="border border-black px-2 py-2 text-center w-[15%]">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
                       {item.quantity * item.price_per_kg}
                     </td>
                   </tr>
