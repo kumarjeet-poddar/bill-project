@@ -17,7 +17,7 @@ export default function Pdf(props) {
   const pages = splitIntoPages(vegetables, itemsPerPage);
 
   return (
-    <div className="w-full p-4 h-full">
+    <div className="w-full px-4 pt-2 h-full">
       <div className="mx-auto m-4 border border-black">
         {/* Loop through each page */}
         {pages.map((pageItems, pageIndex) => (
