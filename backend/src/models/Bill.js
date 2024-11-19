@@ -24,7 +24,8 @@ const billSchema = new mongoose.Schema(
       required: true,
     },
     bill_number:{
-      type:Number
+      type:Number,
+      unique:true
     }
   },
   {

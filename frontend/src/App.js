@@ -30,5 +30,3 @@ function App() {
 
 export default App;
 
-
-// when generating a bill - in start no veges but if refresh page - state resets

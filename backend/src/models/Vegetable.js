@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const { ObjectId } = mongoose.Schema.Types;
+const { ObjectId, Decimal128 } = mongoose.Schema.Types;
 
 const vegSchema = new mongoose.Schema({
   cust_id: {
@@ -12,13 +12,13 @@ const vegSchema = new mongoose.Schema({
     required: true,
   },
   price_per_kg: {
-    type: Number,
+    type: String,
     required: true,
   },
   quantity: {
-    type: Number,
+    type: String,
     required: true,
-  }
+  },
 });
 
 // vegSchema.index({ cust_id: 1, name: 1 }, { unique: true });

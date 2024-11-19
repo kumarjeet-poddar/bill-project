@@ -39,8 +39,8 @@ export default function Pdf(props) {
                   INDIAN, Exotic, Imported & Fruits Supplies
                 </h2>
                 <p className="pb-2 border-black border-b">
-                  <b>Warehouse Add:</b> Senapati Bapat Marg, Dadar (West),
-                  Mum-400028
+                  <b>Warehouse Address:</b> Senapati Bapat Marg, Hawker Plaza
+                  Marg, Shop NO. 110, Dadar (West), Mum-400028
                 </p>
                 <p className="border-b border-black pb-2">
                   <b>Mob:</b> 9167267531 / 9987253372 &nbsp; <b>E-Mail:</b>{" "}
@@ -50,18 +50,18 @@ export default function Pdf(props) {
                 {/* Invoice Information */}
                 <div className="flex justify-between w-full">
                   <div className="w-4/5">
-                    <p className="pt-2 pb-3 border-b border-black  px-6 capitalize">
+                    <p className="pt-2 pb-3 border-b border-black  px-6 capitalize text-left">
                       BILL TO: <strong>{name}</strong>
                     </p>
-                    <p className="pt-2 pb-3 px-6 capitalize">
+                    <p className="pt-2 pb-3 px-6 capitalize text-left">
                       Address: <strong>{address}</strong>
                     </p>
                   </div>
                   <div className="w-1/5 border-l border-black">
-                    <p className="border-b px-2 pb-3 pt-2 border-black">
+                    <p className="border-b px-2 pb-3 pt-2 border-black text-left">
                       Invoice No: <strong>{bill_number}</strong>
                     </p>
-                    <p className="px-2 pb-3 pt-2">
+                    <p className="px-2 pb-3 pt-2 text-left">
                       Invoice Date:{" "}
                       <strong>
                         {date && new Date(date).toLocaleDateString("en-GB")}
@@ -115,6 +115,45 @@ export default function Pdf(props) {
                     </td>
                   </tr>
                 ))}
+                {pageIndex === pages.length - 1 && (
+                  <>
+                    <tr className="py-4">
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                    </tr>
+                    <tr className="py-4">
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                    </tr>
+                    <tr className="py-4">
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                    </tr>
+                    <tr className="py-4">
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                    </tr>
+                    <tr className="py-4">
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                    </tr>
+                  </>
+                )}
               </tbody>
             </table>
 

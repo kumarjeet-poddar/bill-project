@@ -50,6 +50,17 @@ async function add_bill(req, res) {
   try {
     const { cust_id, cust_vegetables, total, date, bill_number } = req.body;
 
+    const is_Exist = await Bill.findOne({
+      bill_number,
+    });
+
+    if (is_Exist) {
+      return res.status(400).json({
+        success: false,
+        msg: "This Bill Number is already generated",
+      });
+    }
+
     const bill = await Bill.create({
       customer: cust_id,
       vegetables: cust_vegetables.map((veg) => ({
@@ -109,7 +120,6 @@ async function edit_bill(req, res) {
       success: true,
       msg: "Bill updated successfully",
     });
-
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -174,14 +184,12 @@ async function get_monthly_bill(req, res) {
 
 async function get_bill_count(req, res) {
   try {
-
     const billCount = await Bill.countDocuments();
 
     return res.status(200).json({
       success: true,
       totalBills: billCount,
     });
-
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -197,5 +205,5 @@ export {
   edit_bill,
   remove_bill,
   get_monthly_bill,
-  get_bill_count
+  get_bill_count,
 };

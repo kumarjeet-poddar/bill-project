@@ -103,8 +103,11 @@ function Form() {
     var amount = 0;
 
     veges.map((veg) => {
-      if (!isNaN(veg.price_per_kg) && !isNaN(veg.quantity)) {
-        var temp = veg.price_per_kg * veg.quantity;
+      const price = parseFloat(veg.price_per_kg);
+      const quantity = parseFloat(veg.quantity);
+
+      if (!isNaN(price) && !isNaN(quantity)) {
+        var temp = price * quantity;
         amount += temp;
       }
     });
@@ -176,8 +179,8 @@ function Form() {
       const d = {
         cust_id: custId,
         name: data.name,
-        price: parseInt(data.price_per_kg),
-        quantity: parseInt(data.quantity),
+        price: parseFloat(data.price_per_kg),
+        quantity: parseFloat(data.quantity),
       };
 
       await axiosInstance
@@ -221,8 +224,8 @@ function Form() {
       const d = {
         veg_id: data._id,
         name: data.name,
-        price: parseInt(data.price_per_kg),
-        quantity: parseInt(data.quantity),
+        price: parseFloat(data.price_per_kg),
+        quantity: parseFloat(data.quantity),
       };
 
       await axiosInstance
@@ -361,6 +364,7 @@ function Form() {
     }
   }
 
+  console.log(veges);
   return (
     <>
       <BackButton />
@@ -508,7 +512,7 @@ function Form() {
                           <div className="w-full flex flex-col">
                             <label className="text-[10px]">KGs</label>
                             <input
-                              type="number"
+                              type="text"
                               placeholder="KGs"
                               value={data?.quantity}
                               required
@@ -523,7 +527,7 @@ function Form() {
                               Price
                             </label>
                             <input
-                              type="number"
+                              type="text"
                               placeholder="price per KG"
                               value={data?.price_per_kg}
                               required
