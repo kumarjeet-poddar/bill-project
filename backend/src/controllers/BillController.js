@@ -1,6 +1,7 @@
 import Bill from "../models/Bill.js";
 import Customer from "../models/Customer.js";
 import Vegetable from "../models/Vegetable.js";
+import dayjs from "dayjs";
 
 // get all bills
 async function get_all_bill(req, res) {
@@ -159,16 +160,24 @@ async function remove_bill(req, res) {
 
 async function get_monthly_bill(req, res) {
   try {
-    const { month, year } = req.params;
+    const { date, cust_id } = await req.params;
 
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0, 23, 59, 59);
+    const parsedDate = new Date(decodeURIComponent(date));
+
+    const startOfDay = new Date(parsedDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(parsedDate.setHours(23, 59, 59, 999));
 
     const bills = await Bill.find({
-      date: { $gte: startDate, $lte: endDate },
-    })
-      .sort({ date: -1 })
-      .populate("customer", "username");
+      customer: cust_id,
+      date: { $gte: startOfDay, $lte: endOfDay },
+    }).populate("customer");
+
+    if (!bills.length) {
+      return res.status(400).json({
+        success: false,
+        msg: "No bills found for the given date.",
+      });
+    }
 
     return res.status(200).json({
       success: true,

@@ -7,23 +7,42 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/L
 import dayjs from "dayjs";
 import CircularProgress from "@mui/material/CircularProgress";
 import BackButton from "./BackButton";
+import LedgerPdf from "./LedgerPdf";
+import { useRef } from "react";
+import generatePDF from "react-to-pdf";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function Ledger() {
   const [bills, setBills] = useState([]);
   const [month, setMonth] = useState(dayjs());
   const [total, setTotal] = useState(0);
   const [load, setLoad] = useState(false);
+  const [customer, setCustomer] = useState();
+  const [customerList, setCustomerList] = useState([]);
+  const targetRef = useRef();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    async function getCustomers() {
+      await axiosInstance
+        .get("/customers")
+        .then((res) => {
+          setCustomerList(res?.data?.customers);
+        })
+        .catch((err) => {});
+    }
+
+    getCustomers();
+  }, []);
 
   async function handleMonth(val) {
     setMonth(val);
-    const month = val.month() + 1;
-    const year = val.year();
+
+    const date = encodeURIComponent(dayjs(val).format("YYYY-MM-DD")); 
 
     setLoad(true);
     await axiosInstance
-      .get(`/monthly_bill/${month}/${year}`)
+      .get(`/monthly_bill/${date.toString()}/${customer?._id}`)
       .then((res) => {
         setLoad(false);
         setBills(res?.data?.bills);
@@ -36,32 +55,56 @@ export function Ledger() {
         setTotal(amount);
       })
       .catch((err) => {
+        toast.error(err?.response?.data?.msg)
         setLoad(false);
       });
+  }
+
+  async function handlePrint() {
+    generatePDF(targetRef, {
+      filename: `${customer.username}_invoice.pdf`,
+    });
   }
 
   return (
     <>
       <BackButton />
       <div className="rounded p-2 m-4">
-        <p className="font-bold text-lg">Monthly Ledger</p>
-        <div className="flex sm:flex-row flex-col justify-between w-full">
-          <div className="flex flex-col gap-y-2 my-4 mr-2">
-            <p>Select Month</p>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateCalendar
-                className="bg-slate-200 rounded-lg w-fit"
-                value={month}
-                views={["month", "year"]}
-                maxDate={dayjs().endOf("year")}
-                onChange={(value) => handleMonth(value)}
-              />
-            </LocalizationProvider>
-          </div>
+        <div className="flex sm:flex-row flex-col justify-between w-full mb-3">
+          <p className="font-bold text-lg">Monthly Ledger</p>
           <p className="text-lg">
-            Total Budget: <b>Rs. {total}</b>
+            Total Budget: <b>Rs. {total.toFixed(2)}</b>
           </p>
+        </div>
+
+        <div className="flex flex-col">
+          <p>Select Customer</p>
+          <select
+            className="w-fit border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+            onChange={(e) => {
+              setCustomer(JSON.parse(e.target.value));
+            }}
+          >
+            <option value="">--select--</option>
+            {customerList.map((cus, index) => (
+              <option key={index} value={JSON.stringify(cus)}>
+                {cus?.username}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-y-2 my-4 mr-2 justify-start items-start">
+          <p>Select Month</p>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar
+              className="bg-slate-200 rounded-lg"
+              value={month}
+              // views={["month", "year"]}
+              maxDate={dayjs().endOf("year")}
+              onChange={(value) => handleMonth(value)}
+            />
+          </LocalizationProvider>
         </div>
 
         {load ? (
@@ -101,7 +144,7 @@ export function Ledger() {
                           {data?.customer?.username}
                         </td>
                         <td className="px-6 py-4">{data?.bill_number}</td>
-                        <td className="px-6 py-4">{data?.total_amount}</td>
+                        <td className="px-6 py-4">{data?.total_amount.toFixed(2)}</td>
                       </tr>
                     );
                   })}
@@ -110,6 +153,28 @@ export function Ledger() {
             </div>
           )
         )}
+
+        <div className="flex justify-end w-full">
+          <button
+            className="w-fit px-8 py-3 rounded-lg bg-gray-600 text-white cursor-pointer"
+            onClick={handlePrint}
+          >
+            Print
+          </button>
+        </div>
+      </div>
+
+      <div className="opacity-0">
+        <div
+          ref={targetRef}
+          style={{
+            width: "1152px",
+            margin: "auto",
+            backgroundColor: "#fff",
+          }}
+        >
+          <LedgerPdf customer={customer} bills={bills} total={total} />
+        </div>
       </div>
     </>
   );

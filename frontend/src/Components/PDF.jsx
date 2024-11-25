@@ -161,7 +161,7 @@ export default function Pdf(props) {
             {pageIndex === pages.length - 1 && (
               <div className="flex justify-between w-full py-3 px-6 font-bold">
                 <p>Total Amount:</p>
-                <p>Rs. {total}</p>
+                <p>Rs. {total.toFixed(2)}</p>
               </div>
             )}
           </div>

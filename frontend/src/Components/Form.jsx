@@ -371,7 +371,6 @@ function Form() {
     }
   }
 
-  console.log(veges);
   return (
     <>
       <BackButton />
@@ -621,7 +620,7 @@ function Form() {
             )}
 
             {custId && (
-              <p className="font-bold text-lg my-4">Total Amount: {total}</p>
+              <p className="font-bold text-lg my-4">Total Amount: {total.toFixed(2)}</p>
             )}
 
             <button
