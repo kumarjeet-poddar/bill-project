@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../Utils/axiosInstance";
-import { useNavigate } from "react-router";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
@@ -12,10 +11,12 @@ import { useRef } from "react";
 import generatePDF from "react-to-pdf";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DatePicker } from "antd";
 
 export function Ledger() {
+  const { RangePicker } = DatePicker;
+
   const [bills, setBills] = useState([]);
-  const [month, setMonth] = useState(dayjs());
   const [total, setTotal] = useState(0);
   const [load, setLoad] = useState(false);
   const [customer, setCustomer] = useState();
@@ -35,14 +36,18 @@ export function Ledger() {
     getCustomers();
   }, []);
 
-  async function handleMonth(val) {
-    setMonth(val);
-
-    const date = encodeURIComponent(dayjs(val).format("YYYY-MM-DD")); 
+  async function handleMonth(dates, dateString) {
+    var start_date, end_date;
+    if (dates) {
+      const formattedDates = dates.map((date) => date.format("YYYY/MM/DD"));
+      start_date = formattedDates[0];
+      end_date = formattedDates[1];
+    }
 
     setLoad(true);
     await axiosInstance
-      .get(`/monthly_bill/${date.toString()}/${customer?._id}`)
+      .get(
+        `/monthly_bill?start_date=${start_date.toString()}&end_date=${end_date.toString()}&cust_id=${customer?._id}`)
       .then((res) => {
         setLoad(false);
         setBills(res?.data?.bills);
@@ -55,7 +60,7 @@ export function Ledger() {
         setTotal(amount);
       })
       .catch((err) => {
-        toast.error(err?.response?.data?.msg)
+        toast.error(err?.response?.data?.msg);
         setLoad(false);
       });
   }
@@ -96,7 +101,7 @@ export function Ledger() {
         <div className="flex flex-col gap-y-2 my-4 mr-2 justify-start items-start">
           <p>Select Month</p>
 
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
               className="bg-slate-200 rounded-lg"
               value={month}
@@ -104,7 +109,9 @@ export function Ledger() {
               maxDate={dayjs().endOf("year")}
               onChange={(value) => handleMonth(value)}
             />
-          </LocalizationProvider>
+          </LocalizationProvider> */}
+
+          <RangePicker onChange={handleMonth} />
         </div>
 
         {load ? (
@@ -144,7 +151,9 @@ export function Ledger() {
                           {data?.customer?.username}
                         </td>
                         <td className="px-6 py-4">{data?.bill_number}</td>
-                        <td className="px-6 py-4">{data?.total_amount.toFixed(2)}</td>
+                        <td className="px-6 py-4">
+                          {data?.total_amount.toFixed(2)}
+                        </td>
                       </tr>
                     );
                   })}

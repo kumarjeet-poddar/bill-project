@@ -160,12 +160,13 @@ async function remove_bill(req, res) {
 
 async function get_monthly_bill(req, res) {
   try {
-    const { date, cust_id } = await req.params;
+    const { start_date, end_date, cust_id } = await req.query;
 
-    const parsedDate = new Date(decodeURIComponent(date));
+    const parsed_start_date = new Date(decodeURIComponent(start_date));
+    const parsed_end_date = new Date(decodeURIComponent(end_date));
 
-    const startOfDay = new Date(parsedDate.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(parsedDate.setHours(23, 59, 59, 999));
+    const startOfDay = new Date(parsed_start_date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(parsed_end_date.setHours(23, 59, 59, 999));
 
     const bills = await Bill.find({
       customer: cust_id,

@@ -43,6 +43,6 @@ router.get("/bill_count", get_bill_count)
 router.post("/bill", add_bill);
 router.put("/bill/:bill_id", edit_bill);
 router.delete("/bill/:bill_id/:cust_id", remove_bill);
-router.get("/monthly_bill/:date/:cust_id", get_monthly_bill);
+router.get("/monthly_bill", get_monthly_bill);
 
 export default router;
