@@ -90,7 +90,7 @@ export default function LedgerPdf(props) {
                     Indian, Exotic, Imported & Fruits Supplier
                   </td>
                   <td className="border-b border-black px-2 pb-3 pt-1 text-center w-[15%]">
-                    {item.total_amount}
+                    {item.total_amount.toFixed(2)}
                   </td>
                 </tr>
               ))}

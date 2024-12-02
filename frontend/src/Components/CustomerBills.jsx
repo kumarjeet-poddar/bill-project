@@ -98,7 +98,7 @@ export default function Customer() {
                         </p>
                       </td>
                       <td className="py-4 px-2 sm:px-4 text-center">
-                        <p className="text-sm">Rs. {b?.total_amount}</p>
+                        <p className="text-sm">Rs. {b?.total_amount.toFixed(2)}</p>
                       </td>
                       <td className="py-4 px-2 sm:px-4">
                         <button

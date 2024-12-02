@@ -111,7 +111,7 @@ export default function Pdf(props) {
                       {item.price_per_kg}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
-                      {item.quantity * item.price_per_kg}
+                      {(item.quantity * item.price_per_kg).toFixed(2)}
                     </td>
                   </tr>
                 ))}
