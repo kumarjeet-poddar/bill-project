@@ -1,5 +1,6 @@
 import React from "react";
 import vegetableList from "../Utils/vegetable.js";
+import mappedVegetables from "../Utils/orderedVegetables.js";
 
 function splitIntoPages(items, itemsPerPage) {
   const pages = [];
@@ -11,10 +12,22 @@ function splitIntoPages(items, itemsPerPage) {
 
 export default function Pdf(props) {
   const { vegetables, total, name, address, bill_number, date } = props;
+
   const itemsPerPage = 32;
 
   // Split the vegetables array into pages
   const pages = splitIntoPages(vegetables, itemsPerPage);
+
+  // order vegetables
+  vegetables.sort((a, b) => {
+    const indexA = mappedVegetables.has(a.name.toUpperCase())
+      ? mappedVegetables.get(a.name.toUpperCase())
+      : Infinity;
+    const indexB = mappedVegetables.has(b.name.toUpperCase())
+      ? mappedVegetables.get(b.name.toUpperCase())
+      : Infinity;
+    return indexA - indexB;
+  });
 
   return (
     <div className="w-full px-4 pt-2 h-full">
