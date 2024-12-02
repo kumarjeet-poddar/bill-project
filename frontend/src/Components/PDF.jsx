@@ -19,15 +19,15 @@ export default function Pdf(props) {
   const pages = splitIntoPages(vegetables, itemsPerPage);
 
   // order vegetables
-  vegetables.sort((a, b) => {
-    const indexA = mappedVegetables.has(a?.name?.toUpperCase())
-      ? mappedVegetables.get(a?.name?.toUpperCase())
-      : Infinity;
-    const indexB = mappedVegetables.has(b?.name?.toUpperCase())
-      ? mappedVegetables.get(b?.name?.toUpperCase())
-      : Infinity;
-    return indexA - indexB;
-  });
+  // vegetables.sort((a, b) => {
+  //   const indexA = mappedVegetables.has(a?.name?.toUpperCase())
+  //     ? mappedVegetables.get(a?.name?.toUpperCase())
+  //     : Infinity;
+  //   const indexB = mappedVegetables.has(b?.name?.toUpperCase())
+  //     ? mappedVegetables.get(b?.name?.toUpperCase())
+  //     : Infinity;
+  //   return indexA - indexB;
+  // });
 
   return (
     <div className="w-full px-4 pt-2 h-full">

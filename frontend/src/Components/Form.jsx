@@ -12,6 +12,20 @@ import "react-toastify/dist/ReactToastify.css";
 import { RiPencilFill } from "react-icons/ri";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import BackButton from "./BackButton";
+import mappedVegetables from "../Utils/orderedVegetables";
+
+// function sortArray(vegetables) {
+//   return vegetables.sort((a, b) => {
+//     const indexA = mappedVegetables.has(a?.name?.toUpperCase())
+//       ? mappedVegetables.get(a?.name?.toUpperCase())
+//       : Infinity;
+//     const indexB = mappedVegetables.has(b?.name?.toUpperCase())
+//       ? mappedVegetables.get(b?.name?.toUpperCase())
+//       : Infinity;
+
+//     return indexA - indexB;
+//   });
+// }
 
 function Form() {
   const {
@@ -328,11 +342,14 @@ function Form() {
             setLoad(false);
             if (res.status === 200) {
               toast.success(res?.data?.msg);
+
               generatePDF(targetRef, {
                 filename: `${data.name}_${new Date(
                   data.date
                 ).toLocaleDateString("en-GB")}_invoice.pdf`,
               });
+
+
             }
           })
           .catch((err) => {
