@@ -23,10 +23,10 @@ const billSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    bill_number:{
-      type:Number,
-      unique:true
-    }
+    bill_number: {
+      type: String,
+      unique: true,
+    },
   },
   {
     timestamps: true,

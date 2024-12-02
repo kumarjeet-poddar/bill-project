@@ -20,11 +20,11 @@ export default function Pdf(props) {
 
   // order vegetables
   vegetables.sort((a, b) => {
-    const indexA = mappedVegetables.has(a.name.toUpperCase())
-      ? mappedVegetables.get(a.name.toUpperCase())
+    const indexA = mappedVegetables.has(a?.name?.toUpperCase())
+      ? mappedVegetables.get(a?.name?.toUpperCase())
       : Infinity;
-    const indexB = mappedVegetables.has(b.name.toUpperCase())
-      ? mappedVegetables.get(b.name.toUpperCase())
+    const indexB = mappedVegetables.has(b?.name?.toUpperCase())
+      ? mappedVegetables.get(b?.name?.toUpperCase())
       : Infinity;
     return indexA - indexB;
   });
@@ -62,7 +62,7 @@ export default function Pdf(props) {
 
                 {/* Invoice Information */}
                 <div className="flex justify-between w-full">
-                  <div className="w-4/5">
+                  <div className="w-3/4">
                     <p className="pt-2 pb-3 border-b border-black  px-6 capitalize text-left">
                       BILL TO: <strong>{name}</strong>
                     </p>
@@ -70,7 +70,7 @@ export default function Pdf(props) {
                       Address: <strong>{address}</strong>
                     </p>
                   </div>
-                  <div className="w-1/5 border-l border-black">
+                  <div className="w-1/4 border-l border-black">
                     <p className="border-b px-2 pb-3 pt-2 border-black text-left">
                       Invoice No: <strong>{bill_number}</strong>
                     </p>

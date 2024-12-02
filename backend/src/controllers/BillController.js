@@ -52,7 +52,7 @@ async function add_bill(req, res) {
     const { cust_id, cust_vegetables, total, date, bill_number } = req.body;
 
     const is_Exist = await Bill.findOne({
-      bill_number,
+      bill_number: bill_number.toLowerCase(),
     });
 
     if (is_Exist) {
@@ -71,7 +71,7 @@ async function add_bill(req, res) {
       })),
       total_amount: total,
       date,
-      bill_number,
+      bill_number: bill_number.toLowerCase(),
     });
 
     await Customer.findByIdAndUpdate(cust_id, {
@@ -112,7 +112,7 @@ async function edit_bill(req, res) {
 
     if (date && bill_number) {
       bill.date = date;
-      bill.bill_number = bill_number;
+      bill.bill_number = bill_number.toLowerCase();
     }
 
     await bill.save();

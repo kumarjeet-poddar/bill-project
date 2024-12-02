@@ -59,15 +59,6 @@ function Form() {
         .catch((err) => {});
     }
 
-    async function getBillCount() {
-      await axiosInstance
-        .get(`/bill_count`)
-        .then((res) => {
-          setValue("bill_number", res?.data?.totalBills + 1);
-        })
-        .catch((err) => {});
-    }
-
     async function getBill() {
       await axiosInstance
         .get(`/bill/${billId}/${custId}`)
@@ -94,8 +85,17 @@ function Form() {
     if (custId) getCustomer();
 
     if (operation === "generate_bill") {
-      getBillCount();
-      return;
+      // setValue("bill_number", res?.data?.bill?.bill_number);
+
+      const now = new Date();
+      const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Month is zero-indexed
+      const year = now.getFullYear();
+
+      // Generate a random 3-digit number
+      const randomNum = Math.floor(Math.random() * 900) + 100; // Random number between 100 and 999
+
+      // Create the string in the required format
+      return setValue("bill_number", `NGV/${month}-${year}/${randomNum}`);
     }
   }, [custId, billId]);
 
@@ -436,7 +436,7 @@ function Form() {
               <div className="mb-4">
                 <label className="text-gray-800">Bill Number</label>
                 <input
-                  type="number"
+                  type="text"
                   className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                   placeholder="Enter Bill Number"
                   {...register("bill_number", { required: true })}
@@ -620,7 +620,9 @@ function Form() {
             )}
 
             {custId && (
-              <p className="font-bold text-lg my-4">Total Amount: {total.toFixed(2)}</p>
+              <p className="font-bold text-lg my-4">
+                Total Amount: {total.toFixed(2)}
+              </p>
             )}
 
             <button
