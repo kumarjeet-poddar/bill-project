@@ -14,19 +14,6 @@ import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import BackButton from "./BackButton";
 import mappedVegetables from "../Utils/orderedVegetables";
 
-// function sortArray(vegetables) {
-//   return vegetables.sort((a, b) => {
-//     const indexA = mappedVegetables.has(a?.name?.toUpperCase())
-//       ? mappedVegetables.get(a?.name?.toUpperCase())
-//       : Infinity;
-//     const indexB = mappedVegetables.has(b?.name?.toUpperCase())
-//       ? mappedVegetables.get(b?.name?.toUpperCase())
-//       : Infinity;
-
-//     return indexA - indexB;
-//   });
-// }
-
 function Form() {
   const {
     register,
@@ -51,6 +38,22 @@ function Form() {
   const bill_number = watch("bill_number");
   const navigate = useNavigate();
   const [currentDropdownId, setCurrentDropdownId] = useState(null);
+  const [updVeges, setUpdVeges] = useState([])
+
+  function sortArray(vegetables) {
+    vegetables.sort((a, b) => {
+      const indexA = mappedVegetables.has(a?.name?.toUpperCase())
+        ? mappedVegetables.get(a?.name?.toUpperCase())
+        : Infinity;
+      const indexB = mappedVegetables.has(b?.name?.toUpperCase())
+        ? mappedVegetables.get(b?.name?.toUpperCase())
+        : Infinity;
+
+      return indexA - indexB;
+    });
+
+    setUpdVeges([...vegetables]);
+  }
 
   useEffect(() => {
     async function getCustomer() {
@@ -194,7 +197,7 @@ function Form() {
         cust_id: custId,
         name: data.name,
         price: parseFloat(data.price_per_kg),
-        quantity: parseFloat(data.quantity),
+        quantity: parseInt(data.quantity),
       };
 
       await axiosInstance
@@ -246,7 +249,7 @@ function Form() {
         veg_id: data._id,
         name: data.name,
         price: parseFloat(data.price_per_kg),
-        quantity: parseFloat(data.quantity),
+        quantity: parseInt(data.quantity),
       };
 
       await axiosInstance
@@ -279,15 +282,18 @@ function Form() {
 
     await axiosInstance
       .put(`bill/${billId}`, d)
-      .then((res) => {
+      .then(async (res) => {
         if (str === "save_bill") {
           setLoad(false);
-          toast.success(res?.data?.msg);
-          generatePDF(targetRef, {
-            filename: `${data.name}_${new Date(data.date).toLocaleDateString(
-              "en-GB"
-            )}_invoice.pdf`,
-          });
+          toast.success("Details updated");
+
+          await sortArray(veges);
+
+          // generatePDF(targetRef, {
+          //   filename: `${data.name}_${new Date(data.date).toLocaleDateString(
+          //     "en-GB"
+          //   )}_invoice.pdf`,
+          // });
         }
       })
       .catch((err) => {
@@ -296,6 +302,22 @@ function Form() {
       });
 
     return;
+  }
+
+  function handleBill(){
+    generatePDF(targetRef, {
+      filename: `${name}_${new Date(date).toLocaleDateString(
+        "en-GB"
+      )}_duplicate_invoice.pdf`,
+    });
+
+    generatePDF(targetRef, {
+      filename: `${name}_${new Date(date).toLocaleDateString(
+        "en-GB"
+      )}_original_invoice.pdf`,
+    });
+
+    toast.success("Bill generated successfully");
   }
 
   async function onSubmit(data) {
@@ -341,15 +363,13 @@ function Form() {
           .then((res) => {
             setLoad(false);
             if (res.status === 200) {
-              toast.success(res?.data?.msg);
+              toast.success("Details updated");
 
-              generatePDF(targetRef, {
-                filename: `${data.name}_${new Date(
-                  data.date
-                ).toLocaleDateString("en-GB")}_invoice.pdf`,
-              });
-
-
+              // generatePDF(targetRef, {
+              //   filename: `${data.name}_${new Date(
+              //     data.date
+              //   ).toLocaleDateString("en-GB")}_invoice.pdf`,
+              // });
             }
           })
           .catch((err) => {
@@ -536,7 +556,7 @@ function Form() {
                             <div className="w-full flex flex-col">
                               <label className="text-[10px]">KGs</label>
                               <input
-                                type="text"
+                                type="number"
                                 placeholder="KGs"
                                 value={data?.quantity}
                                 required
@@ -647,37 +667,37 @@ function Form() {
               type="submit"
               className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
             >
-              {billId
-                ? "Edit Bill"
-                : operation === "generate_bill"
-                ? "Generate Bill"
-                : operation === "edit"
-                ? "Save Details"
+              {custId ? "Save"
                 : "Add Customer"}
             </button>
+{(operation === "generate_bill" 
+|| billId) && 
+            <button type="button" onClick={handleBill} className="w-full rounded-lg py-2 border text-cyan-500 border-cyan-400 hover:bg-cian-600 mt-4 font-bold cursor-pointer">
+              Generate Bill
+            </button>}
           </form>
         </div>
       </div>
 
-      <div className="opacity-0">
-        <div
-          ref={targetRef}
-          style={{
-            width: "1152px",
-            margin: "auto",
-            backgroundColor: "#fff",
-          }}
-        >
-          <Pdf
-            vegetables={veges}
-            total={total}
-            name={name}
-            address={address}
-            date={date}
-            bill_number={bill_number}
-          />
+        <div className="opacity-0">
+          <div
+            ref={targetRef}
+            style={{
+              width: "1152px",
+              margin: "auto",
+              backgroundColor: "#fff",
+            }}
+          >
+            <Pdf
+              vegetables={veges}
+              total={total}
+              name={name}
+              address={address}
+              date={date}
+              bill_number={bill_number}
+            />
+          </div>
         </div>
-      </div>
     </>
   );
 }
