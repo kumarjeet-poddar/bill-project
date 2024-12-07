@@ -11,23 +11,12 @@ function splitIntoPages(items, itemsPerPage) {
 }
 
 export default function Pdf(props) {
-  const { vegetables, total, name, address, bill_number, date } = props;
+  const { vegetables, total, name, address, bill_number, date, showBank } = props;
 
   const itemsPerPage = 32;
 
   // Split the vegetables array into pages
   const pages = splitIntoPages(vegetables, itemsPerPage);
-
-  // order vegetables
-  // vegetables.sort((a, b) => {
-  //   const indexA = mappedVegetables.has(a?.name?.toUpperCase())
-  //     ? mappedVegetables.get(a?.name?.toUpperCase())
-  //     : Infinity;
-  //   const indexB = mappedVegetables.has(b?.name?.toUpperCase())
-  //     ? mappedVegetables.get(b?.name?.toUpperCase())
-  //     : Infinity;
-  //   return indexA - indexB;
-  // });
 
   return (
     <div className="w-full px-4 pt-2 h-full">
@@ -111,10 +100,10 @@ export default function Pdf(props) {
               <tbody>
                 {pageItems.map((item, index) => (
                   <tr key={index + 1} className="pb-2 w-full">
-                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
+                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[15%]">
                       {index + 1 + pageIndex * itemsPerPage}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center text-lg w-2/5 capitalize">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-2/5 capitalize font-bold">
                       {item.name} / {vegetableList[item?.name?.toLowerCase()]}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
@@ -123,47 +112,47 @@ export default function Pdf(props) {
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
                       {item.price_per_kg}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
+                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[15%]">
                       {(item.quantity * item.price_per_kg).toFixed(2)}
                     </td>
                   </tr>
                 ))}
                 {pageIndex === pages.length - 1 && (
                   <>
-                    <tr className="py-4">
+                     <tr className="py-4">
+                      <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
                     <tr className="py-4">
+                      <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
                     <tr className="py-4">
+                      <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
                     <tr className="py-4">
+                      <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
                     <tr className="py-4">
+                      <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
                   </>
                 )}
@@ -171,12 +160,41 @@ export default function Pdf(props) {
             </table>
 
             {/* Total Amount (Only on last page) */}
-            {pageIndex === pages.length - 1 && (
-              <div className="flex justify-between w-full py-3 px-6 font-bold">
+            {pageIndex === pages.length - 1 && <>
+              <div className="flex justify-between w-full py-3 px-4 font-bold mb-4">
                 <p>Total Amount:</p>
                 <p>Rs. {total.toFixed(2)}</p>
               </div>
-            )}
+
+              {showBank && <>
+              <p className="px-4 font-medium py-2 border-t w-full border-black text-gray-700">Bank Details:</p>
+              <table className="w-full p-2 font-bold" border={1} >
+                <tr className="">
+                  <td className="border border-black border-l-0 p-2">Name:</td>
+                  <td className="border-t border-b border-black p-2">Narayan green vegetables
+                  </td>
+                </tr>
+                <tr className="">
+                <td className="border border-black border-l-0 p-2">A/C:</td>
+                <td className="border-t border-b border-black p-2">319201010042283                  </td>
+                </tr>
+                <tr>
+                <td className="border border-black border-l-0 p-2">IFSC Code: </td>
+                <td className="border-t border-b border-black p-2">UBIN0531928</td>
+                </tr>
+                <tr>
+                <td className="border border-black border-l-0 p-2">UPI number:</td>
+                <td className="border-t border-b border-black p-2">9167267531
+                  </td>
+                </tr>
+                <tr>
+                <td className="border-black border-t border-r p-2">UPI ID:</td>
+                <td className="border-t border-black p-2">narayanchoudhary83@uboi</td>
+                </tr>
+              </table>
+              </>
+}
+              </>}
           </div>
         ))}
       </div>

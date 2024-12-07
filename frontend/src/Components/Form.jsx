@@ -25,6 +25,8 @@ function Form() {
 
   const { custId, operation, billId } = useParams();
 
+  const bankRef = useRef();
+
   const [veges, setVeges] = useState([]);
   const [total, setTotal] = useState(0);
   const targetRef = useRef();
@@ -454,7 +456,7 @@ function Form() {
               )}
             </div>
 
-            {(operation === "generate_bill" || billId) && (
+            {(operation === "generate_bill" || operation === "quotation" || billId) && (
               <div className="mb-4">
                 <label className="text-gray-800">Date</label>
                 <input
@@ -469,9 +471,9 @@ function Form() {
               </div>
             )}
 
-            {(operation === "generate_bill" || billId) && (
+            {(operation === "generate_bill" || operation === "quotation" || billId) && (
               <div className="mb-4">
-                <label className="text-gray-800">Bill Number</label>
+                <label className="text-gray-800">{operation === "quotation" ? "Quotation number": "Bill Number"}</label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
@@ -662,6 +664,11 @@ function Form() {
               </p>
             )}
 
+            <div className="flex items-center flex-row w-fit h-fit justify-center">
+            <input type="checkbox" id="bank" ref={bankRef} />
+            <label for="bank" className="ml-2 text-sm">Add Bank Details</label>
+            </div>
+
             <button
               disabled={load}
               type="submit"
@@ -689,12 +696,13 @@ function Form() {
             }}
           >
             <Pdf
-              vegetables={veges}
+              vegetables={updVeges}
               total={total}
               name={name}
               address={address}
               date={date}
               bill_number={bill_number}
+              showBank={bankRef?.current?.checked}
             />
           </div>
         </div>
