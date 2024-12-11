@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { IoIosAddCircle } from "react-icons/io";
-import { IoIosRemoveCircle } from "react-icons/io";
-import { useNavigate, useParams } from "react-router";
-import { useRef } from "react";
-import generatePDF from "react-to-pdf";
-import Pdf from "./PDF";
-import axiosInstance from "../Utils/axiosInstance";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { RiPencilFill } from "react-icons/ri";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import BackButton from "./BackButton";
-import mappedVegetables from "../Utils/orderedVegetables";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { IoIosAddCircle } from 'react-icons/io';
+import { IoIosRemoveCircle } from 'react-icons/io';
+import { useNavigate, useParams } from 'react-router';
+import { useRef } from 'react';
+import generatePDF from 'react-to-pdf';
+import Pdf from './PDF';
+import axiosInstance from '../Utils/axiosInstance';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { RiPencilFill } from 'react-icons/ri';
+import { ReactSearchAutocomplete } from 'react-search-autocomplete';
+import BackButton from './BackButton';
+import mappedVegetables from '../Utils/orderedVegetables';
 
 function Form() {
   const {
@@ -34,13 +34,13 @@ function Form() {
   const [actionId, setActionId] = useState(-1);
   const [isAdd, setIsAdd] = useState(false);
   const [orgVeg, setOrgVeg] = useState([]);
-  const name = watch("name");
-  const address = watch("address");
-  const date = watch("date");
-  const bill_number = watch("bill_number");
+  const name = watch('name');
+  const address = watch('address');
+  const date = watch('date');
+  const bill_number = watch('bill_number');
   const navigate = useNavigate();
   const [currentDropdownId, setCurrentDropdownId] = useState(null);
-  const [updVeges, setUpdVeges] = useState([])
+  const [updVeges, setUpdVeges] = useState([]);
 
   function sortArray(vegetables) {
     vegetables.sort((a, b) => {
@@ -62,17 +62,17 @@ function Form() {
       await axiosInstance
         .get(`/customer/${custId}`)
         .then((res) => {
-          if (operation === "edit") {
+          if (operation === 'edit') {
             setVeges(res?.data?.customer?.vegetables);
           }
           setOrgVeg(res?.data?.customer?.vegetables);
-          setValue("name", res?.data?.customer?.username);
-          setValue("phone", res?.data?.customer?.phone);
-          setValue("address", res?.data?.customer?.address);
+          setValue('name', res?.data?.customer?.username);
+          setValue('phone', res?.data?.customer?.phone);
+          setValue('address', res?.data?.customer?.address);
 
-          if (operation === "generate_bill") {
-            const currentDate = new Date().toISOString().split("T")[0];
-            setValue("date", currentDate);
+          if (operation === 'generate_bill') {
+            const currentDate = new Date().toISOString().split('T')[0];
+            setValue('date', currentDate);
           }
         })
         .catch((err) => {});
@@ -84,14 +84,14 @@ function Form() {
         .then((res) => {
           setVeges(res?.data?.bill?.vegetables);
           setOrgVeg(res?.data?.all_vegetables);
-          setValue("name", res?.data?.bill?.customer?.username);
-          setValue("phone", res?.data?.bill?.customer?.phone);
-          setValue("address", res?.data?.bill?.customer?.address);
+          setValue('name', res?.data?.bill?.customer?.username);
+          setValue('phone', res?.data?.bill?.customer?.phone);
+          setValue('address', res?.data?.bill?.customer?.address);
           const formattedDate = res?.data?.bill?.date
-            ? new Date(res.data.bill.date).toISOString().split("T")[0]
-            : "";
-          setValue("date", formattedDate);
-          setValue("bill_number", res?.data?.bill?.bill_number);
+            ? new Date(res.data.bill.date).toISOString().split('T')[0]
+            : '';
+          setValue('date', formattedDate);
+          setValue('bill_number', res?.data?.bill?.bill_number);
         })
         .catch((err) => {});
     }
@@ -103,18 +103,16 @@ function Form() {
 
     if (custId) getCustomer();
 
-    if (operation === "generate_bill") {
-      // setValue("bill_number", res?.data?.bill?.bill_number);
-
+    if (operation === 'generate_bill') {
       const now = new Date();
-      const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Month is zero-indexed
+      const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-indexed
       const year = now.getFullYear();
 
       // Generate a random 3-digit number
       const randomNum = Math.floor(Math.random() * 900) + 100; // Random number between 100 and 999
 
       // Create the string in the required format
-      return setValue("bill_number", `NGV/${month}-${year}/${randomNum}`);
+      return setValue('bill_number', `NGV/${month}-${year}/${randomNum}`);
     }
   }, [custId, billId]);
 
@@ -135,9 +133,9 @@ function Form() {
   }, [veges]);
 
   async function handleRemove(id) {
-    if (operation === "generate_bill" || billId) {
+    if (operation === 'generate_bill' || billId) {
       setVeges((prev) => prev.filter((veg) => veg._id !== id));
-      toast.success("Vegetable removed");
+      toast.success('Vegetable removed');
     } else {
       if (id === 0) {
         setVeges((prev) => prev.filter((veg) => veg._id !== 0));
@@ -203,7 +201,7 @@ function Form() {
       };
 
       await axiosInstance
-        .post("/vegetable", d)
+        .post('/vegetable', d)
         .then(async (res) => {
           if (res.status === 200) {
             setVeges((prev) => prev.filter((veg) => veg._id !== 0));
@@ -212,7 +210,7 @@ function Form() {
 
             // if editing a bill - save vege to that bill
             if (billId) {
-              await edit_bill({}, "add_veg_in_bill");
+              await edit_bill({}, 'add_veg_in_bill');
             }
             toast.success(res?.data?.msg);
             setIsAdd(false);
@@ -222,27 +220,23 @@ function Form() {
           if (err.response.status == 400) {
             setVeges((prev) => {
               const isDuplicate = prev.some(
-                (veg) =>
-                  veg.name.toLowerCase() === data.name.toLowerCase() &&
-                  veg._id !== 0
+                (veg) => veg.name.toLowerCase() === data.name.toLowerCase() && veg._id !== 0
               );
 
               if (isDuplicate) {
-                toast.error("This vegetable is already added!");
+                toast.error('This vegetable is already added!');
                 return prev.filter((veg) => veg._id !== 0);
               } else {
-                toast.success("Vegetable added");
+                toast.success('Vegetable added');
                 return prev.map((veg) =>
-                  veg._id === 0
-                    ? { ...veg, _id: err.response.data.vegetable._id }
-                    : veg
+                  veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
                 );
               }
             });
 
             // if editing a bill - save vege to that bill
             if (billId) {
-              await edit_bill({}, "add_veg_in_bill");
+              await edit_bill({}, 'add_veg_in_bill');
             }
           }
         });
@@ -268,7 +262,7 @@ function Form() {
 
   async function edit_bill(data, str) {
     var d;
-    if (str === "save_bill") {
+    if (str === 'save_bill') {
       d = {
         vegetables: veges,
         total_amount: total,
@@ -285,9 +279,9 @@ function Form() {
     await axiosInstance
       .put(`bill/${billId}`, d)
       .then(async (res) => {
-        if (str === "save_bill") {
+        if (str === 'save_bill') {
           setLoad(false);
-          toast.success("Details updated");
+          toast.success('Details updated');
 
           await sortArray(veges);
 
@@ -306,20 +300,16 @@ function Form() {
     return;
   }
 
-  function handleBill(){
+  function handleBill() {
     generatePDF(targetRef, {
-      filename: `${name}_${new Date(date).toLocaleDateString(
-        "en-GB"
-      )}_duplicate_invoice.pdf`,
+      filename: `${name}_${new Date(date).toLocaleDateString('en-GB')}_duplicate_invoice.pdf`,
     });
 
     generatePDF(targetRef, {
-      filename: `${name}_${new Date(date).toLocaleDateString(
-        "en-GB"
-      )}_original_invoice.pdf`,
+      filename: `${name}_${new Date(date).toLocaleDateString('en-GB')}_original_invoice.pdf`,
     });
 
-    toast.success("Bill generated successfully");
+    toast.success('Bill generated successfully');
   }
 
   async function onSubmit(data) {
@@ -329,7 +319,7 @@ function Form() {
 
     if (custId) {
       // edit customer
-      if (operation === "edit") {
+      if (operation === 'edit') {
         const d = {
           cust_id: custId,
           phone: data.phone,
@@ -351,7 +341,7 @@ function Form() {
       }
 
       // generate bill
-      if (operation === "generate_bill") {
+      if (operation === 'generate_bill') {
         const bill_data = {
           cust_id: custId,
           cust_vegetables: veges,
@@ -362,10 +352,12 @@ function Form() {
 
         await axiosInstance
           .post(`bill`, bill_data)
-          .then((res) => {
+          .then(async (res) => {
             setLoad(false);
             if (res.status === 200) {
-              toast.success("Details updated");
+              toast.success('Details updated');
+
+              await sortArray(veges);
 
               // generatePDF(targetRef, {
               //   filename: `${data.name}_${new Date(
@@ -384,7 +376,7 @@ function Form() {
 
       // edit bill
       if (billId) {
-        await edit_bill(data, "save_bill");
+        await edit_bill(data, 'save_bill');
       }
     } else {
       // add new customer
@@ -395,12 +387,12 @@ function Form() {
       };
 
       await axiosInstance
-        .post("customer", upd_data)
+        .post('customer', upd_data)
         .then((res) => {
           setLoad(false);
           if (res.status === 200) {
             toast.success(res?.data?.msg);
-            navigate("/customer");
+            navigate('/customer');
           }
         })
         .catch((err) => {
@@ -416,21 +408,17 @@ function Form() {
       <div className="flex w-full flex-col justify-center items-center">
         <div className="bg-slate-100 w-11/12 sm:max-w-lg px-4 py-8 my-8 rounded-xl flex flex-col">
           <form onSubmit={handleSubmit(onSubmit)}>
-            <p className="text-lg font-bold text-center mb-4">
-              Customer Details
-            </p>
+            <p className="text-lg font-bold text-center mb-4">Customer Details</p>
             <div className="mb-4">
               <label className="text-gray-800">Customer Name</label>
               <input
                 type="text"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Enter Customer name"
-                {...register("name", { required: true })}
+                {...register('name', { required: true })}
                 readOnly={custId ? true : false}
               />
-              {errors.username && (
-                <span className="text-red-600">Please, enter name</span>
-              )}
+              {errors.username && <span className="text-red-600">Please, enter name</span>}
             </div>
 
             <div className="mb-4">
@@ -439,7 +427,7 @@ function Form() {
                 type="number"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Phone Number"
-                {...register("phone", { required: true })}
+                {...register('phone', { required: true })}
               />
             </div>
 
@@ -449,40 +437,34 @@ function Form() {
                 type="text"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Enter Address"
-                {...register("address", { required: true })}
+                {...register('address', { required: true })}
               />
-              {errors.username && (
-                <span className="text-red-600">Please, enter address</span>
-              )}
+              {errors.username && <span className="text-red-600">Please, enter address</span>}
             </div>
 
-            {(operation === "generate_bill" || operation === "quotation" || billId) && (
+            {(operation === 'generate_bill' || billId) && (
               <div className="mb-4">
                 <label className="text-gray-800">Date</label>
                 <input
                   type="date"
                   className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                   placeholder="dd-mm-yyyy"
-                  {...register("date", { required: true })}
+                  {...register('date', { required: true })}
                 />
-                {errors.date && (
-                  <span className="text-red-600">This is a required field</span>
-                )}
+                {errors.date && <span className="text-red-600">This is a required field</span>}
               </div>
             )}
 
-            {(operation === "generate_bill" || operation === "quotation" || billId) && (
+            {(operation === 'generate_bill' || billId) && (
               <div className="mb-4">
-                <label className="text-gray-800">{operation === "quotation" ? "Quotation number": "Bill Number"}</label>
+                <label className="text-gray-800">Bill Number</label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                   placeholder="Enter Bill Number"
-                  {...register("bill_number", { required: true })}
+                  {...register('bill_number', { required: true })}
                 />
-                {errors.date && (
-                  <span className="text-red-600">This is a required field</span>
-                )}
+                {errors.date && <span className="text-red-600">This is a required field</span>}
               </div>
             )}
 
@@ -500,14 +482,9 @@ function Form() {
                     veges.map((data, index) => {
                       return (
                         <div key={index} className="flex flex-col gap-y-1">
-                          <div
-                            className="flex items-center w-full gap-x-2 my-2"
-                            key={data._id}
-                          >
+                          <div className="flex items-center w-full gap-x-2 my-2" key={data._id}>
                             <div className="w-full flex flex-col">
-                              <label className="pointer-events-none text-[10px]">
-                                Vegetable
-                              </label>
+                              <label className="pointer-events-none text-[10px]">Vegetable</label>
                               <ReactSearchAutocomplete
                                 showIcon={false}
                                 items={orgVeg}
@@ -517,41 +494,38 @@ function Form() {
                                 onBlur={() => setCurrentDropdownId(null)}
                                 onSearch={(inputValue) => {
                                   const foundItem = veges.find(
-                                    (veg) =>
-                                      veg?.name?.toLowerCase() ===
-                                      inputValue?.toLowerCase()
+                                    (veg) => veg?.name?.toLowerCase() === inputValue?.toLowerCase()
                                   );
                                   if (!foundItem) {
-                                    handleOnChange(data._id, "name", {
+                                    handleOnChange(data._id, 'name', {
                                       target: { value: inputValue },
                                     });
                                   }
                                 }}
                                 onSelect={(item) => {
-                                  handleOnChange(data._id, "name", {
+                                  handleOnChange(data._id, 'name', {
                                     target: { value: item.name },
                                   });
-                                  handleOnChange(data._id, "quantity", {
-                                    target: { value: "" },
+                                  handleOnChange(data._id, 'quantity', {
+                                    target: { value: '' },
                                   });
-                                  handleOnChange(data._id, "price_per_kg", {
+                                  handleOnChange(data._id, 'price_per_kg', {
                                     target: { value: item.price_per_kg },
                                   });
                                 }}
                                 styling={{
-                                  height: "40px",
-                                  borderRadius: "8px",
-                                  backgroundColor: "white",
-                                  boxShadow: "none",
-                                  color: "black",
-                                  fontSize: "16px",
-                                  iconColor: "gray",
-                                  clearIconMargin: "0 4px 0 0",
-                                  borderColor: "#d1d5db",
-                                  placeholderColor: "black",
-                                  zIndex:
-                                    currentDropdownId === data._id ? 50 : 10,
-                                  position: "relative",
+                                  height: '40px',
+                                  borderRadius: '8px',
+                                  backgroundColor: 'white',
+                                  boxShadow: 'none',
+                                  color: 'black',
+                                  fontSize: '16px',
+                                  iconColor: 'gray',
+                                  clearIconMargin: '0 4px 0 0',
+                                  borderColor: '#d1d5db',
+                                  placeholderColor: 'black',
+                                  zIndex: currentDropdownId === data._id ? 50 : 10,
+                                  position: 'relative',
                                 }}
                               />
                             </div>
@@ -563,27 +537,21 @@ function Form() {
                                 value={data?.quantity}
                                 required
                                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
-                                onChange={(e) =>
-                                  handleOnChange(data._id, "quantity", e)
-                                }
+                                onChange={(e) => handleOnChange(data._id, 'quantity', e)}
                               />
                             </div>
                             <div className="w-full flex flex-col">
-                              <label className="pointer-events-none text-[10px]">
-                                Price
-                              </label>
+                              <label className="pointer-events-none text-[10px]">Price</label>
                               <input
                                 type="text"
                                 placeholder="price per KG"
                                 value={data?.price_per_kg}
                                 required
-                                onChange={(e) =>
-                                  handleOnChange(data._id, "price_per_kg", e)
-                                }
+                                onChange={(e) => handleOnChange(data._id, 'price_per_kg', e)}
                                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
                               />
                             </div>
-                            {operation === "edit" && (
+                            {operation === 'edit' && (
                               <div
                                 className="rounded-full cursor-pointer"
                                 title="Edit"
@@ -594,18 +562,17 @@ function Form() {
                                 <RiPencilFill size={32} />
                               </div>
                             )}
-                            {index + 1 === veges.length &&
-                              !veges.some((veg) => veg._id === 0) && (
-                                <div
-                                  className="rounded-full cursor-pointer"
-                                  title="Add More"
-                                  onClick={() => {
-                                    handleAddMore();
-                                  }}
-                                >
-                                  <IoIosAddCircle size={32} />
-                                </div>
-                              )}
+                            {index + 1 === veges.length && !veges.some((veg) => veg._id === 0) && (
+                              <div
+                                className="rounded-full cursor-pointer"
+                                title="Add More"
+                                onClick={() => {
+                                  handleAddMore();
+                                }}
+                              >
+                                <IoIosAddCircle size={32} />
+                              </div>
+                            )}
                             {/* {index !== 0 && ( */}
                             <div
                               className="rounded-full cursor-pointer"
@@ -618,8 +585,7 @@ function Form() {
                             </div>
                             {/* )} */}
                           </div>
-                          {(actionId === data._id ||
-                            (isAdd && data._id === 0)) && (
+                          {(actionId === data._id || (isAdd && data._id === 0)) && (
                             <div className="flex w-full justify-end gap-x-3 border-b pb-1">
                               <button
                                 onClick={() => {
@@ -658,54 +624,57 @@ function Form() {
               </div>
             )}
 
-            {custId && (
-              <p className="font-bold text-lg my-4">
-                Total Amount: {total.toFixed(2)}
-              </p>
-            )}
+            {custId && <p className="font-bold text-lg my-4">Total Amount: {total.toFixed(2)}</p>}
 
-            <div className="flex items-center flex-row w-fit h-fit justify-center">
-            <input type="checkbox" id="bank" ref={bankRef} />
-            <label for="bank" className="ml-2 text-sm">Add Bank Details</label>
-            </div>
+            {custId && (
+              <div className="flex items-center flex-row w-fit h-fit justify-center">
+                <input type="checkbox" id="bank" ref={bankRef} />
+                <label for="bank" className="ml-2 text-sm">
+                  Add Bank Details
+                </label>
+              </div>
+            )}
 
             <button
               disabled={load}
               type="submit"
               className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
             >
-              {custId ? "Save"
-                : "Add Customer"}
+              {custId ? 'Save' : 'Add Customer'}
             </button>
-{(operation === "generate_bill" 
-|| billId) && 
-            <button type="button" onClick={handleBill} className="w-full rounded-lg py-2 border text-cyan-500 border-cyan-400 hover:bg-cian-600 mt-4 font-bold cursor-pointer">
-              Generate Bill
-            </button>}
+            {(operation === 'generate_bill' || billId) && (
+              <button
+                type="button"
+                onClick={handleBill}
+                className="w-full rounded-lg py-2 border text-cyan-500 border-cyan-400 hover:bg-cian-600 mt-4 font-bold cursor-pointer"
+              >
+                Generate Bill
+              </button>
+            )}
           </form>
         </div>
       </div>
 
-        <div className="opacity-0">
-          <div
-            ref={targetRef}
-            style={{
-              width: "1152px",
-              margin: "auto",
-              backgroundColor: "#fff",
-            }}
-          >
-            <Pdf
-              vegetables={updVeges}
-              total={total}
-              name={name}
-              address={address}
-              date={date}
-              bill_number={bill_number}
-              showBank={bankRef?.current?.checked}
-            />
-          </div>
+      <div className="opacity-0">
+        <div
+          ref={targetRef}
+          style={{
+            width: '1152px',
+            margin: 'auto',
+            backgroundColor: '#fff',
+          }}
+        >
+          <Pdf
+            vegetables={updVeges}
+            total={total}
+            name={name}
+            address={address}
+            date={date}
+            bill_number={bill_number}
+            showBank={bankRef?.current?.checked}
+          />
         </div>
+      </div>
     </>
   );
 }

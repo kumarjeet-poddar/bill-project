@@ -6,6 +6,8 @@ import { ToastContainer } from "react-toastify";
 import Customer from "./Components/CustomerBills";
 import Home from "./Components/Home";
 import { Ledger } from "./Components/Ledger";
+import QuotationForm from "./Components/QuotationForm";
+
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/ledger" element={<Ledger />} />
           <Route path="/form/:operation/:custId" element={<Form />} />
           <Route path="/bill/:billId/:custId" element={<Form />} />
+
+          <Route path="/quotation" element={<QuotationForm />} />
           <Route path="/pdf" element={<Pdf />} />
           <Route path="/bills/:custId" element={<Customer />} />
         </Routes>

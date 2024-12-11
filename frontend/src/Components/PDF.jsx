@@ -1,6 +1,5 @@
-import React from "react";
-import vegetableList from "../Utils/vegetable.js";
-import mappedVegetables from "../Utils/orderedVegetables.js";
+import React from 'react';
+import vegetableList from '../Utils/vegetable.js';
 
 function splitIntoPages(items, itemsPerPage) {
   const pages = [];
@@ -26,8 +25,7 @@ export default function Pdf(props) {
           <div
             key={pageIndex}
             style={{
-              pageBreakAfter:
-                pageIndex === pages.length - 1 ? "auto" : "always",
+              pageBreakAfter: pageIndex === pages.length - 1 ? 'auto' : 'always',
             }}
           >
             {/* Show header only on the first page */}
@@ -41,11 +39,11 @@ export default function Pdf(props) {
                   INDIAN, Exotic, Imported & Fruits Supplier
                 </h2>
                 <p className="pb-2 border-black border-b">
-                  <b>Warehouse Address:</b> Senapati Bapat Marg, Hawker Plaza
-                  Marg, Shop NO. 110, Dadar (West), Mum-400028
+                  <b>Warehouse Address:</b> Senapati Bapat Marg, Hawker Plaza Marg, Shop NO. 110,
+                  Dadar (West), Mum-400028
                 </p>
                 <p className="border-b border-black pb-2">
-                  <b>Mob:</b> 9167267531 / 9987253372 &nbsp; <b>E-Mail:</b>{" "}
+                  <b>Mob:</b> 9167267531 / 9987253372 &nbsp; <b>E-Mail:</b>{' '}
                   narayanchoudhary83@gmail.com
                 </p>
 
@@ -64,10 +62,8 @@ export default function Pdf(props) {
                       Invoice No: <strong>{bill_number}</strong>
                     </p>
                     <p className="px-2 pb-3 pt-2 text-left">
-                      Invoice Date:{" "}
-                      <strong>
-                        {date && new Date(date).toLocaleDateString("en-GB")}
-                      </strong>
+                      Invoice Date:{' '}
+                      <strong>{date && new Date(date).toLocaleDateString('en-GB')}</strong>
                     </p>
                   </div>
                 </div>
@@ -88,9 +84,7 @@ export default function Pdf(props) {
                     <th className="border border-r-0 border-black px-2 text-center text-lg">
                       Total (Kg)
                     </th>
-                    <th className="border border-black px-2 text-center text-lg">
-                      Per (Kg)
-                    </th>
+                    <th className="border border-black px-2 text-center text-lg">Per (Kg)</th>
                     <th className="border-t border-b border-black px-2 text-center text-lg">
                       Amount (In Rs.)
                     </th>
@@ -106,20 +100,20 @@ export default function Pdf(props) {
                     <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-2/5 capitalize font-bold">
                       {item.name} / {vegetableList[item?.name?.toLowerCase()]}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%] font-bold">
                       {item.quantity}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%]">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%] font-bold">
                       {item.price_per_kg}
                     </td>
-                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[15%]">
+                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[15%] font-bold">
                       {(item.quantity * item.price_per_kg).toFixed(2)}
                     </td>
                   </tr>
                 ))}
                 {pageIndex === pages.length - 1 && (
                   <>
-                     <tr className="py-4">
+                    <tr className="py-4">
                       <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
@@ -160,41 +154,46 @@ export default function Pdf(props) {
             </table>
 
             {/* Total Amount (Only on last page) */}
-            {pageIndex === pages.length - 1 && <>
-              <div className="flex justify-between w-full py-3 px-4 font-bold mb-4">
-                <p>Total Amount:</p>
-                <p>Rs. {total.toFixed(2)}</p>
-              </div>
+            {pageIndex === pages.length - 1 && (
+              <>
+                <div className="flex justify-between w-full py-3 px-4 font-bold mb-4">
+                  <p>Total Amount:</p>
+                  <p>Rs. {total.toFixed(2)}</p>
+                </div>
 
-              {showBank && <>
-              <p className="px-4 font-medium py-2 border-t w-full border-black text-gray-700">Bank Details:</p>
-              <table className="w-full p-2 font-bold" border={1} >
-                <tr className="">
-                  <td className="border border-black border-l-0 p-2">Name:</td>
-                  <td className="border-t border-b border-black p-2">Narayan green vegetables
-                  </td>
-                </tr>
-                <tr className="">
-                <td className="border border-black border-l-0 p-2">A/C:</td>
-                <td className="border-t border-b border-black p-2">319201010042283                  </td>
-                </tr>
-                <tr>
-                <td className="border border-black border-l-0 p-2">IFSC Code: </td>
-                <td className="border-t border-b border-black p-2">UBIN0531928</td>
-                </tr>
-                <tr>
-                <td className="border border-black border-l-0 p-2">UPI number:</td>
-                <td className="border-t border-b border-black p-2">9167267531
-                  </td>
-                </tr>
-                <tr>
-                <td className="border-black border-t border-r p-2">UPI ID:</td>
-                <td className="border-t border-black p-2">narayanchoudhary83@uboi</td>
-                </tr>
-              </table>
+                {showBank && (
+                  <>
+                    <p className="px-4 font-medium py-2 border-t w-full border-black text-gray-700">
+                      Bank Details:
+                    </p>
+                    <table className="w-full p-2 font-bold" border={1}>
+                      <tr className="">
+                        <td className="border border-black border-l-0 p-2">Name:</td>
+                        <td className="border-t border-b border-black p-2">
+                          Narayan green vegetables
+                        </td>
+                      </tr>
+                      <tr className="">
+                        <td className="border border-black border-l-0 p-2">A/C:</td>
+                        <td className="border-t border-b border-black p-2">319201010042283 </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-black border-l-0 p-2">IFSC Code: </td>
+                        <td className="border-t border-b border-black p-2">UBIN0531928</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-black border-l-0 p-2">UPI number:</td>
+                        <td className="border-t border-b border-black p-2">9167267531</td>
+                      </tr>
+                      <tr>
+                        <td className="border-black border-t border-r p-2">UPI ID:</td>
+                        <td className="border-t border-black p-2">narayanchoudhary83@uboi</td>
+                      </tr>
+                    </table>
+                  </>
+                )}
               </>
-}
-              </>}
+            )}
           </div>
         ))}
       </div>

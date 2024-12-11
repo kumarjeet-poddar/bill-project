@@ -8,8 +8,10 @@ import {
 } from "../controllers/CustController.js";
 
 import {
+  add_quotation,
   add_vegetable,
   edit_vegetable,
+  get_quotations,
   remove_vegetable,
 } from "../controllers/VegController.js";
 
@@ -44,5 +46,9 @@ router.post("/bill", add_bill);
 router.put("/bill/:bill_id", edit_bill);
 router.delete("/bill/:bill_id/:cust_id", remove_bill);
 router.get("/monthly_bill", get_monthly_bill);
+
+// quotation
+router.post("/quotation", add_quotation)
+router.get("/quotation", get_quotations)
 
 export default router;
