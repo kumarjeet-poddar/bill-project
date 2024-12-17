@@ -49,6 +49,6 @@ router.get("/monthly_bill", get_monthly_bill);
 
 // quotation
 router.post("/quotation", add_quotation)
-router.get("/quotation", get_quotations)
+router.get("/quotation/:quotation_type", get_quotations)
 
 export default router;

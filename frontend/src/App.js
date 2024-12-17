@@ -1,13 +1,12 @@
-import Form from "./Components/Form";
-import { Table } from "./Components/CustomersTable";
-import Pdf from "./Components/PDF";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import Customer from "./Components/CustomerBills";
-import Home from "./Components/Home";
-import { Ledger } from "./Components/Ledger";
-import QuotationForm from "./Components/QuotationForm";
-
+import Form from './Components/Form';
+import { Table } from './Components/CustomersTable';
+import Pdf from './Components/PDF';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import Customer from './Components/CustomerBills';
+import Home from './Components/Home';
+import { Ledger } from './Components/Ledger/Ledger';
+import QuotationForm from './Components/Quotation/QuotationForm';
 
 function App() {
   return (
@@ -21,7 +20,7 @@ function App() {
           <Route path="/form/:operation/:custId" element={<Form />} />
           <Route path="/bill/:billId/:custId" element={<Form />} />
 
-          <Route path="/quotation" element={<QuotationForm />} />
+          <Route path="/quotation/:quotation_type" element={<QuotationForm />} />
           <Route path="/pdf" element={<Pdf />} />
           <Route path="/bills/:custId" element={<Customer />} />
         </Routes>
@@ -33,4 +32,3 @@ function App() {
 }
 
 export default App;
-

@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "../Utils/axiosInstance";
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
-import dayjs from "dayjs";
-import CircularProgress from "@mui/material/CircularProgress";
-import BackButton from "./BackButton";
-import LedgerPdf from "./LedgerPdf";
-import { useRef } from "react";
-import generatePDF from "react-to-pdf";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { DatePicker } from "antd";
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../Utils/axiosInstance';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
+import dayjs from 'dayjs';
+import CircularProgress from '@mui/material/CircularProgress';
+import BackButton from '../../Utils/BackButton';
+import LedgerPdf from './LedgerPdf';
+import { useRef } from 'react';
+import generatePDF from 'react-to-pdf';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { DatePicker } from 'antd';
 
 export function Ledger() {
   const { RangePicker } = DatePicker;
@@ -26,7 +26,7 @@ export function Ledger() {
   useEffect(() => {
     async function getCustomers() {
       await axiosInstance
-        .get("/customers")
+        .get('/customers')
         .then((res) => {
           setCustomerList(res?.data?.customers);
         })
@@ -39,7 +39,7 @@ export function Ledger() {
   async function handleMonth(dates, dateString) {
     var start_date, end_date;
     if (dates) {
-      const formattedDates = dates.map((date) => date.format("YYYY/MM/DD"));
+      const formattedDates = dates.map((date) => date.format('YYYY/MM/DD'));
       start_date = formattedDates[0];
       end_date = formattedDates[1];
     }
@@ -47,7 +47,10 @@ export function Ledger() {
     setLoad(true);
     await axiosInstance
       .get(
-        `/monthly_bill?start_date=${start_date.toString()}&end_date=${end_date.toString()}&cust_id=${customer?._id}`)
+        `/monthly_bill?start_date=${start_date.toString()}&end_date=${end_date.toString()}&cust_id=${
+          customer?._id
+        }`
+      )
       .then((res) => {
         setLoad(false);
         setBills(res?.data?.bills);
@@ -132,7 +135,7 @@ export function Ledger() {
                       Bill Number
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Bill Amount{" "}
+                      Bill Amount{' '}
                     </th>
                   </tr>
                 </thead>
@@ -144,16 +147,11 @@ export function Ledger() {
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                       >
                         <td className="px-6 py-4">
-                          {data?.date &&
-                            new Date(data?.date).toLocaleDateString("en-GB")}
+                          {data?.date && new Date(data?.date).toLocaleDateString('en-GB')}
                         </td>
-                        <td className="px-6 py-4">
-                          {data?.customer?.username}
-                        </td>
+                        <td className="px-6 py-4">{data?.customer?.username}</td>
                         <td className="px-6 py-4">{data?.bill_number}</td>
-                        <td className="px-6 py-4">
-                          {data?.total_amount.toFixed(2)}
-                        </td>
+                        <td className="px-6 py-4">{data?.total_amount.toFixed(2)}</td>
                       </tr>
                     );
                   })}
@@ -177,9 +175,9 @@ export function Ledger() {
         <div
           ref={targetRef}
           style={{
-            width: "1152px",
-            margin: "auto",
-            backgroundColor: "#fff",
+            width: '1152px',
+            margin: 'auto',
+            backgroundColor: '#fff',
           }}
         >
           <LedgerPdf customer={customer} bills={bills} total={total} />

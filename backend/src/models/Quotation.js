@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
-const { ObjectId } = mongoose.Schema.Types;
 
 const quotationSchema = new mongoose.Schema(
   {
+    quotation_type:{
+      type:String
+    },
     vegetables: [
       {
         name: String,

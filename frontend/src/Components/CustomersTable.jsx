@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "../Utils/axiosInstance";
-import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
-import { MdDelete } from "react-icons/md";
-import BackButton from "./BackButton";
+import { useEffect, useState } from 'react';
+import axiosInstance from '../Utils/axiosInstance';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
+import { MdDelete } from 'react-icons/md';
+import BackButton from '../Utils/BackButton';
 
 export function Table() {
   const [customer, setCustomer] = useState([]);
@@ -11,7 +11,7 @@ export function Table() {
   useEffect(() => {
     async function getCustomers() {
       await axiosInstance
-        .get("/customers")
+        .get('/customers')
         .then((res) => {
           setCustomer(res?.data?.customers);
         })
@@ -51,10 +51,7 @@ export function Table() {
       <div className="rounded p-2 m-4">
         <div className="flex justify-between items-center mt-2 mb-4">
           <p className="font-bold text-lg">Customer Details</p>
-          <button
-            onClick={handleAdd}
-            className="bg-black text-white rounded w-fit px-4 py-2"
-          >
+          <button onClick={handleAdd} className="bg-black text-white rounded w-fit px-4 py-2">
             Add New Customer
           </button>
         </div>

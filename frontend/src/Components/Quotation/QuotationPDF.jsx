@@ -15,21 +15,9 @@ const paginateData = (data, rowsPerPage) => {
 };
 
 export default function QuotationPdf(props) {
-  const { vegetables, total, name, address, date, phone, quotation_number } = props;
-
-  // const data = [
-  //   { name: 'onion', price_per_kg: 30, quantity: 4, _id: 'item_001' },
-  //   { name: 'potato', price_per_kg: 11, quantity: 5, _id: 'item_002' },
-  //   { name: 'tomato', price_per_kg: 25, quantity: 3, _id: 'item_003' },
-  //   { name: 'carrot', price_per_kg: 40, quantity: 2, _id: 'item_004' },
-  //   { name: 'cabbage', price_per_kg: 18, quantity: 1, _id: 'item_005' },
-  //   { name: 'chard', price_per_kg: 30, quantity: 1, _id: 'item_039' },
-  //   { name: 'sprouts', price_per_kg: 25, quantity: 2, _id: 'item_040' },
-  // ];
+  const { vegetables, total, name, address, date, phone, quotation_number, title } = props;
 
   const pages = paginateData(vegetables, PAGE_ROW_LIMIT);
-
-  // console.log(pages);
 
   return (
     <div className="w-full px-4 pt-2 h-full">
@@ -40,10 +28,10 @@ export default function QuotationPdf(props) {
               <>
                 <tr className="w-full mt-8">
                   <td
-                    className=" border-b border-black px-2 pb-5 font-bold text-lg text-center"
+                    className=" border-b border-black px-2 pb-5 font-bold text-lg text-center uppercase"
                     colSpan={12}
                   >
-                    INDIAN VEGETABLES
+                    {title}
                   </td>
                 </tr>
                 <tr className="w-full">
@@ -133,47 +121,63 @@ export default function QuotationPdf(props) {
               </>
             )}
 
-            {Array.from({ length: PAGE_ROW_LIMIT }).map((_, rowIndex) => {
+            {Array.from({
+              length: Math.max(pageItems.column1.length, pageItems.column2.length),
+            }).map((_, rowIndex) => {
               const firstColumnSerialNumber = rowIndex + 1 + pageIndex * PAGE_ROW_LIMIT * 2;
-              const secondColumnSerialNumber = firstColumnSerialNumber + PAGE_ROW_LIMIT;
+              const secondColumnSerialNumber = pageItems.column2[rowIndex]
+                ? firstColumnSerialNumber + PAGE_ROW_LIMIT
+                : '';
 
               return (
                 <tr key={rowIndex} className="w-full">
                   <td className="border-b border-r border-black px-2 text-center pb-3 pt-1 w-[6%]">
                     {firstColumnSerialNumber}
                   </td>
-                  <td className="border-b border-r border-black px-2 font-semibold capitalize pb-3 pt-1 w-[10%]">
+                  <td className="border-b border-r border-black px-2 font-semibold capitalize pb-3 pt-1 w-[10%] text-center">
                     {pageItems.column1[rowIndex]?.name || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 pb-3 pt-1 w-[8%]">
+                  <td className="border-b border-r border-black px-2 pb-3 pt-1 w-[8%] text-center">
                     {pageItems.column1[rowIndex]?.unit || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 text-right font-semibold pb-3 pt-1 w-[8%]">
+                  <td className="border-b border-r border-black px-2 font-semibold pb-3 text-center pt-1 w-[8%]">
                     {pageItems.column1[rowIndex]?.quantity || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 text-right font-semibold pb-3 pt-1 w-[8%]">
+                  <td className="border-b border-r border-black px-2 font-semibold pb-3 pt-1 w-[8%] text-center">
                     {pageItems.column1[rowIndex]?.price_per_kg || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 text-right font-semibold pb-3 pt-1 w-[10%]">
-                    {pageItems.column1[rowIndex]?.amount || ''}
+                  <td className="border-b border-r border-black px-2 font-semibold pb-3 pt-1 w-[10%] text-center">
+                    {pageItems.column1[rowIndex]?.quantity &&
+                    pageItems.column1[rowIndex]?.price_per_kg
+                      ? (
+                          pageItems.column1[rowIndex]?.quantity *
+                          pageItems.column1[rowIndex]?.price_per_kg
+                        ).toFixed(2)
+                      : ''}
                   </td>
                   <td className="border-b border-r border-black px-2 text-center pb-3 pt-1 w-[6%]">
                     {secondColumnSerialNumber}
                   </td>
-                  <td className="border-b border-r border-black px-2 font-semibold capitalize pb-3 pt-1 w-[10%]">
+                  <td className="border-b border-r border-black px-2 text-center font-semibold capitalize pb-3 pt-1 w-[10%]">
                     {pageItems.column2[rowIndex]?.name || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 pb-3 pt-1 w-[8%]">
+                  <td className="border-b border-r border-black px-2 pb-3 pt-1 text-center w-[8%]">
                     {pageItems.column2[rowIndex]?.unit || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 text-right font-semibold pb-3 pt-1 w-[8%]">
+                  <td className="border-b border-r border-black px-2 text-center font-semibold pb-3 pt-1 w-[8%]">
                     {pageItems.column2[rowIndex]?.quantity || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 text-right font-semibold pb-3 pt-1 w-[8%]">
+                  <td className="border-b border-r border-black px-2 text-center font-semibold pb-3 pt-1 w-[8%]">
                     {pageItems.column2[rowIndex]?.price_per_kg || ''}
                   </td>
-                  <td className="border-b border-black px-2 text-right font-semibold pb-3 pt-1 w-[10%]">
-                    {pageItems.column2[rowIndex]?.amount || ''}
+                  <td className="border-b border-black px-2 text-center font-semibold pb-3 pt-1 w-[10%]">
+                    {pageItems.column2[rowIndex]?.quantity &&
+                    pageItems.column2[rowIndex]?.price_per_kg
+                      ? (
+                          pageItems.column2[rowIndex]?.quantity *
+                          pageItems.column2[rowIndex]?.price_per_kg
+                        ).toFixed(2)
+                      : ''}
                   </td>
                 </tr>
               );
@@ -260,4 +264,4 @@ export default function QuotationPdf(props) {
   );
 }
 
-// testing on large or small number of vegetables
+// testing on large or small number of vegetables 4
