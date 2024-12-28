@@ -10,7 +10,7 @@ function splitIntoPages(items, itemsPerPage) {
 }
 
 export default function Pdf(props) {
-  const { vegetables, total, name, address, bill_number, date, showBank } = props;
+  const { vegetables, total, name, address, bill_number, date, showBank, billCopyType } = props;
 
   const itemsPerPage = 32;
 
@@ -32,8 +32,11 @@ export default function Pdf(props) {
 
             {pageIndex === 0 && (
               <div className="text-center">
-                <h1 className="text-2xl font-bold border-b border-black pb-3">
+                <h1 className="text-2xl font-bold border-b border-black pb-3 relative">
                   NARAYAN GREEN VEGETABLES
+                  <span className="font-semibold text-base absolute top-[10px] right-4">
+                    {billCopyType === 'duplicate' ? '(Customer Copy)' : '(Original Copy)'}
+                  </span>
                 </h1>
                 <h2 className="text-xl font-semibold pb-3 border-b border-black uppercase">
                   INDIAN, Exotic, Imported & Fruits Supplier

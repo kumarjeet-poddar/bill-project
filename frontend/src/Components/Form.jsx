@@ -29,7 +29,8 @@ function Form() {
 
   const [veges, setVeges] = useState([]);
   const [total, setTotal] = useState(0);
-  const targetRef = useRef();
+  const originalRef = useRef();
+  const duplicateRef = useRef();
   const [load, setLoad] = useState(false);
   const [actionId, setActionId] = useState(-1);
   const [isAdd, setIsAdd] = useState(false);
@@ -301,11 +302,11 @@ function Form() {
   }
 
   function handleBill() {
-    generatePDF(targetRef, {
+    generatePDF(duplicateRef, {
       filename: `${name}_${new Date(date).toLocaleDateString('en-GB')}_duplicate_invoice.pdf`,
     });
 
-    generatePDF(targetRef, {
+    generatePDF(originalRef, {
       filename: `${name}_${new Date(date).toLocaleDateString('en-GB')}_original_invoice.pdf`,
     });
 
@@ -657,7 +658,7 @@ function Form() {
 
       <div className="opacity-0">
         <div
-          ref={targetRef}
+          ref={originalRef}
           style={{
             width: '1152px',
             margin: 'auto',
@@ -672,6 +673,29 @@ function Form() {
             date={date}
             bill_number={bill_number}
             showBank={bankRef?.current?.checked}
+            billCopyType="original"
+          />
+        </div>
+      </div>
+
+      <div className="opacity-0">
+        <div
+          ref={duplicateRef}
+          style={{
+            width: '1152px',
+            margin: 'auto',
+            backgroundColor: '#fff',
+          }}
+        >
+          <Pdf
+            vegetables={updVeges}
+            total={total}
+            name={name}
+            address={address}
+            date={date}
+            bill_number={bill_number}
+            showBank={bankRef?.current?.checked}
+            billCopyType="duplicate"
           />
         </div>
       </div>
