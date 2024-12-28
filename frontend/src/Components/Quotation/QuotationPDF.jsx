@@ -196,7 +196,7 @@ export default function QuotationPdf(props) {
                     className="w-1/2 px-4 pb-3 h-8 text-right font-bold border border-x-0 border-black"
                     colspan={6}
                   >
-                    Rs. {total?.toFixed(2)}
+                    Rs. {Math.round(total)}
                   </td>
                 </tr>
                 <tr>

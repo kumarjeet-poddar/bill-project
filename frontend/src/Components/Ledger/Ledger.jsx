@@ -36,13 +36,21 @@ export function Ledger() {
     getCustomers();
   }, []);
 
+  const [date, setDate] = useState([]);
+
   async function handleMonth(dates, dateString) {
     var start_date, end_date;
-    if (dates) {
-      const formattedDates = dates.map((date) => date.format('YYYY/MM/DD'));
-      start_date = formattedDates[0];
-      end_date = formattedDates[1];
+
+    if (dates.length < 2) {
+      console.error('Please ensure there are at least two dates');
+      return;
     }
+
+    setDate(dates.map((date) => date.format('DD/MM/YYYY')));
+
+    const formattedDates = dates.map((date) => date.format('YYYY/MM/DD'));
+    start_date = formattedDates[0];
+    end_date = formattedDates[1];
 
     setLoad(true);
     await axiosInstance
@@ -70,7 +78,7 @@ export function Ledger() {
 
   async function handlePrint() {
     generatePDF(targetRef, {
-      filename: `${customer.username}_invoice.pdf`,
+      filename: `${customer.username}_${date[0]}-${date[1]}_invoice.pdf`,
     });
   }
 
@@ -81,7 +89,7 @@ export function Ledger() {
         <div className="flex sm:flex-row flex-col justify-between w-full mb-3">
           <p className="font-bold text-lg">Monthly Ledger</p>
           <p className="text-lg">
-            Total Budget: <b>Rs. {total.toFixed(2)}</b>
+            Total Budget: <b>Rs. {Math.round(total)}</b>
           </p>
         </div>
 
@@ -103,16 +111,6 @@ export function Ledger() {
         </div>
         <div className="flex flex-col gap-y-2 my-4 mr-2 justify-start items-start">
           <p>Select Month</p>
-
-          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              className="bg-slate-200 rounded-lg"
-              value={month}
-              // views={["month", "year"]}
-              maxDate={dayjs().endOf("year")}
-              onChange={(value) => handleMonth(value)}
-            />
-          </LocalizationProvider> */}
 
           <RangePicker onChange={handleMonth} />
         </div>
@@ -151,7 +149,7 @@ export function Ledger() {
                         </td>
                         <td className="px-6 py-4">{data?.customer?.username}</td>
                         <td className="px-6 py-4">{data?.bill_number}</td>
-                        <td className="px-6 py-4">{data?.total_amount.toFixed(2)}</td>
+                        <td className="px-6 py-4">Rs. {Math.round(data?.total_amount)}</td>
                       </tr>
                     );
                   })}
@@ -180,7 +178,7 @@ export function Ledger() {
             backgroundColor: '#fff',
           }}
         >
-          <LedgerPdf customer={customer} bills={bills} total={total} />
+          <LedgerPdf customer={customer} bills={bills} total={total} dates={date} />
         </div>
       </div>
     </>

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import converter from 'number-to-words';
 
 export default function LedgerPdf(props) {
-  const { customer, bills, total } = props;
+  const { customer, bills, total, dates } = props;
 
   return (
     <div className="w-full px-4 pt-2 h-full">
@@ -45,6 +46,9 @@ export default function LedgerPdf(props) {
           </tr>
           <tr>
             <td className="w-1/2 border-r border-black px-2 pb-2 h-8"></td>
+            <td className="w-1/2 px-2 pb-2">
+              <b>Date:</b> {dates[0]} - {dates[1]}
+            </td>
           </tr>
         </table>
 
@@ -81,7 +85,7 @@ export default function LedgerPdf(props) {
                     Indian, Exotic, Imported & Fruits Supplier
                   </td>
                   <td className="border-b border-black px-2 pb-3 pt-1 text-center w-[15%]">
-                    {item.total_amount.toFixed(2)}
+                    {Math.round(item.total_amount)}
                   </td>
                 </tr>
               ))}
@@ -89,8 +93,8 @@ export default function LedgerPdf(props) {
         </table>
 
         <div className="flex justify-between w-full py-3 px-4 font-bold border-b border-black">
-          <p>Total Amount:</p>
-          <p>Rs. {total?.toFixed(2)}</p>
+          <p className="capitalize">Total Amount: {converter.toWords(Math.round(total))}</p>
+          <p>Rs. {Math.round(total)}</p>
         </div>
 
         <p className="px-4 font-medium py-2 border-t w-full border-black text-gray-700">

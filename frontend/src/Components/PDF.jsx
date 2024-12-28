@@ -161,7 +161,7 @@ export default function Pdf(props) {
               <>
                 <div className="flex justify-between w-full py-3 px-4 font-bold mb-4">
                   <p>Total Amount:</p>
-                  <p>Rs. {total.toFixed(2)}</p>
+                  <p>Rs. {Math.round(total)}</p>
                 </div>
 
                 {showBank && (
