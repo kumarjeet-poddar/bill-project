@@ -10,7 +10,8 @@ async function get_all_bill(req, res) {
 
     const bills = await Bill.find({ customer: cust_id })
       .sort({ date: -1 })
-      .populate("customer", "username");
+      .populate("customer", "username")
+      .select('-vegetables');;
 
     return res.status(200).json({
       success: true,
@@ -173,7 +174,12 @@ async function get_monthly_bill(req, res) {
     const bills = await Bill.find({
       customer: cust_id,
       date: { $gte: startOfDay, $lte: endOfDay },
-    }).populate("customer");
+    })
+      .populate({
+        path: "customer",
+        select: "-vegetables -bills",
+      })
+      .select('-vegetables');
 
     if (!bills.length) {
       return res.status(400).json({

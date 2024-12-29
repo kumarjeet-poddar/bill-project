@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { MdDelete } from 'react-icons/md';
 import BackButton from '../Utils/BackButton';
+import DeleteDialog from '../Utils/DeleteDialog';
 
 export function Table() {
   const [customer, setCustomer] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState('');
 
   useEffect(() => {
     async function getCustomers() {
@@ -35,12 +38,13 @@ export function Table() {
     navigate(`/form`);
   }
 
-  async function handleDelete(id) {
+  async function handleDelete() {
     await axiosInstance
-      .delete(`/customer/${id}`)
+      .delete(`/customer/${deleteId}`)
       .then((res) => {
+        setOpen(false);
         toast.success(res.data.msg);
-        setCustomer((prev) => prev.filter((p) => p._id != id));
+        setCustomer((prev) => prev.filter((p) => p._id != deleteId));
       })
       .catch((err) => {});
   }
@@ -112,7 +116,8 @@ export function Table() {
                       <td>
                         <button
                           onClick={() => {
-                            handleDelete(data._id);
+                            setDeleteId(data._id);
+                            setOpen(true);
                           }}
                         >
                           <MdDelete size={20} />
@@ -125,6 +130,8 @@ export function Table() {
           </table>
         </div>
       </div>
+
+      <DeleteDialog title="Customer" open={open} setOpen={setOpen} onClick={handleDelete} />
     </>
   );
 }

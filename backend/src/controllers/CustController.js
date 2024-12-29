@@ -4,7 +4,7 @@ import Bill from "../models/Bill.js"
 
 async function get_all_customer(req, res) {
   try {
-    const customers = await Customer.find({});
+    const customers = await Customer.find({}).select('-vegetables -bills');;
 
     return res.status(200).json({
       success: true,

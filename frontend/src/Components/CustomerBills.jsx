@@ -3,10 +3,12 @@ import axiosInstance from '../Utils/axiosInstance';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import BackButton from '../Utils/BackButton';
+import DeleteDialog from '../Utils/DeleteDialog';
 
 export default function Customer() {
   const [bills, setBills] = useState({});
-
+  const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState('');
   const { custId } = useParams();
   const navigate = useNavigate();
 
@@ -23,12 +25,13 @@ export default function Customer() {
     getBills();
   }, []);
 
-  async function handleDelete(id) {
+  async function handleDelete() {
     await axiosInstance
-      .delete(`/bill/${id}/${custId}`)
+      .delete(`/bill/${deleteId}/${custId}`)
       .then((res) => {
+        setOpen(false);
         toast.success(res.data.msg);
-        setBills((prev) => prev.filter((p) => p._id !== id));
+        setBills((prev) => prev.filter((p) => p._id !== deleteId));
       })
       .catch((err) => {});
   }
@@ -99,7 +102,8 @@ export default function Customer() {
                         <button
                           className="text-sm font-semibold hover:text-red-500 transition-all overflow-hidden"
                           onClick={() => {
-                            handleDelete(b?._id);
+                            setDeleteId(b?._id);
+                            setOpen(true);
                           }}
                         >
                           Remove
@@ -115,6 +119,8 @@ export default function Customer() {
           )}
         </div>
       </div>
+
+      <DeleteDialog title="Bill" open={open} setOpen={setOpen} onClick={handleDelete} />
     </>
   );
 }
