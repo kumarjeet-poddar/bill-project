@@ -41,10 +41,7 @@ export function Ledger() {
   async function handleMonth(dates, dateString) {
     var start_date, end_date;
 
-    if (dates.length < 2) {
-      console.error('Please ensure there are at least two dates');
-      return;
-    }
+    if (dates.length < 2) return;
 
     setDate(dates.map((date) => date.format('DD/MM/YYYY')));
 

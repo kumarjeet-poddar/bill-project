@@ -10,6 +10,7 @@ const quotationSchema = new mongoose.Schema(
         name: String,
         price_per_kg: Number,
         quantity: Number,
+        unit: String,
       },
     ],
   }

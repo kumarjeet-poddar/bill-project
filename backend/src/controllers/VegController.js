@@ -4,7 +4,7 @@ import Vegetable from "../models/Vegetable.js";
 
 async function add_vegetable(req, res) {
   try {
-    const { cust_id, name, price, quantity } = req.body;
+    const { cust_id, name, price, quantity, unit } = req.body;
 
     const is_exist = await Vegetable.findOne({
       name: name.toLowerCase(),
@@ -24,6 +24,7 @@ async function add_vegetable(req, res) {
       price_per_kg: price,
       quantity: quantity,
       cust_id: cust_id,
+      unit
     });
 
     await Customer.findByIdAndUpdate(cust_id, {
@@ -45,7 +46,7 @@ async function add_vegetable(req, res) {
 
 async function edit_vegetable(req, res) {
   try {
-    const { veg_id, price, quantity } = req.body;
+    const { veg_id, price, quantity, unit } = req.body;
 
     const updatedVeg = await Vegetable.findByIdAndUpdate(
       veg_id,
@@ -53,6 +54,7 @@ async function edit_vegetable(req, res) {
         $set: {
           ...(price && { price_per_kg: price }),
           ...(quantity && { quantity: quantity }),
+          ...(unit && { unit: unit }),
         },
       },
       { new: true }
@@ -120,6 +122,7 @@ async function add_quotation(req, res) {
         name: veg.name,
         price_per_kg: veg.price_per_kg,
         quantity: veg.quantity,
+        unit: veg.unit,
       }));
       await quotation.save();
     } else {
@@ -129,6 +132,7 @@ async function add_quotation(req, res) {
           name: veg.name,
           price_per_kg: veg.price_per_kg,
           quantity: veg.quantity,
+          unit: veg.unit,
         })),
       });
     }

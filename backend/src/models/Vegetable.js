@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const { ObjectId, Decimal128 } = mongoose.Schema.Types;
+const { ObjectId} = mongoose.Schema.Types;
 
 const vegSchema = new mongoose.Schema({
   cust_id: {
@@ -19,9 +19,10 @@ const vegSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  unit: {
+    type: String,
+  },
 });
-
-// vegSchema.index({ cust_id: 1, name: 1 }, { unique: true });
 
 const Vegetable = mongoose.model("vegetable", vegSchema);
 

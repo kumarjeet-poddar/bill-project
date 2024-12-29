@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import converter from 'number-to-words';
+import { ToWords } from 'to-words';
 
 export default function LedgerPdf(props) {
   const { customer, bills, total, dates } = props;
 
+  const toWords = new ToWords();
   return (
     <div className="w-full px-4 pt-2 h-full">
       <div className="mx-auto m-4 border border-b-0 border-black">
@@ -93,7 +95,9 @@ export default function LedgerPdf(props) {
         </table>
 
         <div className="flex justify-between w-full py-3 px-4 font-bold border-b border-black">
-          <p className="capitalize">Total Amount: {converter.toWords(Math.round(total))}</p>
+          <p className="capitalize">
+            Total Amount: {toWords.convert(Math.round(total), { currency: true })}
+          </p>
           <p>Rs. {Math.round(total)}</p>
         </div>
 

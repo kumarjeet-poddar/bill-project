@@ -82,14 +82,17 @@ export default function Pdf(props) {
                       Sr. No
                     </th>
                     <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center text-lg">
-                      Particulars
+                      Description
+                    </th>
+                    <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center text-lg">
+                      Unit
                     </th>
                     <th className="border border-r-0 border-black px-2 text-center text-lg">
-                      Total (Kg)
+                      Quantity
                     </th>
-                    <th className="border border-black px-2 text-center text-lg">Per (Kg)</th>
+                    <th className="border border-black px-2 text-center text-lg">Price/unit</th>
                     <th className="border-t border-b border-black px-2 text-center text-lg">
-                      Amount (In Rs.)
+                      Amount
                     </th>
                   </tr>
                 </thead>
@@ -97,19 +100,22 @@ export default function Pdf(props) {
               <tbody>
                 {pageItems.map((item, index) => (
                   <tr key={index + 1} className="pb-2 w-full">
-                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[15%]">
+                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[10%]">
                       {index + 1 + pageIndex * itemsPerPage}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-2/5 capitalize font-bold">
                       {item.name} / {vegetableList[item?.name?.toLowerCase()]}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%] font-bold">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
+                      {item?.unit}
+                    </td>
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
                       {item.quantity}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[15%] font-bold">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
                       {item.price_per_kg}
                     </td>
-                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[15%] font-bold">
+                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[20%] font-bold">
                       {(item.quantity * item.price_per_kg).toFixed(2)}
                     </td>
                   </tr>
@@ -121,12 +127,6 @@ export default function Pdf(props) {
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-r-0 border-black px-2 py-4"></td>
-                    </tr>
-                    <tr className="py-4">
-                      <td className="border border-black px-2 py-4 border-l-0"></td>
-                      <td className="border border-black px-2 py-4"></td>
-                      <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
@@ -135,17 +135,28 @@ export default function Pdf(props) {
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
                       <td className="border border-r-0 border-black px-2 py-4"></td>
+                    </tr>
+                    <tr className="py-4">
+                      <td className="border border-black px-2 py-4 border-l-0"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-r-0 border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
                     </tr>
                     <tr className="py-4">
                       <td className="border border-black px-2 py-4 border-l-0"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
+                      <td className="border border-black px-2 py-4"></td>
                       <td className="border border-r-0 border-black px-2 py-4"></td>
                     </tr>
                     <tr className="py-4">
                       <td className="border border-black px-2 py-4 border-l-0"></td>
+                      <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>
                       <td className="border border-black px-2 py-4"></td>

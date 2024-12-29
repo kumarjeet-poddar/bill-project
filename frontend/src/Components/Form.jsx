@@ -198,7 +198,8 @@ function Form() {
         cust_id: custId,
         name: data.name,
         price: parseFloat(data.price_per_kg),
-        quantity: parseInt(data.quantity),
+        quantity: parseFloat(data.quantity),
+        unit: data.unit,
       };
 
       await axiosInstance
@@ -246,7 +247,8 @@ function Form() {
         veg_id: data._id,
         name: data.name,
         price: parseFloat(data.price_per_kg),
-        quantity: parseInt(data.quantity),
+        quantity: parseFloat(data.quantity),
+        unit: data.unit,
       };
 
       await axiosInstance
@@ -279,18 +281,11 @@ function Form() {
 
     await axiosInstance
       .put(`bill/${billId}`, d)
-      .then(async (res) => {
+      .then((res) => {
         if (str === 'save_bill') {
           setLoad(false);
           toast.success('Details updated');
-
-          await sortArray(veges);
-
-          // generatePDF(targetRef, {
-          //   filename: `${data.name}_${new Date(data.date).toLocaleDateString(
-          //     "en-GB"
-          //   )}_invoice.pdf`,
-          // });
+          sortArray(veges);
         }
       })
       .catch((err) => {
@@ -353,18 +348,11 @@ function Form() {
 
         await axiosInstance
           .post(`bill`, bill_data)
-          .then(async (res) => {
+          .then((res) => {
             setLoad(false);
             if (res.status === 200) {
               toast.success('Details updated');
-
-              await sortArray(veges);
-
-              // generatePDF(targetRef, {
-              //   filename: `${data.name}_${new Date(
-              //     data.date
-              //   ).toLocaleDateString("en-GB")}_invoice.pdf`,
-              // });
+              sortArray(veges);
             }
           })
           .catch((err) => {
@@ -407,8 +395,8 @@ function Form() {
     <>
       <BackButton />
       <div className="flex w-full flex-col justify-center items-center">
-        <div className="bg-slate-100 w-11/12 sm:max-w-lg px-4 py-8 my-8 rounded-xl flex flex-col">
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="bg-slate-100 w-11/12 sm:max-w-2xl px-4 py-8 my-8 rounded-xl">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
             <p className="text-lg font-bold text-center mb-4">Customer Details</p>
             <div className="mb-4">
               <label className="text-gray-800">Customer Name</label>
@@ -429,6 +417,7 @@ function Form() {
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Phone Number"
                 {...register('phone', { required: true })}
+                readOnly={custId ? true : false}
               />
             </div>
 
@@ -439,6 +428,7 @@ function Form() {
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Enter Address"
                 {...register('address', { required: true })}
+                readOnly={custId ? true : false}
               />
               {errors.username && <span className="text-red-600">Please, enter address</span>}
             </div>
@@ -533,12 +523,15 @@ function Form() {
                             <div className="w-full flex flex-col">
                               <label className="text-[10px]">KGs</label>
                               <input
-                                type="number"
+                                type="text"
                                 placeholder="KGs"
                                 value={data?.quantity}
                                 required
                                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
-                                onChange={(e) => handleOnChange(data._id, 'quantity', e)}
+                                onChange={(e) => {
+                                  if (isNaN(e.target.value)) return;
+                                  handleOnChange(data._id, 'quantity', e);
+                                }}
                               />
                             </div>
                             <div className="w-full flex flex-col">
@@ -548,8 +541,36 @@ function Form() {
                                 placeholder="price per KG"
                                 value={data?.price_per_kg}
                                 required
-                                onChange={(e) => handleOnChange(data._id, 'price_per_kg', e)}
+                                onChange={(e) => {
+                                  if (isNaN(e.target.value)) return;
+                                  handleOnChange(data._id, 'price_per_kg', e);
+                                }}
                                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                              />
+                            </div>
+                            <div className="w-full flex flex-col">
+                              <label className="text-[10px]">Unit</label>
+                              <input
+                                type="text"
+                                placeholder="kg"
+                                value={data?.unit}
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                                onChange={(e) => {
+                                  handleOnChange(data._id, 'unit', e);
+                                }}
+                              />
+                            </div>
+                            <div className="w-full flex flex-col">
+                              <label className="text-[10px]">Total</label>
+                              <input
+                                type="number"
+                                placeholder="00"
+                                value={data?.quantity * data?.price_per_kg}
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                                onChange={(e) => {
+                                  if (isNaN(e.target.value)) return;
+                                  handleOnChange(data._id, 'total', e);
+                                }}
                               />
                             </div>
                             {operation === 'edit' && (

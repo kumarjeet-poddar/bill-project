@@ -68,6 +68,7 @@ async function add_bill(req, res) {
         name: veg.name,
         price_per_kg: veg.price_per_kg,
         quantity: veg.quantity,
+        unit: veg.unit
       })),
       total_amount: total,
       date,
@@ -106,6 +107,7 @@ async function edit_bill(req, res) {
       name: veg.name,
       price_per_kg: veg.price_per_kg,
       quantity: veg.quantity,
+      unit: veg.unit
     }));
 
     bill.total_amount = total_amount;

@@ -154,7 +154,7 @@ function QuotationForm() {
     <>
       <BackButton />
       <div className="flex w-full flex-col justify-center items-center">
-        <div className="bg-slate-100 w-11/12 sm:max-w-lg px-4 py-8 my-8 rounded-xl flex flex-col">
+        <div className="bg-slate-100 w-11/12 sm:max-w-2xl px-4 py-8 my-8 rounded-xl flex flex-col">
           <form onSubmit={handleSubmit(onSubmit)}>
             <p className="text-lg font-bold text-center mb-4">Customer Details</p>
             <div className="mb-4">
@@ -291,6 +291,31 @@ function QuotationForm() {
                               required
                               onChange={(e) => handleOnChange(data._id, 'price_per_kg', e)}
                               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                            />
+                          </div>
+                          <div className="w-full flex flex-col">
+                            <label className="text-[10px]">Unit</label>
+                            <input
+                              type="text"
+                              placeholder="kg"
+                              value={data?.unit}
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                              onChange={(e) => {
+                                handleOnChange(data._id, 'unit', e);
+                              }}
+                            />
+                          </div>
+                          <div className="w-full flex flex-col">
+                            <label className="text-[10px]">Total</label>
+                            <input
+                              type="number"
+                              placeholder="00"
+                              value={data?.quantity * data?.price_per_kg}
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                              onChange={(e) => {
+                                if (isNaN(e.target.value)) return;
+                                handleOnChange(data._id, 'total', e);
+                              }}
                             />
                           </div>
                           {index + 1 === veges.length && !veges.some((veg) => veg._id === 0) && (
