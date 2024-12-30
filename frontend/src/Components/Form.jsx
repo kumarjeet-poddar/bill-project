@@ -72,7 +72,7 @@ function Form() {
           setValue('address', res?.data?.customer?.address);
 
           if (operation === 'generate_bill') {
-            const currentDate = new Date().toISOString().split('T')[0];
+            const currentDate = new Date().toLocaleDateString('en-CA');
             setValue('date', currentDate);
           }
         })
@@ -89,7 +89,7 @@ function Form() {
           setValue('phone', res?.data?.bill?.customer?.phone);
           setValue('address', res?.data?.bill?.customer?.address);
           const formattedDate = res?.data?.bill?.date
-            ? new Date(res.data.bill.date).toISOString().split('T')[0]
+            ? new Date(res.data.bill.date).toLocaleDateString('en-CA')
             : '';
           setValue('date', formattedDate);
           setValue('bill_number', res?.data?.bill?.bill_number);
