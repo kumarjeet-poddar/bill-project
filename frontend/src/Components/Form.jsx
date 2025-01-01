@@ -157,7 +157,6 @@ function Form() {
     setActionId(0);
     setVeges((prev) => [...prev, { _id: 0 }]);
   }
-
   function handleOnChange(idx, field, e) {
     var val = e.target.value;
 
@@ -391,6 +390,7 @@ function Form() {
     }
   }
 
+  console.log(orgVeg);
   return (
     <>
       <BackButton />
@@ -480,6 +480,12 @@ function Form() {
                                 showIcon={false}
                                 items={orgVeg}
                                 placeholder={data.name}
+                                fuseOptions={{
+                                  keys: ['name'], // Search by the "name" property
+                                  threshold: 0.1, // Lower threshold for stricter matches
+                                  distance: 0, // Ensure exact matches
+                                  shouldSort: true, // Sort results by relevance
+                                }}
                                 value={data.name}
                                 onFocus={() => setCurrentDropdownId(data._id)}
                                 onBlur={() => setCurrentDropdownId(null)}
@@ -497,11 +503,11 @@ function Form() {
                                   handleOnChange(data._id, 'name', {
                                     target: { value: item.name },
                                   });
-                                  handleOnChange(data._id, 'quantity', {
-                                    target: { value: '' },
-                                  });
                                   handleOnChange(data._id, 'price_per_kg', {
                                     target: { value: item.price_per_kg },
+                                  });
+                                  handleOnChange(data._id, 'unit', {
+                                    target: { value: item.unit },
                                   });
                                 }}
                                 styling={{

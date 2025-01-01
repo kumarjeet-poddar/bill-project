@@ -84,11 +84,11 @@ export default function Pdf(props) {
                     <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center text-lg">
                       Description
                     </th>
-                    <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center text-lg">
-                      Unit
-                    </th>
                     <th className="border border-r-0 border-black px-2 text-center text-lg">
                       Quantity
+                    </th>
+                    <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center text-lg">
+                      Unit
                     </th>
                     <th className="border border-black px-2 text-center text-lg">Price/unit</th>
                     <th className="border-t border-b border-black px-2 text-center text-lg">
@@ -107,10 +107,10 @@ export default function Pdf(props) {
                       {item.name} / {vegetableList[item?.name?.toLowerCase()]}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
-                      {item?.unit}
+                      {item.quantity}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
-                      {item.quantity}
+                      {item?.unit}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
                       {item.price_per_kg}

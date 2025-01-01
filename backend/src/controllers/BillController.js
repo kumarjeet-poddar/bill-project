@@ -30,7 +30,10 @@ async function get_bill(req, res) {
   try {
     const { bill_id, cust_id } = req.params;
 
-    const bill = await Bill.findById(bill_id).populate("customer");
+    const bill = await Bill.findById(bill_id).populate({
+      path: "customer",
+      select: "-vegetables -bills",
+    })
 
     const all_vegetables = await Vegetable.find({ cust_id });
 

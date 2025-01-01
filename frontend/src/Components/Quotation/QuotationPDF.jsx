@@ -94,10 +94,10 @@ export default function QuotationPdf(props) {
                   <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center">
                     Item
                   </th>
+                  <th className="border border-black px-2 text-center pt-2 pb-3 ">Quanity</th>
                   <th className="border border-r-0 border-black px-2 text-center pt-2 pb-3 ">
                     Unit
                   </th>
-                  <th className="border border-black px-2 text-center pt-2 pb-3 ">Quanity</th>
                   <th className="border border-x-0 border-black px-2 text-center pt-2 pb-3 ">
                     Price
                   </th>
@@ -109,10 +109,10 @@ export default function QuotationPdf(props) {
                   <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center">
                     Item
                   </th>
+                  <th className="border border-black px-2 text-center pt-2 pb-3 ">Quanity</th>
                   <th className="border border-r-0 border-black px-2 text-center pt-2 pb-3 ">
                     Unit
                   </th>
-                  <th className="border border-black px-2 text-center pt-2 pb-3 ">Quanity</th>
                   <th className="border-y border-black px-2 text-center pt-2 pb-3 ">Price</th>
                   <th className="border border-r-0 border-black px-2 text-center pt-2 pb-3 ">
                     Amount
@@ -137,11 +137,11 @@ export default function QuotationPdf(props) {
                   <td className="border-b border-r border-black px-2 font-semibold capitalize pb-3 pt-1 w-[10%] text-center">
                     {pageItems.column1[rowIndex]?.name || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 pb-3 pt-1 w-[8%] text-center">
-                    {pageItems.column1[rowIndex]?.unit || ''}
-                  </td>
                   <td className="border-b border-r border-black px-2 font-semibold pb-3 text-center pt-1 w-[8%]">
                     {pageItems.column1[rowIndex]?.quantity || ''}
+                  </td>
+                  <td className="border-b border-r border-black px-2 pb-3 pt-1 w-[8%] text-center">
+                    {pageItems.column1[rowIndex]?.unit || ''}
                   </td>
                   <td className="border-b border-r border-black px-2 font-semibold pb-3 pt-1 w-[8%] text-center">
                     {pageItems.column1[rowIndex]?.price_per_kg || ''}
@@ -161,11 +161,11 @@ export default function QuotationPdf(props) {
                   <td className="border-b border-r border-black px-2 text-center font-semibold capitalize pb-3 pt-1 w-[10%]">
                     {pageItems.column2[rowIndex]?.name || ''}
                   </td>
-                  <td className="border-b border-r border-black px-2 pb-3 pt-1 text-center w-[8%]">
-                    {pageItems.column2[rowIndex]?.unit || ''}
-                  </td>
                   <td className="border-b border-r border-black px-2 text-center font-semibold pb-3 pt-1 w-[8%]">
                     {pageItems.column2[rowIndex]?.quantity || ''}
+                  </td>
+                  <td className="border-b border-r border-black px-2 pb-3 pt-1 text-center w-[8%]">
+                    {pageItems.column2[rowIndex]?.unit || ''}
                   </td>
                   <td className="border-b border-r border-black px-2 text-center font-semibold pb-3 pt-1 w-[8%]">
                     {pageItems.column2[rowIndex]?.price_per_kg || ''}
