@@ -274,7 +274,8 @@ function QuotationForm() {
                           <div className="w-full flex flex-col">
                             <label className="text-[10px]">KGs</label>
                             <input
-                              type="number"
+                              inputMode="decimal"
+                              type="tel"
                               placeholder="KGs"
                               value={data?.quantity}
                               required
@@ -285,7 +286,8 @@ function QuotationForm() {
                           <div className="w-full flex flex-col">
                             <label className="pointer-events-none text-[10px]">Price</label>
                             <input
-                              type="text"
+                              inputMode="decimal"
+                              type="tel"
                               placeholder="price per KG"
                               value={data?.price_per_kg}
                               required
@@ -308,7 +310,8 @@ function QuotationForm() {
                           <div className="w-full flex flex-col">
                             <label className="text-[10px]">Total</label>
                             <input
-                              type="number"
+                              inputMode="decimal"
+                              type="tel"
                               placeholder="00"
                               value={data?.quantity * data?.price_per_kg}
                               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
