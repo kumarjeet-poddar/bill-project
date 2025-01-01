@@ -528,7 +528,7 @@ function Form() {
                               <label className="text-[10px]">KGs</label>
                               <input
                                 inputMode="decimal"
-                                type="text"
+                                type="tel"
                                 placeholder="KGs"
                                 value={data?.quantity}
                                 required
@@ -542,7 +542,7 @@ function Form() {
                             <div className="w-full flex flex-col">
                               <label className="pointer-events-none text-[10px]">Price</label>
                               <input
-                                inputMode="numeric"
+                                inputMode="decimal"
                                 type="text"
                                 placeholder="price per KG"
                                 value={data?.price_per_kg}
@@ -569,6 +569,7 @@ function Form() {
                             <div className="w-full flex flex-col">
                               <label className="text-[10px]">Total</label>
                               <input
+                                inputMode="decimal"
                                 type="number"
                                 placeholder="00"
                                 value={data?.quantity * data?.price_per_kg}
