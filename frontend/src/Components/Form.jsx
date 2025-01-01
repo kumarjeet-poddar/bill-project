@@ -389,8 +389,6 @@ function Form() {
         });
     }
   }
-
-  console.log(orgVeg);
   return (
     <>
       <BackButton />
@@ -529,6 +527,7 @@ function Form() {
                             <div className="w-full flex flex-col">
                               <label className="text-[10px]">KGs</label>
                               <input
+                                inputMode="decimal"
                                 type="text"
                                 placeholder="KGs"
                                 value={data?.quantity}
@@ -543,6 +542,7 @@ function Form() {
                             <div className="w-full flex flex-col">
                               <label className="pointer-events-none text-[10px]">Price</label>
                               <input
+                                inputMode="numeric"
                                 type="text"
                                 placeholder="price per KG"
                                 value={data?.price_per_kg}
