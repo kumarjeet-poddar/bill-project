@@ -45,6 +45,7 @@ function Form() {
   const [updVeges, setUpdVeges] = useState([]);
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState('');
+  const [focusId, setFocusId] = useState('');
 
   function sortArray(vegetables) {
     vegetables.sort((a, b) => {
@@ -384,6 +385,7 @@ function Form() {
         });
     }
   }
+
   return (
     <>
       <BackButton />
@@ -467,8 +469,11 @@ function Form() {
                       return (
                         <div key={index} className="flex flex-col gap-y-1">
                           <div className="flex items-center w-full gap-x-2 my-2" key={data._id}>
-                            <div className="w-full flex flex-col">
-                              <label className="pointer-events-none text-[10px]">Vegetable</label>
+                            <label
+                              className="w-full flex flex-col"
+                              onBlur={() => setCurrentDropdownId(null)}
+                            >
+                              <div className="pointer-events-none text-[10px] ">Vegetable</div>
                               <ReactSearchAutocomplete
                                 showIcon={false}
                                 items={orgVeg}
@@ -481,7 +486,6 @@ function Form() {
                                 }}
                                 value={data.name}
                                 onFocus={() => setCurrentDropdownId(data._id)}
-                                onBlur={() => setCurrentDropdownId(null)}
                                 onSearch={(inputValue) => {
                                   const foundItem = veges.find(
                                     (veg) => veg?.name?.toLowerCase() === inputValue?.toLowerCase()
@@ -504,21 +508,26 @@ function Form() {
                                   });
                                 }}
                                 styling={{
-                                  height: '40px',
+                                  height: '41px',
                                   borderRadius: '8px',
-                                  backgroundColor: 'white',
+                                  backgroundColor:
+                                    currentDropdownId === data._id ? 'white' : '#f3f4f6',
+                                  border:
+                                    currentDropdownId === data._id
+                                      ? '1px solid #06b6d4'
+                                      : '1px solid #d1d5db',
+                                  cursor: currentDropdownId === data._id ? 'text' : 'not-allowed',
                                   boxShadow: 'none',
                                   color: 'black',
                                   fontSize: '16px',
                                   iconColor: 'gray',
                                   clearIconMargin: '0 4px 0 0',
-                                  borderColor: '#d1d5db',
                                   placeholderColor: 'black',
                                   zIndex: currentDropdownId === data._id ? 50 : 10,
                                   position: 'relative',
                                 }}
                               />
-                            </div>
+                            </label>
                             <div className="w-full flex flex-col">
                               <label className="text-[10px]">KGs</label>
                               <input
@@ -527,11 +536,13 @@ function Form() {
                                 placeholder="KGs"
                                 value={data?.quantity}
                                 required
-                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                                 onChange={(e) => {
                                   if (isNaN(e.target.value)) return;
                                   handleOnChange(data._id, 'quantity', e);
                                 }}
+                                // onFocus={() => setFocusId(data._id)}
+                                // readOnly={focusId === data._id ? false : true}
                               />
                             </div>
                             <div className="w-full flex flex-col">
@@ -546,7 +557,7 @@ function Form() {
                                   if (isNaN(e.target.value)) return;
                                   handleOnChange(data._id, 'price_per_kg', e);
                                 }}
-                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                               />
                             </div>
                             <div className="w-full flex flex-col">
@@ -555,7 +566,7 @@ function Form() {
                                 type="text"
                                 placeholder="kg"
                                 value={data?.unit}
-                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                                 onChange={(e) => {
                                   handleOnChange(data._id, 'unit', e);
                                 }}
@@ -567,8 +578,12 @@ function Form() {
                                 inputMode="decimal"
                                 type="tel"
                                 placeholder="00"
-                                value={data?.quantity * data?.price_per_kg}
-                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300"
+                                value={
+                                  isNaN(data?.quantity * data?.price_per_kg)
+                                    ? ''
+                                    : data?.quantity * data?.price_per_kg
+                                }
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                                 onChange={(e) => {
                                   if (isNaN(e.target.value)) return;
                                   handleOnChange(data._id, 'total', e);
