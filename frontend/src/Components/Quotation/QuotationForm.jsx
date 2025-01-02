@@ -9,11 +9,10 @@ import Pdf from '../PDF';
 import axiosInstance from '../../Utils/axiosInstance';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { RiPencilFill } from 'react-icons/ri';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import BackButton from '../../Utils/BackButton';
-import mappedVegetables from '../../Utils/orderedVegetables';
 import QuotationPdf from './QuotationPDF';
+import DeleteDialog from '../../Utils/DeleteDialog';
 
 function QuotationForm() {
   const {
@@ -25,6 +24,7 @@ function QuotationForm() {
   } = useForm();
 
   const [veges, setVeges] = useState([]);
+  const [orgVeges, setOrgVeges] = useState([]);
   const [total, setTotal] = useState(0);
   const targetRef = useRef();
   const [load, setLoad] = useState(false);
@@ -35,7 +35,8 @@ function QuotationForm() {
   const phone = watch('phone');
   const quotation_number = watch('quotation_number');
   const [currentDropdownId, setCurrentDropdownId] = useState(null);
-
+  const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState('');
   const { quotation_type } = useParams();
 
   useEffect(() => {
@@ -43,6 +44,7 @@ function QuotationForm() {
       await axiosInstance
         .get(`/quotation/${quotation_type}`)
         .then((res) => {
+          setOrgVeges(res?.data?.quotation?.vegetables ? res?.data?.quotation?.vegetables : []);
           setVeges(res?.data?.quotation?.vegetables ? res?.data?.quotation?.vegetables : []);
           const now = new Date();
           const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -100,6 +102,12 @@ function QuotationForm() {
   function handleRemove(id) {
     setVeges((prev) => prev.filter((veg) => veg._id !== id));
     setActionId(-1);
+  }
+
+  function handleModalDelete() {
+    setVeges((prev) => prev.filter((veg) => veg._id !== deleteId));
+    setActionId(-1);
+    setOpen(false);
   }
 
   async function handleSave(id) {
@@ -229,9 +237,15 @@ function QuotationForm() {
                             <label className="pointer-events-none text-[10px]">Vegetable</label>
                             <ReactSearchAutocomplete
                               showIcon={false}
-                              items={veges}
+                              items={orgVeges}
                               placeholder={data.name}
                               value={data.name}
+                              fuseOptions={{
+                                keys: ['name'],
+                                threshold: 0.1,
+                                distance: 0,
+                                shouldSort: true,
+                              }}
                               onFocus={() => setCurrentDropdownId(data._id)}
                               onBlur={() => setCurrentDropdownId(null)}
                               onSearch={(inputValue) => {
@@ -248,8 +262,8 @@ function QuotationForm() {
                                 handleOnChange(data._id, 'name', {
                                   target: { value: item.name },
                                 });
-                                handleOnChange(data._id, 'quantity', {
-                                  target: { value: '' },
+                                handleOnChange(data._id, 'unit', {
+                                  target: { value: item.unit },
                                 });
                                 handleOnChange(data._id, 'price_per_kg', {
                                   target: { value: item.price_per_kg },
@@ -336,7 +350,8 @@ function QuotationForm() {
                             className="rounded-full cursor-pointer"
                             title="Remove"
                             onClick={() => {
-                              handleRemove(data._id);
+                              setDeleteId(data._id);
+                              setOpen(true);
                             }}
                           >
                             <IoIosRemoveCircle size={32} />
@@ -414,6 +429,8 @@ function QuotationForm() {
           />
         </div>
       </div>
+
+      <DeleteDialog title="Vegetable" open={open} setOpen={setOpen} onClick={handleModalDelete} />
     </>
   );
 }

@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
       ref: "bill",
     },
   ],
+  bill_number:{
+    type:Number,
+    default:1
+  }
 });
 
 const Customer = mongoose.model("customer", userSchema);

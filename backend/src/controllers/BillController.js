@@ -11,7 +11,7 @@ async function get_all_bill(req, res) {
     const bills = await Bill.find({ customer: cust_id })
       .sort({ date: -1 })
       .populate("customer", "username")
-      .select('-vegetables');;
+      .select('-vegetables');
 
     return res.status(200).json({
       success: true,
@@ -79,8 +79,11 @@ async function add_bill(req, res) {
       bill_number: bill_number.toLowerCase(),
     });
 
+    const customer = await Customer.findById(cust_id);
+
     await Customer.findByIdAndUpdate(cust_id, {
       $addToSet: { bills: bill._id },
+      bill_number: customer.bill_number + 1, 
     });
 
     return res.status(200).json({
@@ -203,22 +206,6 @@ async function get_monthly_bill(req, res) {
   }
 }
 
-async function get_bill_count(req, res) {
-  try {
-    const billCount = await Bill.countDocuments();
-
-    return res.status(200).json({
-      success: true,
-      totalBills: billCount,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: "Internal server error",
-    });
-  }
-}
-
 export {
   add_bill,
   get_all_bill,
@@ -226,5 +213,4 @@ export {
   edit_bill,
   remove_bill,
   get_monthly_bill,
-  get_bill_count,
 };

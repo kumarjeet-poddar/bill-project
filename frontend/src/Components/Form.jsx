@@ -13,6 +13,7 @@ import { RiPencilFill } from 'react-icons/ri';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import BackButton from '../Utils/BackButton';
 import mappedVegetables from '../Utils/orderedVegetables';
+import DeleteDialog from '../Utils/DeleteDialog';
 
 function Form() {
   const {
@@ -42,6 +43,8 @@ function Form() {
   const navigate = useNavigate();
   const [currentDropdownId, setCurrentDropdownId] = useState(null);
   const [updVeges, setUpdVeges] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState('');
 
   function sortArray(vegetables) {
     vegetables.sort((a, b) => {
@@ -74,6 +77,10 @@ function Form() {
           if (operation === 'generate_bill') {
             const currentDate = new Date().toLocaleDateString('en-CA');
             setValue('date', currentDate);
+            setValue(
+              'bill_number',
+              `NGV/${res?.data?.customer?._id.slice(-4)}/${res?.data?.customer?.bill_number}`
+            );
           }
         })
         .catch((err) => {});
@@ -103,18 +110,6 @@ function Form() {
     }
 
     if (custId) getCustomer();
-
-    if (operation === 'generate_bill') {
-      const now = new Date();
-      const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-indexed
-      const year = now.getFullYear();
-
-      // Generate a random 3-digit number
-      const randomNum = Math.floor(Math.random() * 900) + 100; // Random number between 100 and 999
-
-      // Create the string in the required format
-      return setValue('bill_number', `NGV/${month}-${year}/${randomNum}`);
-    }
   }, [custId, billId]);
 
   useEffect(() => {
@@ -133,23 +128,24 @@ function Form() {
     setTotal(amount);
   }, [veges]);
 
-  async function handleRemove(id) {
+  async function handleModalDelete() {
     if (operation === 'generate_bill' || billId) {
-      setVeges((prev) => prev.filter((veg) => veg._id !== id));
+      setVeges((prev) => prev.filter((veg) => veg._id !== deleteId));
       toast.success('Vegetable removed');
     } else {
-      if (id === 0) {
+      if (deleteId === 0) {
         setVeges((prev) => prev.filter((veg) => veg._id !== 0));
       } else {
         await axiosInstance
-          .delete(`/vegetable/${custId}/${id}`)
+          .delete(`/vegetable/${custId}/${deleteId}`)
           .then((res) => {
-            setVeges((prev) => prev.filter((p) => p._id !== id));
+            setVeges((prev) => prev.filter((p) => p._id !== deleteId));
             toast.success(res?.data?.msg);
           })
           .catch((err) => {});
       }
     }
+    setOpen(false);
   }
 
   function handleAddMore() {
@@ -185,10 +181,9 @@ function Form() {
       setIsAdd(false);
     } else {
       setActionId(-1);
-      setVeges(orgVeg);
+      // setVeges(orgVeg);
     }
   }
-
   async function handleSave(id) {
     const data = veges.find((v) => v._id === id);
 
@@ -607,7 +602,8 @@ function Form() {
                               className="rounded-full cursor-pointer"
                               title="Remove"
                               onClick={() => {
-                                handleRemove(data._id);
+                                setDeleteId(data._id);
+                                setOpen(true);
                               }}
                             >
                               <IoIosRemoveCircle size={32} />
@@ -727,6 +723,8 @@ function Form() {
           />
         </div>
       </div>
+
+      <DeleteDialog title="Vegetable" open={open} setOpen={setOpen} onClick={handleModalDelete} />
     </>
   );
 }

@@ -24,7 +24,7 @@ async function get_customer(req, res) {
 
     const data = await Customer.findOne({ _id: cust_id }).populate({
       path: "vegetables",
-    });
+    }).select('-bills');
 
     return res.status(200).json({
       success: true,
