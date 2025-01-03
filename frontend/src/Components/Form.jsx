@@ -481,7 +481,6 @@ function Form() {
                                 fuseOptions={{
                                   keys: ['name'], // Search by the "name" property
                                   threshold: 0.1, // Lower threshold for stricter matches
-                                  distance: 0, // Ensure exact matches
                                   shouldSort: true, // Sort results by relevance
                                 }}
                                 value={data.name}
@@ -529,7 +528,7 @@ function Form() {
                               />
                             </label>
                             <div className="w-full flex flex-col">
-                              <label className="text-[10px]">KGs</label>
+                              <label className="text-[10px]">Quantity</label>
                               <input
                                 inputMode="decimal"
                                 type="tel"
@@ -543,6 +542,18 @@ function Form() {
                                 }}
                                 // onFocus={() => setFocusId(data._id)}
                                 // readOnly={focusId === data._id ? false : true}
+                              />
+                            </div>
+                            <div className="w-full flex flex-col">
+                              <label className="text-[10px]">Unit</label>
+                              <input
+                                type="text"
+                                placeholder="kg"
+                                value={data?.unit}
+                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
+                                onChange={(e) => {
+                                  handleOnChange(data._id, 'unit', e);
+                                }}
                               />
                             </div>
                             <div className="w-full flex flex-col">
@@ -561,19 +572,7 @@ function Form() {
                               />
                             </div>
                             <div className="w-full flex flex-col">
-                              <label className="text-[10px]">Unit</label>
-                              <input
-                                type="text"
-                                placeholder="kg"
-                                value={data?.unit}
-                                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
-                                onChange={(e) => {
-                                  handleOnChange(data._id, 'unit', e);
-                                }}
-                              />
-                            </div>
-                            <div className="w-full flex flex-col">
-                              <label className="text-[10px]">Total</label>
+                              <label className="text-[10px]">Amount</label>
                               <input
                                 inputMode="decimal"
                                 type="tel"

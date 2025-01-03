@@ -246,7 +246,6 @@ function QuotationForm() {
                               fuseOptions={{
                                 keys: ['name'],
                                 threshold: 0.1,
-                                distance: 0,
                                 shouldSort: true,
                               }}
                               onFocus={() => setCurrentDropdownId(data._id)}
@@ -293,7 +292,7 @@ function QuotationForm() {
                             />
                           </div>
                           <div className="w-full flex flex-col">
-                            <label className="text-[10px]">KGs</label>
+                            <label className="text-[10px]">Quantity</label>
                             <input
                               inputMode="decimal"
                               type="tel"
@@ -302,18 +301,6 @@ function QuotationForm() {
                               required
                               className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                               onChange={(e) => handleOnChange(data._id, 'quantity', e)}
-                            />
-                          </div>
-                          <div className="w-full flex flex-col">
-                            <label className="pointer-events-none text-[10px]">Price</label>
-                            <input
-                              inputMode="decimal"
-                              type="tel"
-                              placeholder="price per KG"
-                              value={data?.price_per_kg}
-                              required
-                              onChange={(e) => handleOnChange(data._id, 'price_per_kg', e)}
-                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                             />
                           </div>
                           <div className="w-full flex flex-col">
@@ -329,7 +316,19 @@ function QuotationForm() {
                             />
                           </div>
                           <div className="w-full flex flex-col">
-                            <label className="text-[10px]">Total</label>
+                            <label className="pointer-events-none text-[10px]">Price</label>
+                            <input
+                              inputMode="decimal"
+                              type="tel"
+                              placeholder="price per KG"
+                              value={data?.price_per_kg}
+                              required
+                              onChange={(e) => handleOnChange(data._id, 'price_per_kg', e)}
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
+                            />
+                          </div>
+                          <div className="w-full flex flex-col">
+                            <label className="text-[10px]">Amount</label>
                             <input
                               inputMode="decimal"
                               type="tel"
