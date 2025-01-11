@@ -7,6 +7,7 @@ import Customer from './Components/CustomerBills';
 import Home from './Components/Home';
 import { Ledger } from './Components/Ledger/Ledger';
 import QuotationForm from './Components/Quotation/QuotationForm';
+import Admin from './Components/Admin/Page';
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
           <Route path="/quotation/:quotation_type" element={<QuotationForm />} />
           <Route path="/pdf" element={<Pdf />} />
           <Route path="/bills/:custId" element={<Customer />} />
+
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </BrowserRouter>
 

@@ -299,7 +299,7 @@ function QuotationForm() {
                               placeholder="KGs"
                               value={data?.quantity}
                               required
-                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-indigo-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                               onChange={(e) => handleOnChange(data._id, 'quantity', e)}
                             />
                           </div>
@@ -309,7 +309,7 @@ function QuotationForm() {
                               type="text"
                               placeholder="kg"
                               value={data?.unit}
-                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-indigo-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                               onChange={(e) => {
                                 handleOnChange(data._id, 'unit', e);
                               }}
@@ -324,7 +324,7 @@ function QuotationForm() {
                               value={data?.price_per_kg}
                               required
                               onChange={(e) => handleOnChange(data._id, 'price_per_kg', e)}
-                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-indigo-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                             />
                           </div>
                           <div className="w-full flex flex-col">
@@ -334,7 +334,7 @@ function QuotationForm() {
                               type="tel"
                               placeholder="00"
                               value={data?.quantity * data?.price_per_kg}
-                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-cyan-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
+                              className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-indigo-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                               onChange={(e) => {
                                 if (isNaN(e.target.value)) return;
                                 handleOnChange(data._id, 'total', e);
@@ -406,7 +406,7 @@ function QuotationForm() {
             <button
               disabled={load}
               type="submit"
-              className="w-full rounded-lg py-2 bg-cyan-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-cyan-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
+              className="w-full rounded-lg py-2 bg-indigo-400 hover:bg-cian-600 mt-4 text-white font-bold hover:bg-indigo-700 cursor-pointer disabled:cursor-none disabled:bg-gray-400"
             >
               Save
             </button>

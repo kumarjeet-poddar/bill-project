@@ -8,10 +8,8 @@ import {
 } from "../controllers/CustController.js";
 
 import {
-  add_quotation,
   add_vegetable,
   edit_vegetable,
-  get_quotations,
   remove_vegetable,
 } from "../controllers/VegController.js";
 
@@ -23,6 +21,13 @@ import {
   get_monthly_bill,
   remove_bill,
 } from "../controllers/BillController.js";
+
+import {
+  add_quotation,
+  add_sequence,
+  get_quotations,
+  get_sequence
+} from "../controllers/adminController.js"
 const router = express.Router();
 
 // customers
@@ -48,5 +53,10 @@ router.get("/monthly_bill", get_monthly_bill);
 // quotation
 router.post("/quotation", add_quotation)
 router.get("/quotation/:quotation_type", get_quotations)
+
+// sequence
+router.post("/sequence", add_sequence)
+router.get("/sequence", get_sequence)
+
 
 export default router;
