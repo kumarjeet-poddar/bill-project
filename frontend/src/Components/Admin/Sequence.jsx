@@ -22,9 +22,7 @@ export default function Sequence() {
           setOrgVegetables(res.data.vegetables);
           if (res.data.vegetables.length > 0) setEditId(-1);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => {});
     }
     getVegetables();
   }, []);

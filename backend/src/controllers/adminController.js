@@ -1,5 +1,7 @@
 import Admin from '../models/admin.js';
 import Quotation from '../models/Quotation.js';
+import Customer from '../models/Customer.js';
+import Bill from '../models/Bill.js';
 
 async function add_quotation(req, res) {
   try {
@@ -81,8 +83,8 @@ async function add_sequence(req, res) {
     }
 
     admin.vegetables = vegetables.map((veg) => ({
-      english_name: veg.englishName,
-      hindi_name: veg.hindiName,
+      english_name: veg.english_name,
+      hindi_name: veg.hindi_name,
       order: veg.order,
     }));
 
@@ -111,4 +113,65 @@ async function get_sequence(req, res) {
   }
 }
 
-export { add_quotation, get_quotations, add_sequence, get_sequence };
+async function get_requirements(req, res) {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ success: false, msg: 'Date parameter is required' });
+    }
+
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const customers = await Customer.find({}, 'username');
+    const customerMap = {};
+    customers.forEach((customer) => {
+      customerMap[customer._id] = customer.username;
+    });
+
+    const customerIds = Object.keys(customerMap); // Array of unique customer IDs
+    const customerNames = Object.values(customerMap); // Array of customer names
+
+    // Fetch all bills for the given date
+    const bills = await Bill.find({
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    // Build a map of vegetables with quantities for each customer
+    const vegetableMap = {};
+    bills.forEach((bill) => {
+      bill.vegetables.forEach((veg) => {
+        if (!vegetableMap[veg.name]) {
+          vegetableMap[veg.name] = {};
+          customerIds.forEach((id) => (vegetableMap[veg.name][id] = null)); // Initialize with null for all customers
+        }
+
+        vegetableMap[veg.name][bill.customer] = veg.quantity; // Add the quantity for the customer
+      });
+    });
+
+    // Construct the final table-like response
+    const response = [];
+    Object.entries(vegetableMap).forEach(([vegName, customerData]) => {
+      const row = { vegetable: vegName };
+      customerIds.forEach((id) => {
+        row[customerMap[id]] = customerData[id]; // Map customer names to quantities
+      });
+      response.push(row);
+    });
+
+    // Respond with the table-like structure
+    res.status(200).json({
+      success: true,
+      customers: customerNames,
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: 'Internal server error' });
+  }
+}
+export { add_quotation, get_quotations, add_sequence, get_sequence, get_requirements };
