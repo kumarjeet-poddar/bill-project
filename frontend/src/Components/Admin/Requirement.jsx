@@ -22,7 +22,7 @@ export default function RequirementPage() {
   }
 
   return (
-    <div className="flex flex-col gap-y-4 pb-10 h-screen">
+    <div className="flex flex-col gap-y-4 pb-10 min-h-screen">
       <div className="flex w-full justify-end">
         <input
           className="w-64 border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
@@ -83,7 +83,7 @@ export default function RequirementPage() {
                   </TableCell>
                   {customers.map((customer, index) => (
                     <TableCell key={index} align="right">
-                      {row[customer] || 0}
+                      {row[customer] || ''}
                     </TableCell>
                   ))}
                 </TableRow>

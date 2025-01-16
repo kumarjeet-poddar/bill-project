@@ -45,8 +45,8 @@ function Form() {
   const [updVeges, setUpdVeges] = useState([]);
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState('');
-  const [focusId, setFocusId] = useState('');
 
+  // implement this in backend to get sequence with hindi to english names
   function sortArray(vegetables) {
     vegetables.sort((a, b) => {
       const indexA = mappedVegetables.has(a?.name?.toUpperCase())

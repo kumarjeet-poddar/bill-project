@@ -58,7 +58,7 @@ export default function Sequence() {
   };
   return (
     <>
-      <div className="flex flex-col h-[82vh]">
+      <div className="flex flex-col min-h-[82vh]">
         <div className="grow">
           {vegetables.length > 0 ? (
             vegetables.map((veg, index) => (

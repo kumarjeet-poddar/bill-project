@@ -68,6 +68,8 @@ async function add_sequence(req, res) {
     const { vegetables } = req.body;
 
     const orderSet = new Set();
+    const englishNameSet = new Set();
+    const hindiNameSet = new Set();
     for (let veg of vegetables) {
       if (orderSet.has(veg.order)) {
         return res
@@ -75,6 +77,23 @@ async function add_sequence(req, res) {
           .json({ success: false, msg: `Duplicate order found in input: ${veg.order}` });
       }
       orderSet.add(veg.order);
+
+      // Check for duplicate English names
+      if (englishNameSet.has(veg.english_name)) {
+        return res.status(400).json({
+          success: false,
+          msg: `Duplicate vegetable English name found: ${veg.english_name}`,
+        });
+      }
+      englishNameSet.add(veg.english_name);
+
+      // Check for duplicate Hindi names
+      if (hindiNameSet.has(veg.hindi_name)) {
+        return res
+          .status(400)
+          .json({ success: false, msg: `Duplicate vegetable Hindi name found: ${veg.hindi_name}` });
+      }
+      hindiNameSet.add(veg.hindi_name);
     }
 
     let admin = await Admin.findOne();
@@ -127,18 +146,16 @@ async function get_requirements(req, res) {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const customers = await Customer.find({}, 'username');
-    const customerMap = {};
-    customers.forEach((customer) => {
-      customerMap[customer._id] = customer.username;
-    });
-
-    const customerIds = Object.keys(customerMap); // Array of unique customer IDs
-    const customerNames = Object.values(customerMap); // Array of customer names
-
     // Fetch all bills for the given date
     const bills = await Bill.find({
       date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    const customerIds = [...new Set(bills.map((bill) => bill.customer))]; // Get unique customer IDs
+    const customers = await Customer.find({ _id: { $in: customerIds } }, 'username');
+    const customerMap = {};
+    customers.forEach((customer) => {
+      customerMap[customer._id] = customer.username;
     });
 
     // Build a map of vegetables with quantities for each customer
@@ -147,7 +164,7 @@ async function get_requirements(req, res) {
       bill.vegetables.forEach((veg) => {
         if (!vegetableMap[veg.name]) {
           vegetableMap[veg.name] = {};
-          customerIds.forEach((id) => (vegetableMap[veg.name][id] = null)); // Initialize with null for all customers
+          customerIds.forEach((id) => (vegetableMap[veg.name][id] = null)); // Initialize with null for relevant customers
         }
 
         vegetableMap[veg.name][bill.customer] = veg.quantity; // Add the quantity for the customer
@@ -167,7 +184,7 @@ async function get_requirements(req, res) {
     // Respond with the table-like structure
     res.status(200).json({
       success: true,
-      customers: customerNames,
+      customers: customers.map((c) => c.username),
       data: response,
     });
   } catch (error) {
