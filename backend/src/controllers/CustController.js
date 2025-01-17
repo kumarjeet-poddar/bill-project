@@ -1,10 +1,11 @@
-import Customer from "../models/Customer.js";
-import Vegetable from "../models/Vegetable.js";
-import Bill from "../models/Bill.js"
+import Customer from '../models/Customer.js';
+import Vegetable from '../models/Vegetable.js';
+import Bill from '../models/Bill.js';
+import Admin from '../models/admin.js';
 
 async function get_all_customer(req, res) {
   try {
-    const customers = await Customer.find({}).select('-vegetables -bills');;
+    const customers = await Customer.find({}).select('-vegetables -bills');
 
     return res.status(200).json({
       success: true,
@@ -13,7 +14,7 @@ async function get_all_customer(req, res) {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -22,18 +23,28 @@ async function get_customer(req, res) {
   try {
     const { cust_id } = req.params;
 
-    const data = await Customer.findOne({ _id: cust_id }).populate({
-      path: "vegetables",
-    }).select('-bills');
+    const data = await Customer.findOne({ _id: cust_id })
+      .populate({
+        path: 'vegetables',
+      })
+      .select('-bills');
+    const admin = await Admin.findOne({}, 'vegetables');
+    const admin_vegetables = admin
+      ? admin.vegetables.map((veg) => ({
+          name: veg.english_name,
+          _id: veg._id,
+        }))
+      : [];
 
     return res.status(200).json({
       success: true,
       customer: data,
+      admin_vegetables,
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -51,12 +62,12 @@ async function add_customer(req, res) {
     return res.status(200).json({
       success: true,
       user: new_user,
-      msg: "New Customer added",
+      msg: 'New Customer added',
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -79,19 +90,19 @@ async function edit_customer(req, res) {
     if (!updatedCustomer) {
       return res.status(404).json({
         success: false,
-        msg: "Customer not found",
+        msg: 'Customer not found',
       });
     }
 
     return res.status(200).json({
       success: true,
-      msg: "Customer details updated successfully",
+      msg: 'Customer details updated successfully',
       customer: updatedCustomer,
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -105,7 +116,7 @@ async function remove_customer(req, res) {
     if (!customer) {
       return res.status(404).json({
         success: false,
-        msg: "Customer not found",
+        msg: 'Customer not found',
       });
     }
 
@@ -117,13 +128,12 @@ async function remove_customer(req, res) {
 
     return res.status(200).json({
       success: true,
-      msg: "Customer deleted successfully",
+      msg: 'Customer deleted successfully',
     });
-
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }

@@ -67,13 +67,15 @@ function Form() {
       await axiosInstance
         .get(`/customer/${custId}`)
         .then((res) => {
-          if (operation === 'edit') {
-            setVeges(res?.data?.customer?.vegetables);
-          }
-          setOrgVeg(res?.data?.customer?.vegetables);
           setValue('name', res?.data?.customer?.username);
           setValue('phone', res?.data?.customer?.phone);
           setValue('address', res?.data?.customer?.address);
+          if (operation === 'edit') {
+            setVeges(res?.data?.customer?.vegetables);
+            setOrgVeg(res?.data?.admin_vegetables);
+          } else {
+            setOrgVeg(res?.data?.customer?.vegetables);
+          }
 
           if (operation === 'generate_bill') {
             const currentDate = new Date().toLocaleDateString('en-CA');

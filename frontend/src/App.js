@@ -8,6 +8,7 @@ import Home from './Components/Home';
 import { Ledger } from './Components/Ledger/Ledger';
 import QuotationForm from './Components/Quotation/QuotationForm';
 import Admin from './Components/Admin/Page';
+import SampleHook from './Components/Admin/abc';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/bills/:custId" element={<Customer />} />
 
           <Route path="/admin" element={<Admin />} />
+          <Route path="/abc" element={<SampleHook />} />
         </Routes>
       </BrowserRouter>
 

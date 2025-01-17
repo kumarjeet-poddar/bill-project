@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../Utils/axiosInstance';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Paper from '@mui/material/Paper';
+import { useDownloadExcel } from 'react-export-table-to-excel';
 
 export default function RequirementPage() {
   const [date, setDate] = useState('');
   const [customers, setCustomers] = useState([]);
   const [vegetables, setVegetables] = useState([]);
+  const tableRef = useRef(null);
 
   async function handleDateChange(e) {
     const value = e.target.value;
@@ -21,6 +23,11 @@ export default function RequirementPage() {
       .catch((err) => {});
   }
 
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tableRef.current,
+    filename: 'Users table',
+    sheet: 'Users',
+  });
   return (
     <div className="flex flex-col gap-y-4 pb-10 min-h-screen">
       <div className="flex w-full justify-end">
@@ -32,7 +39,7 @@ export default function RequirementPage() {
         />
       </div>
       {customers.length > 0 && vegetables.length > 0 ? (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} ref={tableRef}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
             <TableHead>
               <TableRow>
@@ -92,6 +99,15 @@ export default function RequirementPage() {
           </Table>
         </TableContainer>
       ) : null}
+
+      {/* <div className="flex justify-end w-full">
+        <button
+          className="w-fit px-8 py-3 rounded-lg bg-gray-600 text-white cursor-pointer"
+          onClick={onDownload}
+        >
+          Print
+        </button>
+      </div> */}
     </div>
   );
 }
