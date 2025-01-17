@@ -12,7 +12,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { RiPencilFill } from 'react-icons/ri';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import BackButton from '../Utils/BackButton';
-import mappedVegetables from '../Utils/orderedVegetables';
 import DeleteDialog from '../Utils/DeleteDialog';
 
 function Form() {
@@ -46,20 +45,17 @@ function Form() {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState('');
 
-  // implement this in backend to get sequence with hindi to english names
-  function sortArray(vegetables) {
-    vegetables.sort((a, b) => {
-      const indexA = mappedVegetables.has(a?.name?.toUpperCase())
-        ? mappedVegetables.get(a?.name?.toUpperCase())
-        : Infinity;
-      const indexB = mappedVegetables.has(b?.name?.toUpperCase())
-        ? mappedVegetables.get(b?.name?.toUpperCase())
-        : Infinity;
-
-      return indexA - indexB;
-    });
-
-    setUpdVeges([...vegetables]);
+  async function sortArray(vegetables) {
+    await axiosInstance
+      .post('/arranged_vegetables', {
+        vegetables,
+      })
+      .then((res) => {
+        setUpdVeges(res.data.vegetables);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(() => {
@@ -278,11 +274,11 @@ function Form() {
 
     await axiosInstance
       .put(`bill/${billId}`, d)
-      .then((res) => {
+      .then(async (res) => {
         if (str === 'save_bill') {
           setLoad(false);
           toast.success('Details updated');
-          sortArray(veges);
+          await sortArray(veges);
         }
       })
       .catch((err) => {
@@ -345,11 +341,11 @@ function Form() {
 
         await axiosInstance
           .post(`bill`, bill_data)
-          .then((res) => {
+          .then(async (res) => {
             setLoad(false);
             if (res.status === 200) {
               toast.success('Details updated');
-              sortArray(veges);
+              await sortArray(veges);
             }
           })
           .catch((err) => {

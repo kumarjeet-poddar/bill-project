@@ -21,6 +21,7 @@ import {
 import {
   add_quotation,
   add_sequence,
+  get_arranged_vegetables,
   get_quotations,
   get_requirements,
   get_sequence,
@@ -56,5 +57,6 @@ router.post('/sequence', add_sequence);
 router.get('/sequence', get_sequence);
 
 router.get('/requirements', get_requirements);
+router.post('/arranged_vegetables', get_arranged_vegetables);
 
 export default router;

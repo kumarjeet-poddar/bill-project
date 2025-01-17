@@ -191,4 +191,73 @@ async function get_requirements(req, res) {
     res.status(500).json({ success: false, msg: 'Internal server error' });
   }
 }
-export { add_quotation, get_quotations, add_sequence, get_sequence, get_requirements };
+
+async function get_arranged_vegetables(req, res) {
+  try {
+    const { vegetables } = req.body;
+
+    if (!vegetables || !Array.isArray(vegetables)) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid input. 'vegetables' should be an array.",
+      });
+    }
+
+    // Fetch the vegetable sequence from the Admin model
+    const admin = await Admin.findOne({}, 'vegetables');
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        msg: 'No vegetable sequence found in the Admin model.',
+      });
+    }
+
+    // Create a map of the order and hindi_name from the Admin model
+    const adminVegetableMap = {};
+    admin.vegetables.forEach((veg) => {
+      adminVegetableMap[veg.english_name.toLowerCase()] = {
+        order: veg.order,
+        hindi_name: veg.hindi_name,
+      };
+    });
+
+    // Process the input vegetables array
+    const withOrder = []; // Vegetables with order
+    const withoutOrder = []; // Vegetables without order
+
+    vegetables.forEach((veg) => {
+      const adminData = adminVegetableMap[veg.name.toLowerCase()];
+      if (adminData) {
+        withOrder.push({
+          ...veg,
+          hindi_name: adminData.hindi_name,
+          order: adminData.order,
+        });
+      } else {
+        withoutOrder.push({ ...veg, hindi_name: null, order: Infinity });
+      }
+    });
+
+    // Sort vegetables with order and append those without order at the end
+    const sortedVegetables = [...withOrder.sort((a, b) => a.order - b.order), ...withoutOrder];
+
+    return res.status(200).json({
+      success: true,
+      vegetables: sortedVegetables,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: 'Internal server error',
+    });
+  }
+}
+
+export {
+  add_quotation,
+  get_quotations,
+  add_sequence,
+  get_sequence,
+  get_requirements,
+  get_arranged_vegetables,
+};

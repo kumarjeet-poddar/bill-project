@@ -104,7 +104,7 @@ export default function Pdf(props) {
                       {index + 1 + pageIndex * itemsPerPage}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-2/5 capitalize font-bold">
-                      {item.name} / {vegetableList[item?.name?.toLowerCase()]}
+                      {item.name} / {item.hindi_name || ''}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
                       {item.quantity}
