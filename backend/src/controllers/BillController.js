@@ -1,7 +1,8 @@
-import Bill from "../models/Bill.js";
-import Customer from "../models/Customer.js";
-import Vegetable from "../models/Vegetable.js";
-import dayjs from "dayjs";
+import Admin from '../models/admin.js';
+import Bill from '../models/Bill.js';
+import Customer from '../models/Customer.js';
+import Vegetable from '../models/Vegetable.js';
+import dayjs from 'dayjs';
 
 // get all bills
 async function get_all_bill(req, res) {
@@ -10,7 +11,7 @@ async function get_all_bill(req, res) {
 
     const bills = await Bill.find({ customer: cust_id })
       .sort({ date: -1 })
-      .populate("customer", "username")
+      .populate('customer', 'username')
       .select('-vegetables');
 
     return res.status(200).json({
@@ -20,7 +21,7 @@ async function get_all_bill(req, res) {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -31,21 +32,30 @@ async function get_bill(req, res) {
     const { bill_id, cust_id } = req.params;
 
     const bill = await Bill.findById(bill_id).populate({
-      path: "customer",
-      select: "-vegetables -bills",
-    })
+      path: 'customer',
+      select: '-vegetables -bills',
+    });
 
-    const all_vegetables = await Vegetable.find({ cust_id });
+    const admin = await Admin.findOne({}, 'vegetables');
+    const admin_vegetables = admin
+      ? admin.vegetables.map((veg) => ({
+          name: veg.english_name,
+          _id: veg._id,
+        }))
+      : [];
+
+    const customer_vegetables = await Vegetable.find({ cust_id });
 
     return res.status(200).json({
       success: true,
       bill,
-      all_vegetables,
+      customer_vegetables,
+      admin_vegetables,
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -62,7 +72,7 @@ async function add_bill(req, res) {
     if (is_Exist) {
       return res.status(400).json({
         success: false,
-        msg: "This Bill Number is already generated",
+        msg: 'This Bill Number is already generated',
       });
     }
 
@@ -72,7 +82,7 @@ async function add_bill(req, res) {
         name: veg.name,
         price_per_kg: veg.price_per_kg,
         quantity: veg.quantity,
-        unit: veg.unit
+        unit: veg.unit,
       })),
       total_amount: total,
       date,
@@ -83,18 +93,18 @@ async function add_bill(req, res) {
 
     await Customer.findByIdAndUpdate(cust_id, {
       $addToSet: { bills: bill._id },
-      bill_number: customer.bill_number + 1, 
+      bill_number: customer.bill_number + 1,
     });
 
     return res.status(200).json({
       success: true,
-      msg: "Bill generated successfully",
+      msg: 'Bill generated successfully',
       bill,
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -107,14 +117,14 @@ async function edit_bill(req, res) {
 
     const bill = await Bill.findById(bill_id);
     if (!bill) {
-      return res.status(404).json({ message: "Bill not found" });
+      return res.status(404).json({ message: 'Bill not found' });
     }
 
     bill.vegetables = vegetables.map((veg) => ({
       name: veg.name,
       price_per_kg: veg.price_per_kg,
       quantity: veg.quantity,
-      unit: veg.unit
+      unit: veg.unit,
     }));
 
     bill.total_amount = total_amount;
@@ -128,12 +138,12 @@ async function edit_bill(req, res) {
 
     return res.status(200).json({
       success: true,
-      msg: "Bill updated successfully",
+      msg: 'Bill updated successfully',
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -147,7 +157,7 @@ async function remove_bill(req, res) {
     if (!deletedBill) {
       return res.status(404).json({
         success: false,
-        msg: "Bill not found",
+        msg: 'Bill not found',
       });
     }
 
@@ -157,12 +167,12 @@ async function remove_bill(req, res) {
 
     return res.status(200).json({
       success: true,
-      msg: "Bill deleted successfully",
+      msg: 'Bill deleted successfully',
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
@@ -182,15 +192,15 @@ async function get_monthly_bill(req, res) {
       date: { $gte: startOfDay, $lte: endOfDay },
     })
       .populate({
-        path: "customer",
-        select: "-vegetables -bills",
+        path: 'customer',
+        select: '-vegetables -bills',
       })
       .select('-vegetables');
 
     if (!bills.length) {
       return res.status(400).json({
         success: false,
-        msg: "No bills found for the given date.",
+        msg: 'No bills found for the given date.',
       });
     }
 
@@ -201,16 +211,9 @@ async function get_monthly_bill(req, res) {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: 'Internal server error',
     });
   }
 }
 
-export {
-  add_bill,
-  get_all_bill,
-  get_bill,
-  edit_bill,
-  remove_bill,
-  get_monthly_bill,
-};
+export { add_bill, get_all_bill, get_bill, edit_bill, remove_bill, get_monthly_bill };

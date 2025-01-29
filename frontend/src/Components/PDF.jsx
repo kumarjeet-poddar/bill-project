@@ -1,5 +1,4 @@
 import React from 'react';
-import vegetableList from '../Utils/vegetable.js';
 
 function splitIntoPages(items, itemsPerPage) {
   const pages = [];

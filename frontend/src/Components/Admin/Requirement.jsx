@@ -78,7 +78,7 @@ export default function RequirementPage() {
                   <TableCell
                     component="th"
                     scope="row"
-                    className="capitalize"
+                    className="capitalize w-fit"
                     sx={{
                       position: 'sticky',
                       left: 0,

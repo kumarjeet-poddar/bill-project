@@ -34,7 +34,7 @@ function Form() {
   const [load, setLoad] = useState(false);
   const [actionId, setActionId] = useState(-1);
   const [isAdd, setIsAdd] = useState(false);
-  const [orgVeg, setOrgVeg] = useState([]);
+  const [adminVegetables, setAdminVegetables] = useState([]);
   const name = watch('name');
   const address = watch('address');
   const date = watch('date');
@@ -44,6 +44,8 @@ function Form() {
   const [updVeges, setUpdVeges] = useState([]);
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState('');
+  const [editVegetableId, setEditVegetableId] = useState(0);
+  const [customerVegetables, setCustomerVegetables] = useState([]);
 
   async function sortArray(vegetables) {
     await axiosInstance
@@ -53,9 +55,7 @@ function Form() {
       .then((res) => {
         setUpdVeges(res.data.vegetables);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => {});
   }
 
   useEffect(() => {
@@ -66,21 +66,14 @@ function Form() {
           setValue('name', res?.data?.customer?.username);
           setValue('phone', res?.data?.customer?.phone);
           setValue('address', res?.data?.customer?.address);
-          if (operation === 'edit') {
-            setVeges(res?.data?.customer?.vegetables);
-            setOrgVeg(res?.data?.admin_vegetables);
-          } else {
-            setOrgVeg(res?.data?.customer?.vegetables);
-          }
-
-          if (operation === 'generate_bill') {
-            const currentDate = new Date().toLocaleDateString('en-CA');
-            setValue('date', currentDate);
-            setValue(
-              'bill_number',
-              `NGV/${res?.data?.customer?._id.slice(-4)}/${res?.data?.customer?.bill_number}`
-            );
-          }
+          setAdminVegetables(res?.data?.admin_vegetables);
+          setCustomerVegetables(res?.data?.customer?.vegetables);
+          const currentDate = new Date().toLocaleDateString('en-CA');
+          setValue('date', currentDate);
+          setValue(
+            'bill_number',
+            `NGV/${res?.data?.customer?._id.slice(-4)}/${res?.data?.customer?.bill_number}`
+          );
         })
         .catch((err) => {});
     }
@@ -90,7 +83,8 @@ function Form() {
         .get(`/bill/${billId}/${custId}`)
         .then((res) => {
           setVeges(res?.data?.bill?.vegetables);
-          setOrgVeg(res?.data?.all_vegetables);
+          setAdminVegetables(res?.data?.admin_vegetables);
+          setCustomerVegetables(res?.data?.customer_vegetables);
           setValue('name', res?.data?.bill?.customer?.username);
           setValue('phone', res?.data?.bill?.customer?.phone);
           setValue('address', res?.data?.bill?.customer?.address);
@@ -127,11 +121,23 @@ function Form() {
     setTotal(amount);
   }, [veges]);
 
+  function handleSelectVegetable(item, id) {
+    const customerVeg = customerVegetables.find(
+      (veg) => veg.name.toLowerCase() === item.name.toLowerCase()
+    );
+
+    if (customerVeg) {
+      handleOnChange(id, 'price_per_kg', { target: { value: customerVeg.price_per_kg } });
+      handleOnChange(id, 'unit', { target: { value: customerVeg.unit } });
+    }
+    handleOnChange(id, 'name', { target: { value: item.name } });
+  }
   async function handleModalDelete() {
     if (operation === 'generate_bill' || billId) {
       setVeges((prev) => prev.filter((veg) => veg._id !== deleteId));
       toast.success('Vegetable removed');
     } else {
+      // this is of no use right now becuase there is no functionality to delete items from customer collection
       if (deleteId === 0) {
         setVeges((prev) => prev.filter((veg) => veg._id !== 0));
       } else {
@@ -152,6 +158,7 @@ function Form() {
     setActionId(0);
     setVeges((prev) => [...prev, { _id: 0 }]);
   }
+
   function handleOnChange(idx, field, e) {
     var val = e.target.value;
 
@@ -172,19 +179,44 @@ function Form() {
 
   function handleEditVeg(id) {
     setActionId(id);
+    setEditVegetableId(id);
   }
 
   function handleCancel(id) {
     if (isAdd && id == 0) {
       setVeges((prev) => prev.filter((veg) => veg._id !== 0));
       setIsAdd(false);
-    } else {
+      return;
+    }
+    if (editVegetableId === id) {
+      setVeges((prev) =>
+        prev.map((veg) => {
+          if (veg._id === id) {
+            // Find the corresponding vegetable in `customerVegetables`
+            // const matchedVeg = customerVegetables.find((customerVeg) => customerVeg._id === id);
+            const matchedVeg = customerVegetables.find(
+              (customerVeg) => customerVeg.name.toLowerCase() === veg.name.toLowerCase()
+            );
+
+            // If a match is found, reset fields; otherwise, keep them unchanged
+            return matchedVeg
+              ? {
+                  name: matchedVeg.name,
+                  price_per_kg: matchedVeg.price_per_kg,
+                  unit: matchedVeg.unit,
+                  quantity: matchedVeg.quantity,
+                }
+              : veg;
+          }
+          return veg;
+        })
+      );
       setActionId(-1);
-      // setVeges(orgVeg);
     }
   }
   async function handleSave(id) {
     const data = veges.find((v) => v._id === id);
+    if (!data) return;
 
     if (isAdd && id === 0) {
       const d = {
@@ -201,9 +233,9 @@ function Form() {
           if (res.status === 200) {
             setVeges((prev) => prev.filter((veg) => veg._id !== 0));
             setVeges((prev) => [...prev, res?.data?.vegetable]);
-            setOrgVeg((prev) => [...prev, res?.data?.vegetable]);
+            setCustomerVegetables(res.data.customer_vegetables);
 
-            // if editing a bill - save vege to that bill
+            // if editing a bill - save vegetable to that bill
             if (billId) {
               await edit_bill({}, 'add_veg_in_bill');
             }
@@ -213,30 +245,56 @@ function Form() {
         })
         .catch(async (err) => {
           if (err.response.status == 400) {
+            setCustomerVegetables(err.response.data.customer_vegetables);
+            const toastId = 'vegetable-toast';
             setVeges((prev) => {
               const isDuplicate = prev.some(
                 (veg) => veg.name.toLowerCase() === data.name.toLowerCase() && veg._id !== 0
               );
 
               if (isDuplicate) {
-                toast.error('This vegetable is already added!');
+                if (!toast.isActive(toastId)) {
+                  toast.error('This vegetable is already added!', { toastId });
+                }
                 return prev.filter((veg) => veg._id !== 0);
-              } else {
-                toast.success('Vegetable added');
-                return prev.map((veg) =>
-                  veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
-                );
               }
+              if (!toast.isActive(toastId)) {
+                toast.success('Vegetable added', { toastId });
+              }
+              return prev.map((veg) =>
+                veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
+              );
             });
 
-            // if editing a bill - save vege to that bill
+            // if editing a bill - save vegetable to that bill
             if (billId) {
               await edit_bill({}, 'add_veg_in_bill');
             }
           }
         });
     } else {
+      if (billId) {
+        const req = {
+          cust_id: custId,
+          name: data.name,
+          price: data.price_per_kg,
+          unit: data.unit,
+        };
+        await axiosInstance
+          .put(`/bill_vegetable`, req)
+          .then(async (res) => {
+            if (res.status === 200) {
+              await edit_bill({}, 'add_veg_in_bill');
+              toast.success(res?.data?.msg);
+              setActionId(-1);
+              setCustomerVegetables(res.data.customer_vegetables);
+            }
+          })
+          .catch((err) => {});
+        return;
+      }
       const d = {
+        cust_id: custId,
         veg_id: data._id,
         name: data.name,
         price: parseFloat(data.price_per_kg),
@@ -250,6 +308,7 @@ function Form() {
           if (res.status === 200) {
             toast.success(res?.data?.msg);
             setActionId(-1);
+            setCustomerVegetables(res.data.customer_vegetables);
           }
         })
         .catch((err) => {});
@@ -426,33 +485,33 @@ function Form() {
               {errors.username && <span className="text-red-600">Please, enter address</span>}
             </div>
 
-            {(operation === 'generate_bill' || billId) && (
-              <div className="mb-4">
-                <label className="text-gray-800">Date</label>
-                <input
-                  type="date"
-                  className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                  placeholder="dd-mm-yyyy"
-                  {...register('date', { required: true })}
-                />
-                {errors.date && <span className="text-red-600">This is a required field</span>}
-              </div>
+            {operation === 'edit' ? null : (
+              <>
+                <div className="mb-4">
+                  <label className="text-gray-800">Date</label>
+                  <input
+                    type="date"
+                    className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                    placeholder="dd-mm-yyyy"
+                    {...register('date', { required: true })}
+                  />
+                  {errors.date && <span className="text-red-600">This is a required field</span>}
+                </div>
+
+                <div className="mb-4">
+                  <label className="text-gray-800">Bill Number</label>
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                    placeholder="Enter Bill Number"
+                    {...register('bill_number', { required: true })}
+                  />
+                  {errors.date && <span className="text-red-600">This is a required field</span>}
+                </div>
+              </>
             )}
 
-            {(operation === 'generate_bill' || billId) && (
-              <div className="mb-4">
-                <label className="text-gray-800">Bill Number</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
-                  placeholder="Enter Bill Number"
-                  {...register('bill_number', { required: true })}
-                />
-                {errors.date && <span className="text-red-600">This is a required field</span>}
-              </div>
-            )}
-
-            {custId && (
+            {custId && operation !== 'edit' && (
               <div className="mb-4">
                 <div className="flex justify-between">
                   <label className="text-gray-800">Vegetables</label>
@@ -474,35 +533,29 @@ function Form() {
                               <div className="pointer-events-none text-[10px] ">Vegetable</div>
                               <ReactSearchAutocomplete
                                 showIcon={false}
-                                items={orgVeg}
-                                placeholder={data.name}
+                                items={adminVegetables}
                                 fuseOptions={{
                                   keys: ['name'], // Search by the "name" property
                                   threshold: 0.1, // Lower threshold for stricter matches
                                   shouldSort: true, // Sort results by relevance
                                 }}
-                                value={data.name}
+                                // TODO: render this value conditionally
+                                // inputValue={data.name}
+                                // value={data.name}
+                                placeholder={data.name ? data.name : ''}
                                 onFocus={() => setCurrentDropdownId(data._id)}
                                 onSearch={(inputValue) => {
-                                  const foundItem = veges.find(
+                                  const foundItem = adminVegetables.find(
                                     (veg) => veg?.name?.toLowerCase() === inputValue?.toLowerCase()
                                   );
                                   if (!foundItem) {
                                     handleOnChange(data._id, 'name', {
-                                      target: { value: inputValue },
+                                      target: { value: '' },
                                     });
                                   }
                                 }}
                                 onSelect={(item) => {
-                                  handleOnChange(data._id, 'name', {
-                                    target: { value: item.name },
-                                  });
-                                  handleOnChange(data._id, 'price_per_kg', {
-                                    target: { value: item.price_per_kg },
-                                  });
-                                  handleOnChange(data._id, 'unit', {
-                                    target: { value: item.unit },
-                                  });
+                                  handleSelectVegetable(item, data._id);
                                 }}
                                 styling={{
                                   height: '41px',
@@ -538,8 +591,7 @@ function Form() {
                                   if (isNaN(e.target.value)) return;
                                   handleOnChange(data._id, 'quantity', e);
                                 }}
-                                // onFocus={() => setFocusId(data._id)}
-                                // readOnly={focusId === data._id ? false : true}
+                                readOnly={editVegetableId == data._id ? false : true}
                               />
                             </div>
                             <div className="w-full flex flex-col">
@@ -552,6 +604,7 @@ function Form() {
                                 onChange={(e) => {
                                   handleOnChange(data._id, 'unit', e);
                                 }}
+                                readOnly={editVegetableId == data._id ? false : true}
                               />
                             </div>
                             <div className="w-full flex flex-col">
@@ -566,6 +619,7 @@ function Form() {
                                   if (isNaN(e.target.value)) return;
                                   handleOnChange(data._id, 'price_per_kg', e);
                                 }}
+                                readOnly={editVegetableId == data._id ? false : true}
                                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-indigo-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                               />
                             </div>
@@ -580,6 +634,7 @@ function Form() {
                                     ? ''
                                     : data?.quantity * data?.price_per_kg
                                 }
+                                readOnly={editVegetableId == data._id ? false : true}
                                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 rounded-lg focus:outline-none placeholder-gray-300 focus:border-indigo-500 focus:bg-white bg-gray-100 cursor-not-allowed focus:cursor-text"
                                 onChange={(e) => {
                                   if (isNaN(e.target.value)) return;
@@ -587,17 +642,15 @@ function Form() {
                                 }}
                               />
                             </div>
-                            {operation === 'edit' && (
-                              <div
-                                className="rounded-full cursor-pointer"
-                                title="Edit"
-                                onClick={() => {
-                                  handleEditVeg(data._id);
-                                }}
-                              >
-                                <RiPencilFill size={32} />
-                              </div>
-                            )}
+                            <div
+                              className="rounded-full cursor-pointer"
+                              title="Edit"
+                              onClick={() => {
+                                handleEditVeg(data._id);
+                              }}
+                            >
+                              <RiPencilFill size={32} />
+                            </div>
                             {index + 1 === veges.length && !veges.some((veg) => veg._id === 0) && (
                               <div
                                 className="rounded-full cursor-pointer"
@@ -609,7 +662,6 @@ function Form() {
                                 <IoIosAddCircle size={32} />
                               </div>
                             )}
-                            {/* {index !== 0 && ( */}
                             <div
                               className="rounded-full cursor-pointer"
                               title="Remove"
@@ -620,7 +672,6 @@ function Form() {
                             >
                               <IoIosRemoveCircle size={32} />
                             </div>
-                            {/* )} */}
                           </div>
                           {(actionId === data._id || (isAdd && data._id === 0)) && (
                             <div className="flex w-full justify-end gap-x-3 border-b pb-1">

@@ -7,7 +7,12 @@ import {
   remove_customer,
 } from '../controllers/CustController.js';
 
-import { add_vegetable, edit_vegetable, remove_vegetable } from '../controllers/VegController.js';
+import {
+  add_vegetable,
+  edit_bill_vegetable,
+  edit_vegetable,
+  remove_vegetable,
+} from '../controllers/VegController.js';
 
 import {
   add_bill,
@@ -38,6 +43,7 @@ router.delete('/customer/:cust_id', remove_customer);
 // vegetables
 router.post('/vegetable', add_vegetable);
 router.put('/vegetable/:veg_id', edit_vegetable);
+router.put('/bill_vegetable', edit_bill_vegetable);
 router.delete('/vegetable/:cust_id/:veg_id', remove_vegetable);
 
 // bills
