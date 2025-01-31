@@ -33,6 +33,7 @@ function QuotationForm() {
   const address = watch('address');
   const date = watch('date');
   const phone = watch('phone');
+  const discount = watch('discount');
   const quotation_number = watch('quotation_number');
   const [currentDropdownId, setCurrentDropdownId] = useState(null);
   const [open, setOpen] = useState(false);
@@ -215,6 +216,17 @@ function QuotationForm() {
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Enter Bill Number"
                 {...register('quotation_number', { required: true })}
+              />
+              {errors.date && <span className="text-red-600">This is a required field</span>}
+            </div>
+
+            <div className="mb-4">
+              <label className="text-gray-800">Discount</label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                placeholder="00"
+                {...register('discount', { required: true })}
               />
               {errors.date && <span className="text-red-600">This is a required field</span>}
             </div>
@@ -431,6 +443,7 @@ function QuotationForm() {
             date={date}
             quotation_number={quotation_number}
             phone={phone}
+            discount={discount}
             title={quotation_type === 'indian' ? 'Indian Vegetables' : 'Exotic Vegetables'}
           />
         </div>

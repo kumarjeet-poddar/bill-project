@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { ToWords } from 'to-words';
 
 const PAGE_ROW_LIMIT = 30;
 
@@ -15,7 +16,18 @@ const paginateData = (data, rowsPerPage) => {
 };
 
 export default function QuotationPdf(props) {
-  const { vegetables, total, name, address, date, phone, quotation_number, title } = props;
+  const { vegetables, total, name, address, date, phone, quotation_number, title, discount } =
+    props;
+
+  const [discountedAmount, setDiscountedAmount] = useState(0);
+  const toWords = new ToWords();
+
+  useEffect(() => {
+    if (total && discount) {
+      const amountAfterDiscount = total - (total * discount) / 100;
+      setDiscountedAmount(amountAfterDiscount);
+    }
+  }, [total, discount]);
 
   const pages = paginateData(vegetables, PAGE_ROW_LIMIT);
 
@@ -189,20 +201,34 @@ export default function QuotationPdf(props) {
                   <td
                     className="w-1/2 border border-black px-4 pb-3 h-8 border-l-0 font-bold"
                     colspan={6}
+                    rowSpan={3}
                   >
-                    Total Amount:
+                    Total Amount:{' '}
+                    {toWords.convert(Math.round(discountedAmount), { currency: true })}
                   </td>
                   <td
                     className="w-1/2 px-4 pb-3 h-8 text-right font-bold border border-x-0 border-black"
                     colspan={6}
                   >
-                    Rs. {Math.round(total)}
+                    Subtotal: Rs.{Math.round(total)}
                   </td>
                 </tr>
                 <tr>
-                  <td className="w-1/2 border-r border-black px-2 pb-1 h-8" colspan={6}></td>
+                  <td
+                    className="w-1/2 px-4 pb-3 h-8 text-right font-bold border border-x-0 border-black"
+                    colspan={6}
+                  >
+                    Discount: {discount}%
+                  </td>
                 </tr>
-
+                <tr>
+                  <td
+                    className="w-1/2 px-4 pb-3 h-8 text-right font-bold border border-x-0 border-black"
+                    colspan={6}
+                  >
+                    Final Amount: Rs.{discountedAmount}
+                  </td>
+                </tr>
                 <tr className="w-full">
                   <td
                     className="px-4 font-medium py-2 border-t border-black text-gray-700"
