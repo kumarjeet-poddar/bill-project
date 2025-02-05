@@ -10,12 +10,14 @@ async function add_vegetable(req, res) {
       cust_id,
     });
 
+    var new_veg;
+
     if (vegetable_exist) {
       vegetable_exist.price_per_kg = price;
       vegetable_exist.unit = unit;
       await vegetable_exist.save();
     } else {
-      const new_veg = await Vegetable.create({
+      new_veg = await Vegetable.create({
         name: name.toLowerCase(),
         price_per_kg: price,
         quantity: quantity,
@@ -27,7 +29,6 @@ async function add_vegetable(req, res) {
         $addToSet: { vegetables: new_veg._id },
       });
     }
-
     const customer = await Customer.findById(cust_id)
       .populate('vegetables')
       .select('-bills -username -phone -address -bill_number');

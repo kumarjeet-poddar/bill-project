@@ -132,9 +132,18 @@ function Form() {
     }
     handleOnChange(id, 'name', { target: { value: item.name } });
   }
+
   async function handleModalDelete() {
     if (operation === 'generate_bill' || billId) {
-      setVeges((prev) => prev.filter((veg) => veg._id !== deleteId));
+      setVeges((prev) => {
+        const updatedVeges = prev.filter((veg) => veg._id !== deleteId);
+
+        if (billId) {
+          edit_bill({ vegetables: updatedVeges }, 'add_veg_in_bill');
+        }
+
+        return updatedVeges;
+      });
       toast.success('Vegetable removed');
     } else {
       // this is of no use right now becuase there is no functionality to delete items from customer collection
@@ -192,13 +201,10 @@ function Form() {
       setVeges((prev) =>
         prev.map((veg) => {
           if (veg._id === id) {
-            // Find the corresponding vegetable in `customerVegetables`
-            // const matchedVeg = customerVegetables.find((customerVeg) => customerVeg._id === id);
             const matchedVeg = customerVegetables.find(
               (customerVeg) => customerVeg.name.toLowerCase() === veg.name.toLowerCase()
             );
 
-            // If a match is found, reset fields; otherwise, keep them unchanged
             return matchedVeg
               ? {
                   name: matchedVeg.name,
@@ -218,6 +224,11 @@ function Form() {
     const data = veges.find((v) => v._id === id);
     if (!data) return;
 
+    if (!data.name) {
+      setVeges((prev) => prev.filter((veg) => veg._id !== id));
+      return toast.error('Please select vegetable from the list.');
+    }
+
     if (isAdd && id === 0) {
       const d = {
         cust_id: custId,
@@ -231,14 +242,16 @@ function Form() {
         .post('/vegetable', d)
         .then(async (res) => {
           if (res.status === 200) {
-            setVeges((prev) => prev.filter((veg) => veg._id !== 0));
-            setVeges((prev) => [...prev, res?.data?.vegetable]);
-            setCustomerVegetables(res.data.customer_vegetables);
-
-            // if editing a bill - save vegetable to that bill
             if (billId) {
-              await edit_bill({}, 'add_veg_in_bill');
+              edit_bill({ vegetables: veges }, 'add_veg_in_bill');
             }
+
+            setVeges((prev) => {
+              const updatedVeges = prev.filter((veg) => veg._id !== 0);
+              const newVeges = [...updatedVeges, res?.data?.vegetable];
+              return newVeges;
+            });
+            setCustomerVegetables(res.data.customer_vegetables);
             toast.success(res?.data?.msg);
             setIsAdd(false);
           }
@@ -258,17 +271,25 @@ function Form() {
                 }
                 return prev.filter((veg) => veg._id !== 0);
               }
+
               if (!toast.isActive(toastId)) {
                 toast.success('Vegetable added', { toastId });
               }
-              return prev.map((veg) =>
+
+              const updatedVeges = prev.map((veg) =>
                 veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
               );
+
+              // If editing a bill, update it with the new vegetables
+              // if (billId) {
+              //   edit_bill({ vegetables: veges }, 'add_veg_in_bill');
+              // }
+
+              return updatedVeges;
             });
 
-            // if editing a bill - save vegetable to that bill
             if (billId) {
-              await edit_bill({}, 'add_veg_in_bill');
+              edit_bill({ vegetables: veges }, 'add_veg_in_bill');
             }
           }
         });
@@ -284,7 +305,7 @@ function Form() {
           .put(`/bill_vegetable`, req)
           .then(async (res) => {
             if (res.status === 200) {
-              await edit_bill({}, 'add_veg_in_bill');
+              await edit_bill({ vegetables: veges }, 'add_veg_in_bill');
               toast.success(res?.data?.msg);
               setActionId(-1);
               setCustomerVegetables(res.data.customer_vegetables);
@@ -319,14 +340,14 @@ function Form() {
     var d;
     if (str === 'save_bill') {
       d = {
-        vegetables: veges,
+        vegetables: data.vegetables,
         total_amount: total,
         date: data.date,
         bill_number: data.bill_number,
       };
     } else {
       d = {
-        vegetables: veges,
+        vegetables: data.vegetables,
         total_amount: total,
       };
     }
@@ -417,7 +438,11 @@ function Form() {
 
       // edit bill
       if (billId) {
-        await edit_bill(data, 'save_bill');
+        const editBillReq = {
+          ...data,
+          vegetables: veges,
+        };
+        await edit_bill(editBillReq, 'save_bill');
       }
     } else {
       // add new customer

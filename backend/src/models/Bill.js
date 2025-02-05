@@ -1,18 +1,18 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { ObjectId } = mongoose.Schema.Types;
 
 const billSchema = new mongoose.Schema(
   {
     customer: {
       type: ObjectId,
-      ref: "customer",
+      ref: 'customer',
       required: true,
     },
     vegetables: [
       {
         name: String,
-        price_per_kg: Number,
-        quantity: Number,
+        price_per_kg: String,
+        quantity: String,
         unit: String,
       },
     ],
@@ -34,6 +34,6 @@ const billSchema = new mongoose.Schema(
   }
 );
 
-const Bill = mongoose.model("bill", billSchema);
+const Bill = mongoose.model('bill', billSchema);
 
 export default Bill;

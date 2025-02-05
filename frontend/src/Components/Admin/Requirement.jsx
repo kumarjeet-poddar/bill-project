@@ -3,6 +3,8 @@ import axiosInstance from '../../Utils/axiosInstance';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { useDownloadExcel } from 'react-export-table-to-excel';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 export default function RequirementPage() {
   const [date, setDate] = useState('');
@@ -23,11 +25,50 @@ export default function RequirementPage() {
       .catch((err) => {});
   }
 
-  const { onDownload } = useDownloadExcel({
-    currentTableRef: tableRef.current,
-    filename: 'Users table',
-    sheet: 'Users',
-  });
+  const generatePDF = () => {
+    const doc = new jsPDF({
+      orientation: 'landscape', // Landscape for better column fit
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    doc.text('Requirement Table', 14, 10);
+
+    // Function to truncate customer names
+    const truncateName = (name) => {
+      if (name.length > 14) {
+        return name.substring(0, 7) + '...' + name.substring(name.length - 7);
+      }
+      return name;
+    };
+
+    const tableColumn = ['Vegetable', ...customers.map(truncateName)];
+    const tableRows = [];
+
+    vegetables.forEach((row) => {
+      const rowData = [row.vegetable, ...customers.map((customer) => row[customer] || '')];
+      tableRows.push(rowData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      styles: {
+        fontSize: 8, // Reduce font size for better fit
+        cellPadding: 2, // Reduce padding to fit more content
+      },
+      columnStyles: {
+        0: { cellWidth: 35 }, // Set fixed width for the first column (Vegetable)
+      },
+      margin: { top: 15 },
+      theme: 'striped',
+      pageBreak: 'auto', // Automatically adds pages if content overflows
+    });
+
+    doc.save(`Requirement_${date}.pdf`);
+  };
+
   return (
     <div className="flex flex-col gap-y-4 pb-10 min-h-screen">
       <div className="flex w-full justify-end">
@@ -84,7 +125,11 @@ export default function RequirementPage() {
                       left: 0,
                       zIndex: 1,
                       backgroundColor: 'white',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                     }}
+                    style={{ minWidth: '120px', maxWidth: '160px' }}
                   >
                     {row.vegetable}
                   </TableCell>
@@ -100,14 +145,14 @@ export default function RequirementPage() {
         </TableContainer>
       ) : null}
 
-      {/* <div className="flex justify-end w-full">
+      <div className="flex justify-end w-full">
         <button
           className="w-fit px-8 py-3 rounded-lg bg-gray-600 text-white cursor-pointer"
-          onClick={onDownload}
+          onClick={generatePDF}
         >
           Print
         </button>
-      </div> */}
+      </div>
     </div>
   );
 }
