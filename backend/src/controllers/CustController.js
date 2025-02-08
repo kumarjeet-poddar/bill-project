@@ -51,12 +51,37 @@ async function get_customer(req, res) {
 
 async function add_customer(req, res) {
   try {
-    const { username, phone, address } = req.body;
+    const { username, phone, address, customer_identifier, customer_sequence } = req.body;
+
+    const existingCustomer = await Customer.findOne({
+      customer_identifier: customer_identifier.toLowerCase(),
+    });
+    if (existingCustomer) {
+      return res.status(400).json({
+        success: false,
+        msg: 'Customer identifier already exists',
+      });
+    }
+
+    if (customer_sequence) {
+      const existingCustomer = await Customer.findOne({
+        customer_sequence,
+        _id: { $ne: cust_id },
+      });
+      if (existingCustomer) {
+        return res.status(400).json({
+          success: false,
+          msg: 'This customer sequence is already added!',
+        });
+      }
+    }
 
     const new_user = await Customer.create({
-      username: username,
+      username,
       phone,
       address,
+      customer_identifier: customer_identifier.toLowerCase(),
+      customer_sequence,
     });
 
     return res.status(200).json({
@@ -74,14 +99,42 @@ async function add_customer(req, res) {
 
 async function edit_customer(req, res) {
   try {
-    const { cust_id, phone, address } = req.body;
+    const { cust_id, phone, address, customer_identifier, customer_sequence } = req.body;
+
+    if (customer_identifier) {
+      const existingCustomer = await Customer.findOne({
+        customer_identifier: customer_identifier.toLowerCase(),
+        _id: { $ne: cust_id },
+      });
+      if (existingCustomer) {
+        return res.status(400).json({
+          success: false,
+          msg: 'Customer identifier already exists',
+        });
+      }
+    }
+
+    if (customer_sequence) {
+      const existingCustomer = await Customer.findOne({
+        customer_sequence,
+        _id: { $ne: cust_id },
+      });
+      if (existingCustomer) {
+        return res.status(400).json({
+          success: false,
+          msg: 'This customer sequence is already added!',
+        });
+      }
+    }
 
     const updatedCustomer = await Customer.findByIdAndUpdate(
       cust_id,
       {
         $set: {
-          phone: phone,
-          address: address,
+          phone,
+          address,
+          ...(customer_identifier && { customer_identifier: customer_identifier.toLowerCase() }),
+          ...(customer_sequence && { customer_sequence }),
         },
       },
       { new: true }

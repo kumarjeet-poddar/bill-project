@@ -27,12 +27,10 @@ export default function RequirementPage() {
 
   const generatePDF = () => {
     const doc = new jsPDF({
-      orientation: 'landscape', // Landscape for better column fit
+      orientation: 'landscape',
       unit: 'mm',
       format: 'a4',
     });
-
-    doc.text('Requirement Table', 14, 10);
 
     // Function to truncate customer names
     const truncateName = (name) => {
@@ -43,30 +41,46 @@ export default function RequirementPage() {
     };
 
     const tableColumn = ['Vegetable', ...customers.map(truncateName)];
-    const tableRows = [];
+    const tableRows = vegetables.map((row) => [
+      row.vegetable,
+      ...customers.map((customer) => row[customer] || ''),
+    ]);
 
-    vegetables.forEach((row) => {
-      const rowData = [row.vegetable, ...customers.map((customer) => row[customer] || '')];
-      tableRows.push(rowData);
-    });
+    let firstPage = true;
 
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 20,
+      startY: 10,
       styles: {
-        fontSize: 8, // Reduce font size for better fit
-        cellPadding: 2, // Reduce padding to fit more content
+        fontSize: 7, // Further reduced font size
+        cellPadding: 1, // Further reduced padding
       },
       columnStyles: {
-        0: { cellWidth: 35 }, // Set fixed width for the first column (Vegetable)
+        0: { cellWidth: 30 }, // Slightly reduced width for the first column
       },
-      margin: { top: 15 },
+      margin: { top: 10, right: 7, bottom: 10, left: 7 }, // Reduced margins
       theme: 'striped',
-      pageBreak: 'auto', // Automatically adds pages if content overflows
+      pageBreak: 'auto',
+      didDrawPage: (data) => {
+        // Add heading only on the first page
+        if (firstPage) {
+          doc.setFontSize(12);
+          doc.text('Requirement Table', 7, 7);
+          firstPage = false;
+        }
+      },
+      willDrawCell: (data) => {
+        // Ensure header is not repeated on subsequent pages
+        if (data.row.index === 0 && data.pageCount > 1) {
+          data.cell.styles.fillColor = '#FFFFFF';
+          data.cell.styles.textColor = '#FFFFFF';
+        }
+      },
     });
 
-    doc.save(`Requirement_${date}.pdf`);
+    const currentDate = new Date().toISOString().split('T')[0];
+    doc.save(`Requirement_${currentDate}.pdf`);
   };
 
   return (

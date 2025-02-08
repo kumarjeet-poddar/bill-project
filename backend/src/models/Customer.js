@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { ObjectId } = mongoose.Schema.Types;
 
 const userSchema = new mongoose.Schema({
@@ -14,24 +14,32 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  customer_identifier: {
+    type: String,
+    unique: true,
+  },
+  customer_sequence: {
+    type: Number,
+    unique: true,
+  },
   vegetables: [
     {
       type: ObjectId,
-      ref: "vegetable",
+      ref: 'vegetable',
     },
   ],
   bills: [
     {
       type: ObjectId,
-      ref: "bill",
+      ref: 'bill',
     },
   ],
-  bill_number:{
-    type:Number,
-    default:1
-  }
+  bill_number: {
+    type: Number,
+    default: 1,
+  },
 });
 
-const Customer = mongoose.model("customer", userSchema);
+const Customer = mongoose.model('customer', userSchema);
 
 export default Customer;

@@ -123,7 +123,9 @@ async function get_sequence(req, res) {
     if (!admin) {
       return res.status(404).json({ success: true, msg: 'No data found!' });
     }
-    res.status(200).json({ success: true, vegetables: admin.vegetables });
+    const sortedVegetables = admin.vegetables.sort((a, b) => a.order - b.order);
+
+    res.status(200).json({ success: true, vegetables: sortedVegetables });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -146,17 +148,31 @@ async function get_requirements(req, res) {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Fetch all bills for the given date
     const bills = await Bill.find({
       date: { $gte: startOfDay, $lte: endOfDay },
     });
 
-    const customerIds = [...new Set(bills.map((bill) => bill.customer))]; // Get unique customer IDs
-    const customers = await Customer.find({ _id: { $in: customerIds } }, 'username');
+    const customerIds = [...new Set(bills.map((bill) => bill.customer))];
+
+    // Fetch customers sorted by customer_sequence
+    const customers = await Customer.find(
+      { _id: { $in: customerIds } },
+      'username customer_sequence'
+    ).sort({ customer_sequence: 1 });
     const customerMap = {};
     customers.forEach((customer) => {
-      customerMap[customer._id] = customer.username;
+      customerMap[customer._id] = {
+        username: customer.username,
+        sequence: customer.customer_sequence,
+      };
     });
+
+    // Fetch vegetables from Admin collection and sort them by order
+    const adminData = await Admin.findOne({}, 'vegetables');
+    const adminVegetables = adminData ? adminData.vegetables.map((veg) => veg.english_name) : [];
+    const sortedVegetables = adminData
+      ? adminData.vegetables.sort((a, b) => a.order - b.order).map((veg) => veg.english_name)
+      : [];
 
     // Build a map of vegetables with quantities for each customer
     const vegetableMap = {};
@@ -164,24 +180,30 @@ async function get_requirements(req, res) {
       bill.vegetables.forEach((veg) => {
         if (!vegetableMap[veg.name]) {
           vegetableMap[veg.name] = {};
-          customerIds.forEach((id) => (vegetableMap[veg.name][id] = null)); // Initialize with null for relevant customers
+          customers.forEach((customer) => (vegetableMap[veg.name][customer._id] = null));
         }
-
-        vegetableMap[veg.name][bill.customer] = veg.quantity; // Add the quantity for the customer
+        vegetableMap[veg.name][bill.customer] = veg.quantity;
       });
     });
 
-    // Construct the final table-like response
+    // Collect vegetables not present in the Admin collection
+    const additionalVegetables = Object.keys(vegetableMap).filter(
+      (veg) => !adminVegetables.includes(veg)
+    );
+
+    // Construct the sorted response
     const response = [];
-    Object.entries(vegetableMap).forEach(([vegName, customerData]) => {
-      const row = { vegetable: vegName };
-      customerIds.forEach((id) => {
-        row[customerMap[id]] = customerData[id]; // Map customer names to quantities
-      });
-      response.push(row);
+    [...sortedVegetables, ...additionalVegetables].forEach((vegName) => {
+      if (vegetableMap[vegName]) {
+        const row = { vegetable: vegName };
+        customers.forEach((customer) => {
+          row[customer.username] = vegetableMap[vegName][customer._id] || null;
+        });
+        response.push(row);
+      }
     });
 
-    // Respond with the table-like structure
+    // Respond with sorted data
     res.status(200).json({
       success: true,
       customers: customers.map((c) => c.username),

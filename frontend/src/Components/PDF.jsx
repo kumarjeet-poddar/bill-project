@@ -99,10 +99,10 @@ export default function Pdf(props) {
               <tbody>
                 {pageItems.map((item, index) => (
                   <tr key={index + 1} className="pb-2 w-full">
-                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[10%]">
+                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[5%]">
                       {index + 1 + pageIndex * itemsPerPage}
                     </td>
-                    <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-2/5 capitalize font-bold">
+                    <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-1/2 capitalize font-bold">
                       {item.name} / {item.hindi_name || ''}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
@@ -114,7 +114,7 @@ export default function Pdf(props) {
                     <td className="border border-black px-2 pb-3 pt-1 text-center w-[10%] font-bold">
                       {item.price_per_kg}
                     </td>
-                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[20%] font-bold">
+                    <td className="border border-black border-r-0 px-2 pb-3 pt-1 text-center w-[15%] font-bold">
                       {(item.quantity * item.price_per_kg).toFixed(2)}
                     </td>
                   </tr>

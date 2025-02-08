@@ -66,6 +66,8 @@ function Form() {
           setValue('name', res?.data?.customer?.username);
           setValue('phone', res?.data?.customer?.phone);
           setValue('address', res?.data?.customer?.address);
+          setValue('customer_identifier', res?.data?.customer?.customer_identifier);
+          setValue('customer_sequence', res?.data?.customer?.customer_sequence);
           setAdminVegetables(res?.data?.admin_vegetables);
           setCustomerVegetables(res?.data?.customer?.vegetables);
           const currentDate = new Date().toLocaleDateString('en-CA');
@@ -88,6 +90,8 @@ function Form() {
           setValue('name', res?.data?.bill?.customer?.username);
           setValue('phone', res?.data?.bill?.customer?.phone);
           setValue('address', res?.data?.bill?.customer?.address);
+          setValue('customer_identifier', res?.data?.bill?.customer.customer_identifier);
+          setValue('customer_sequence', res?.data?.bill?.customer?.customer_sequence);
           const formattedDate = res?.data?.bill?.date
             ? new Date(res.data.bill.date).toLocaleDateString('en-CA')
             : '';
@@ -280,17 +284,15 @@ function Form() {
                 veg._id === 0 ? { ...veg, _id: err.response.data.vegetable._id } : veg
               );
 
-              // If editing a bill, update it with the new vegetables
-              // if (billId) {
-              //   edit_bill({ vegetables: veges }, 'add_veg_in_bill');
-              // }
+              // Use setTimeout to ensure this runs after state update
+              setTimeout(() => {
+                if (billId) {
+                  edit_bill({ vegetables: updatedVeges }, 'add_veg_in_bill');
+                }
+              }, 0);
 
               return updatedVeges;
             });
-
-            if (billId) {
-              edit_bill({ vegetables: veges }, 'add_veg_in_bill');
-            }
           }
         });
     } else {
@@ -393,6 +395,8 @@ function Form() {
           cust_id: custId,
           phone: data.phone,
           address: data.address,
+          customer_identifier: data.customer_identifier,
+          customer_sequence: data.customer_sequence,
         };
 
         await axiosInstance
@@ -411,9 +415,18 @@ function Form() {
 
       // generate bill
       if (operation === 'generate_bill') {
+        const filteredVeges = veges
+          .filter((veg) => veg.name.trim() !== '' && veg._id !== '0') // Remove empty names and _id === "0"
+          .reduce((acc, veg) => {
+            if (!acc.some((item) => item.name.toLowerCase() === veg.name.toLowerCase())) {
+              acc.push(veg);
+            }
+            return acc;
+          }, []);
+
         const bill_data = {
           cust_id: custId,
-          cust_vegetables: veges,
+          cust_vegetables: filteredVeges,
           total,
           date: data.date,
           bill_number: data.bill_number,
@@ -438,9 +451,18 @@ function Form() {
 
       // edit bill
       if (billId) {
+        const filteredVeges = veges
+          .filter((veg) => veg.name.trim() !== '' && veg._id !== '0') // Remove empty names and _id === "0"
+          .reduce((acc, veg) => {
+            if (!acc.some((item) => item.name.toLowerCase() === veg.name.toLowerCase())) {
+              acc.push(veg);
+            }
+            return acc;
+          }, []);
+
         const editBillReq = {
           ...data,
-          vegetables: veges,
+          vegetables: filteredVeges,
         };
         await edit_bill(editBillReq, 'save_bill');
       }
@@ -450,6 +472,8 @@ function Form() {
         username: data.name,
         phone: data.phone,
         address: data.address,
+        customer_identifier: data.customer_identifier,
+        customer_sequence: data.customer_sequence,
       };
 
       await axiosInstance
@@ -510,7 +534,27 @@ function Form() {
               {errors.username && <span className="text-red-600">Please, enter address</span>}
             </div>
 
-            {operation === 'edit' ? null : (
+            <div className="mb-4">
+              <label className="text-gray-800">Customer Unique Identifier </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                placeholder=""
+                {...register('customer_identifier', { required: true })}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="text-gray-800">Customer Sequence </label>
+              <input
+                type="number"
+                className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
+                placeholder=""
+                {...register('customer_sequence', { required: true })}
+              />
+            </div>
+
+            {operation === 'edit' || !custId ? null : (
               <>
                 <div className="mb-4">
                   <label className="text-gray-800">Date</label>

@@ -226,7 +226,7 @@ function QuotationForm() {
                 type="number"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="00"
-                {...register('discount', { required: true })}
+                {...register('discount')}
               />
               {errors.date && <span className="text-red-600">This is a required field</span>}
             </div>
