@@ -157,56 +157,59 @@ async function get_requirements(req, res) {
     // Fetch customers sorted by customer_sequence
     const customers = await Customer.find(
       { _id: { $in: customerIds } },
-      'username customer_sequence'
+      'customer_identifier customer_sequence'
     ).sort({ customer_sequence: 1 });
+
     const customerMap = {};
     customers.forEach((customer) => {
       customerMap[customer._id] = {
-        username: customer.username,
+        identifier: customer.customer_identifier,
         sequence: customer.customer_sequence,
       };
     });
 
     // Fetch vegetables from Admin collection and sort them by order
     const adminData = await Admin.findOne({}, 'vegetables');
-    const adminVegetables = adminData ? adminData.vegetables.map((veg) => veg.english_name) : [];
     const sortedVegetables = adminData
-      ? adminData.vegetables.sort((a, b) => a.order - b.order).map((veg) => veg.english_name)
+      ? adminData.vegetables
+          .sort((a, b) => a.order - b.order)
+          .map((veg) => veg.english_name.toLowerCase()) // Convert to lowercase
       : [];
 
-    // Build a map of vegetables with quantities for each customer
+    // Initialize vegetableMap for ordered vegetables
     const vegetableMap = {};
-    bills.forEach((bill) => {
-      bill.vegetables.forEach((veg) => {
-        if (!vegetableMap[veg.name]) {
-          vegetableMap[veg.name] = {};
-          customers.forEach((customer) => (vegetableMap[veg.name][customer._id] = null));
-        }
-        vegetableMap[veg.name][bill.customer] = veg.quantity;
+    sortedVegetables.forEach((veg) => {
+      vegetableMap[veg] = {}; // Initialize each vegetable row
+      customers.forEach((customer) => {
+        vegetableMap[veg][customer._id] = null; // Default to null
       });
     });
 
-    // Collect vegetables not present in the Admin collection
-    const additionalVegetables = Object.keys(vegetableMap).filter(
-      (veg) => !adminVegetables.includes(veg)
-    );
+    // Populate vegetableMap with actual purchase data
+    bills.forEach((bill) => {
+      bill.vegetables.forEach((veg) => {
+        const vegName = veg.name.toLowerCase(); // Normalize to lowercase
+        if (vegetableMap.hasOwnProperty(vegName)) {
+          vegetableMap[vegName][bill.customer] = veg.quantity;
+        }
+      });
+    });
 
-    // Construct the sorted response
-    const response = [];
-    [...sortedVegetables, ...additionalVegetables].forEach((vegName) => {
-      if (vegetableMap[vegName]) {
+    // Construct the response in sorted order
+    const response = sortedVegetables
+      .filter((vegName) => vegetableMap[vegName]) // Ensure only existing vegetables are considered
+      .map((vegName) => {
         const row = { vegetable: vegName };
         customers.forEach((customer) => {
-          row[customer.username] = vegetableMap[vegName][customer._id] || null;
+          row[customer.customer_identifier] = vegetableMap[vegName][customer._id] || null;
         });
-        response.push(row);
-      }
-    });
+        return row;
+      });
 
     // Respond with sorted data
     res.status(200).json({
       success: true,
-      customers: customers.map((c) => c.username),
+      customers: customers.map((c) => c.customer_identifier),
       data: response,
     });
   } catch (error) {

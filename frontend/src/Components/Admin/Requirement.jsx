@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import { useDownloadExcel } from 'react-export-table-to-excel';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { truncateText } from '../Quotation/QuotationPDF';
 
 export default function RequirementPage() {
   const [date, setDate] = useState('');
@@ -32,17 +33,11 @@ export default function RequirementPage() {
       format: 'a4',
     });
 
-    // Function to truncate customer names
-    const truncateName = (name) => {
-      if (name.length > 14) {
-        return name.substring(0, 7) + '...' + name.substring(name.length - 7);
-      }
-      return name;
-    };
+    const capitalizeText = (text) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
-    const tableColumn = ['Vegetable', ...customers.map(truncateName)];
+    const tableColumn = ['Vegetable', ...customers.map((name) => name.toUpperCase())];
     const tableRows = vegetables.map((row) => [
-      row.vegetable,
+      truncateText(capitalizeText(row.vegetable)),
       ...customers.map((customer) => row[customer] || ''),
     ]);
 
@@ -51,36 +46,41 @@ export default function RequirementPage() {
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 10,
+      startY: 15, // Adjusted to avoid overlapping the title
       styles: {
-        fontSize: 7, // Further reduced font size
-        cellPadding: 1, // Further reduced padding
+        fontSize: 7,
+        cellPadding: 1,
+        textColor: [0, 0, 0], // Ensures text is visible
+      },
+      headStyles: {
+        fontSize: 8, // Slightly larger font for header
+        fontStyle: 'bold', // Bold headings
+        fillColor: [0, 0, 255], // Blue background for heading
+        textColor: [255, 255, 255], // White text color
+      },
+      bodyStyles: {
+        fontStyle: 'bold',
       },
       columnStyles: {
-        0: { cellWidth: 30 }, // Slightly reduced width for the first column
+        0: { cellWidth: 30 },
       },
-      margin: { top: 10, right: 7, bottom: 10, left: 7 }, // Reduced margins
+      margin: { top: 10, right: 5, bottom: 5, left: 5 },
       theme: 'striped',
       pageBreak: 'auto',
       didDrawPage: (data) => {
-        // Add heading only on the first page
+        // Add heading on every page
         if (firstPage) {
-          doc.setFontSize(12);
-          doc.text('Requirement Table', 7, 7);
+          doc.setFontSize(14);
+          doc.setTextColor(0, 0, 255);
+          doc.text(`Order Sheet - Narayan Green Vegetables - ${date}`, 5, 10);
           firstPage = false;
         }
-      },
-      willDrawCell: (data) => {
-        // Ensure header is not repeated on subsequent pages
-        if (data.row.index === 0 && data.pageCount > 1) {
-          data.cell.styles.fillColor = '#FFFFFF';
-          data.cell.styles.textColor = '#FFFFFF';
-        }
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 255); // Blue heading
       },
     });
 
-    const currentDate = new Date().toISOString().split('T')[0];
-    doc.save(`Requirement_${currentDate}.pdf`);
+    doc.save(`Order Sheet_Narayan Green Vegetables_${date}.pdf`);
   };
 
   return (
@@ -121,6 +121,7 @@ export default function RequirementPage() {
                       fontWeight: 600,
                     }}
                     align="right"
+                    className="uppercase"
                   >
                     {customer}
                   </TableCell>
