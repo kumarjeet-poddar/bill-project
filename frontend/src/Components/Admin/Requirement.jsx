@@ -41,8 +41,6 @@ export default function RequirementPage() {
       ...customers.map((customer) => row[customer] || ''),
     ]);
 
-    let firstPage = true;
-
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
@@ -64,23 +62,29 @@ export default function RequirementPage() {
       columnStyles: {
         0: { cellWidth: 30 },
       },
-      margin: { top: 10, right: 5, bottom: 5, left: 5 },
+      margin: { top: 15, right: 5, bottom: 5, left: 5 },
       theme: 'striped',
       pageBreak: 'auto',
       didDrawPage: (data) => {
-        // Add heading on every page
-        if (firstPage) {
-          doc.setFontSize(14);
-          doc.setTextColor(0, 0, 255);
-          doc.text(`Order Sheet - Narayan Green Vegetables - ${date}`, 5, 10);
-          firstPage = false;
-        }
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 255);
+
+        doc.text('Order Sheet', 5, 10);
+
+        const pageWidth = doc.internal.pageSize.width;
+        const textWidth = doc.getTextWidth('Narayan Green Vegetables');
+        doc.text('Narayan Green Vegetables', (pageWidth - textWidth) / 2, 10);
+
+        const dateTextWidth = doc.getTextWidth(date);
+        doc.text(date.split('-').reverse().join('/'), pageWidth - dateTextWidth - 5, 10);
+
+        // doc.text(`Order Sheet - Narayan Green Vegetables - ${date}`, 5, 10);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 255); // Blue heading
       },
     });
 
-    doc.save(`Order Sheet_Narayan Green Vegetables_${date}.pdf`);
+    doc.save(`Order Sheet_${date}.pdf`);
   };
 
   return (

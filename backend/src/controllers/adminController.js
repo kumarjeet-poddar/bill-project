@@ -170,15 +170,30 @@ async function get_requirements(req, res) {
 
     // Fetch vegetables from Admin collection and sort them by order
     const adminData = await Admin.findOne({}, 'vegetables');
-    const sortedVegetables = adminData
-      ? adminData.vegetables
-          .sort((a, b) => a.order - b.order)
-          .map((veg) => veg.english_name.toLowerCase()) // Convert to lowercase
+    const adminVegetables = adminData
+      ? adminData.vegetables.map((veg) => ({
+          name: veg.english_name.toLowerCase(), // Convert to lowercase
+          order: veg.order,
+        }))
       : [];
 
-    // Initialize vegetableMap for ordered vegetables
+    // Get only the vegetables that were purchased (normalized to lowercase)
+    const purchasedVegetablesSet = new Set();
+    bills.forEach((bill) => {
+      bill.vegetables.forEach((veg) => {
+        purchasedVegetablesSet.add(veg.name.toLowerCase());
+      });
+    });
+
+    // Filter and sort vegetables based on admin's order
+    const sortedPurchasedVegetables = adminVegetables
+      .filter((veg) => purchasedVegetablesSet.has(veg.name))
+      .sort((a, b) => a.order - b.order)
+      .map((veg) => veg.name); // Extract only names
+
+    // Initialize vegetableMap only for purchased vegetables
     const vegetableMap = {};
-    sortedVegetables.forEach((veg) => {
+    sortedPurchasedVegetables.forEach((veg) => {
       vegetableMap[veg] = {}; // Initialize each vegetable row
       customers.forEach((customer) => {
         vegetableMap[veg][customer._id] = null; // Default to null
@@ -196,15 +211,13 @@ async function get_requirements(req, res) {
     });
 
     // Construct the response in sorted order
-    const response = sortedVegetables
-      .filter((vegName) => vegetableMap[vegName]) // Ensure only existing vegetables are considered
-      .map((vegName) => {
-        const row = { vegetable: vegName };
-        customers.forEach((customer) => {
-          row[customer.customer_identifier] = vegetableMap[vegName][customer._id] || null;
-        });
-        return row;
+    const response = sortedPurchasedVegetables.map((vegName) => {
+      const row = { vegetable: vegName };
+      customers.forEach((customer) => {
+        row[customer.customer_identifier] = vegetableMap[vegName][customer._id] || null;
       });
+      return row;
+    });
 
     // Respond with sorted data
     res.status(200).json({
