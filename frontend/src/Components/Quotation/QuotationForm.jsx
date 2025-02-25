@@ -149,7 +149,11 @@ function QuotationForm() {
         setLoad(false);
         setVeges(res?.data?.quotation?.vegetables);
         generatePDF(targetRef, {
-          filename: `${name}_${new Date(date).toLocaleDateString('en-GB')}.pdf`,
+          filename: `${
+            name
+              ? `${name}_${new Date(date).toLocaleDateString('en-GB')}.pdf`
+              : `Quotation_${new Date(date).toLocaleDateString('en-GB')}.pdf`
+          }`,
         });
 
         toast.success(res?.data?.msg);
@@ -172,9 +176,7 @@ function QuotationForm() {
                 type="text"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Enter Customer name"
-                {...register('name', { required: true })}
               />
-              {errors.username && <span className="text-red-600">Please, enter name</span>}
             </div>
 
             <div className="mb-4">
@@ -183,7 +185,6 @@ function QuotationForm() {
                 type="number"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Phone Number"
-                {...register('phone', { required: true })}
               />
             </div>
 
@@ -193,9 +194,7 @@ function QuotationForm() {
                 type="text"
                 className="w-full border border-gray-300 bg-[ffffff] py-2 px-4 mt-1 rounded-lg focus:outline-none placeholder-gray-300"
                 placeholder="Enter Address"
-                {...register('address', { required: true })}
               />
-              {errors.username && <span className="text-red-600">Please, enter address</span>}
             </div>
 
             <div className="mb-4">
@@ -228,7 +227,6 @@ function QuotationForm() {
                 placeholder="00"
                 {...register('discount')}
               />
-              {errors.date && <span className="text-red-600">This is a required field</span>}
             </div>
 
             <div className="mb-4">
