@@ -78,7 +78,7 @@ export default function Pdf(props) {
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border-t border-b border-black px-2 pt-2 pb-3 text-lg text-center">
-                      Sr. No
+                      S. No
                     </th>
                     <th className="border border-r-0 border-black px-2 pt-2 pb-3 text-center text-lg">
                       Description
@@ -99,7 +99,7 @@ export default function Pdf(props) {
               <tbody>
                 {pageItems.map((item, index) => (
                   <tr key={index + 1} className="pb-2 w-full">
-                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[5%]">
+                    <td className="border border-black border-l-0 px-2 pb-3 pt-1 text-center w-[6%]">
                       {index + 1 + pageIndex * itemsPerPage}
                     </td>
                     <td className="border border-black px-2 pb-3 pt-1 text-center text-[17px] w-1/2 capitalize font-bold">

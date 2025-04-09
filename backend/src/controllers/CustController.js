@@ -63,17 +63,14 @@ async function add_customer(req, res) {
       });
     }
 
-    if (customer_sequence) {
-      const existingCustomer = await Customer.findOne({
-        customer_sequence,
-        _id: { $ne: cust_id },
+    const existingCustomerBySequence = await Customer.findOne({
+      customer_sequence,
+    });
+    if (existingCustomerBySequence) {
+      return res.status(400).json({
+        success: false,
+        msg: 'This customer sequence is already added!',
       });
-      if (existingCustomer) {
-        return res.status(400).json({
-          success: false,
-          msg: 'This customer sequence is already added!',
-        });
-      }
     }
 
     const new_user = await Customer.create({
